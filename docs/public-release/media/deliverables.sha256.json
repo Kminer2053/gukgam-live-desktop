@@ -1,0 +1,34 @@
+{
+  "gukgam-live-threads-30s.mp4": {
+    "bytes": 8610742,
+    "sha256": "e394c96628938609d2fb42baa962cf99d15fa81344c2481f859eebbeb06058bb"
+  },
+  "poster.png": {
+    "bytes": 304021,
+    "sha256": "2955e0c31f6ed2363e8d0c00a442d99dcfa8599b8b4a5f823f3251e80d257ec0"
+  },
+  "poster.svg": {
+    "bytes": 15592,
+    "sha256": "e052d76eeb1bb67e56d265cf90f38f69dc2321680e23fe3f64ca670178180060"
+  },
+  "promo.ko.srt": {
+    "bytes": 668,
+    "sha256": "f1f57890369c2e0c892e50f9b1297a565daa78b494e967f9b8ba07dbdfe73f72"
+  },
+  "promo-script.ko.txt": {
+    "bytes": 364,
+    "sha256": "af19e3585b4d31ddfd629e38c715808f54cafc225af1fc2f870b74ff59e0a8e8"
+  },
+  "promo-motion-master.mp4": {
+    "bytes": 15253037,
+    "sha256": "dfced3b34e7298fd1f56e18833952db63e964da8adca29ec44b9b5a651983a0e"
+  },
+  "promo-canvas.html": {
+    "bytes": 8815,
+    "sha256": "0a9c54a004aee88c3918b7f356728d44a34617a573c8f4afe39f94d6dd9183ff"
+  },
+  "threads-caption.ko.txt": {
+    "bytes": 585,
+    "sha256": "d2b1bd485f07c9d26b2469ab421fc7caf3c699895ac0d778e6434370a48a731a"
+  }
+}

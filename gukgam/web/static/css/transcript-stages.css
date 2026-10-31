@@ -1,0 +1,106 @@
+/* 원수신 실황과 종료 블록 보정의 공통 시간/화자/본문 배치. */
+.show-transcript-stages { overflow-anchor: none; }
+.transcript-stages { margin: 16px 0; border: 1px solid var(--border); border-radius: var(--r); background: var(--surface); overflow: hidden; }
+.transcript-stages.transcript-data-only { display: none; }
+.legacy-corrected .u-text { white-space: pre-wrap; }
+.legacy-corrected .u-spk > button { font-weight: 650; }
+.transcript-stage-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.transcript-stage-tabs { display: flex; flex: 1; gap: 4px; }
+.transcript-stage-tabs button { border: 0; border-radius: var(--r-sm); background: transparent; color: var(--text-2); font: inherit; font-weight: 650; padding: 9px 13px; cursor: pointer; white-space: nowrap; }
+.transcript-stage-tabs button[aria-selected="true"] { background: var(--primary-weak); color: var(--primary-text); }
+.transcript-stage-tabs button:focus-visible, .transcript-stages [tabindex]:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.transcript-stage-guide { margin: 0; padding: 12px 16px 6px; color: var(--text-3); font-size: 13px; line-height: 1.6; }
+.transcript-stage-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 8px 16px; }
+.transcript-stage-toolbar .switch { margin-left: auto; font-size: 13px; }
+#transcript-stage-status { margin: 0; padding: 0 16px 8px; }
+/* 발언 목록만 따라가며 이전 보정·위원별 펼침이 페이지 스크롤을 이동시키지 않는다. */
+.transcript-stages > [role="tabpanel"] { max-height: calc(100dvh - 240px); min-height: 220px; overflow-y: auto; overscroll-behavior: contain; overflow-anchor: none; scrollbar-gutter: stable; }
+.transcript-source, .transcript-document { border-top: 1px solid var(--border); scroll-margin-top: 72px; }
+.transcript-source-heading { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 12px 16px 4px; font-size: 13px; color: var(--text-3); }
+.transcript-source-heading time, .transcript-stage-time { font-family: var(--mono); font-size: 13px; color: var(--text-3); }
+.transcript-stage-row { display: grid; grid-template-columns: 76px 112px minmax(0, 1fr); gap: 12px; padding: 16px; align-items: start; }
+.transcript-stage-row + .transcript-stage-row { border-top: 1px solid var(--border); }
+.transcript-stage-speaker { color: var(--primary-text); font-size: 14px; font-weight: 650; overflow-wrap: anywhere; }
+.role-answer .transcript-stage-speaker { color: var(--answer); }
+.role-chair .transcript-stage-speaker { color: var(--violet); }
+.role-other .transcript-stage-speaker { color: var(--text-3); }
+.transcript-role { display: block; margin-top: 4px; font-size: 12px; font-weight: 500; color: var(--text-3); }
+.transcript-stage-body { min-width: 0; font-size: 16px; line-height: 1.85; overflow-wrap: anywhere; }
+.transcript-source-body, .transcript-paragraph, .transcript-original { white-space: pre-wrap; }
+.transcript-paragraph { margin: 0; }
+.transcript-stage-pill { display: inline-block; border-radius: var(--r-pill); background: var(--surface-2); color: var(--text-3); padding: 2px 8px; font-size: 12px; font-weight: 550; line-height: 1.7; }
+.transcript-stage-pill.pending { background: var(--warn-weak); color: var(--warn-text); }
+.transcript-stage-pill.changed { background: var(--violet-weak); color: var(--violet); }
+.transcript-stage-pill.settled { background: var(--primary-weak); color: var(--primary-text); }
+.transcript-stage-flags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.transcript-stage-flags:empty { display: none; }
+.transcript-document-status { margin: 0; padding: 10px 16px; background: var(--surface-2); color: var(--text-3); font-size: 12px; }
+.transcript-block-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: 12px; padding: 16px 16px 8px; }
+.transcript-block-heading h3 { margin: 0; font-size: 18px; color: var(--text); }
+.transcript-correction-detail { margin-left: auto; min-width: 0; }
+.transcript-correction-detail[open] { flex-basis: 100%; margin-left: 0; }
+.transcript-correction-badge { display: inline-block; padding: 3px 10px; border-radius: var(--r-pill); background: var(--violet-weak); color: var(--violet); font-size: 12px; font-weight: 650; line-height: 1.7; cursor: pointer; list-style: none; }
+.transcript-correction-badge::-webkit-details-marker { display: none; }
+.transcript-correction-badge:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+.transcript-correction-detail[open] > .transcript-correction-badge { margin-bottom: 8px; }
+.transcript-correction-content { padding: 12px; border: 1px solid var(--border); border-radius: var(--r-sm); background: var(--surface-2); font-size: 13px; }
+.transcript-correction-content .transcript-block-summary { margin: 12px 0; }
+.transcript-evidence-row, .transcript-group-evidence { padding: 12px 0; border-top: 1px solid var(--border); }
+.transcript-evidence-row > .transcript-stage-pill { margin-left: 8px; }
+.transcript-group-evidence h4 { margin: 0 0 6px; }
+.transcript-pending-source { border-top: 1px solid var(--border); scroll-margin-top: 72px; }
+.transcript-pending-source .role-unknown .transcript-stage-speaker { color: var(--text-3); }
+.transcript-live-turn { border-top: 1px solid var(--border); scroll-margin-top: 72px; }
+.transcript-live-turn .role-unknown .transcript-stage-speaker { color: var(--text-3); }
+.transcript-processing .transcript-block-heading { padding-bottom: 16px; }
+.transcript-speaker-guess > summary { cursor: pointer; list-style: none; }
+.transcript-speaker-guess > summary::-webkit-details-marker { display: none; }
+.transcript-speaker-guess p { margin: 6px 0 0; font-weight: 400; line-height: 1.5; }
+.transcript-member-blocks { flex-direction: column; align-items: stretch; width: 100%; }
+.transcript-member-slot { min-width: 0; width: 100%; }
+.transcript-member-block { border: 1px solid var(--border); border-radius: var(--r-sm); overflow: hidden; }
+.transcript-member-block > summary { padding: 10px 12px; cursor: pointer; color: var(--primary-text); font-family: var(--mono); font-size: 13px; }
+.transcript-member-block-body { min-width: 0; max-height: 68dvh; overflow-y: auto; overscroll-behavior: contain; overflow-anchor: none; scrollbar-gutter: stable; border-top: 1px solid var(--border); }
+.transcript-member-block-body > p { padding: 12px; }
+.transcript-member-summary { padding: 14px 16px; }
+.transcript-member-summary h3, .transcript-member-live > h3 { margin: 0 0 10px; font-size: 16px; }
+.transcript-member-summary .transcript-block-summary { margin: 0; }
+.transcript-member-live > h3, .transcript-member-live > p { padding: 0 16px; }
+.transcript-member-content .transcript-document { border-left: 0; border-right: 0; }
+.transcript-member-content .transcript-block-heading h3 { font-size: 16px; }
+.transcript-block-summary { margin: 14px 16px 4px; padding: 14px 16px; background: var(--primary-weak); border-radius: var(--r-sm); }
+.transcript-summary-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.transcript-summary-section h4 { margin: 12px 0 4px; font-size: 13px; font-weight: 650; color: var(--text-2); }
+.transcript-summary-section ul { margin: 0; padding-left: 20px; }
+.transcript-summary-section li { margin: 5px 0; font-size: 14px; line-height: 1.7; overflow-wrap: anywhere; }
+.transcript-summary-evidence { display: inline-flex; gap: 6px; margin-left: 8px; }
+.transcript-summary-evidence a { color: var(--primary-text); }
+.transcript-sentence { scroll-margin-top: 84px; }
+.transcript-sentence:target { background: var(--warn-weak); }
+.transcript-uncertain { display: inline-block; vertical-align: middle; margin-left: 5px; padding: 1px 5px; border-radius: 4px; background: var(--warn-weak); color: var(--warn-text); font-size: 10px; line-height: 1.5; font-weight: 500; white-space: nowrap; }
+.transcript-sentence-evidence { margin-top: 8px; font-size: 13px; color: var(--text-2); }
+.transcript-sentence-evidence > summary, .transcript-source-detail > summary { cursor: pointer; color: var(--primary-text); }
+.transcript-original { border-left: 2px solid var(--border-strong); padding-left: 10px; }
+.transcript-edit, .transcript-source-parts p { margin: 6px 0; }
+.transcript-before { text-decoration: line-through; color: var(--text-3); }
+.transcript-source-links { display: flex; flex-wrap: wrap; gap: 6px; }
+.transcript-source-detail { flex: 1 0 100%; padding: 8px; background: var(--surface-2); border-radius: var(--r-sm); }
+.transcript-source-parts { white-space: pre-wrap; }
+.transcript-stage-empty { padding: 24px 16px; color: var(--text-3); font-size: 14px; }
+/* 현재 발언도 같은 목록의 마지막 행이며 본문 텍스트 노드만 이어 갱신한다. */
+.transcript-current { overflow-anchor: none; background: var(--primary-weak); box-shadow: inset 2px 0 0 var(--primary); }
+.transcript-current[hidden] { display: none; }
+.transcript-current-text { display: block; white-space: pre-wrap; overflow-wrap: anywhere; }
+.transcript-current[data-role="answer"] .transcript-stage-speaker { color: var(--answer); }
+.transcript-current[data-role="chair"] .transcript-stage-speaker { color: var(--violet); }
+.has-transcript-stages #question-audio-enable { display: none !important; }
+.show-transcript-stages #fab, .show-transcript-stages #scrubber, .show-transcript-stages #to-latest { display: none !important; }
+@media (max-width: 700px) {
+  .transcript-stage-head { padding: 10px; gap: 4px; }
+  .transcript-stage-tabs button { font-size: 13px; padding: 8px; }
+  .transcript-stage-row { grid-template-columns: 76px minmax(0, 1fr); gap: 8px 12px; padding: 12px; }
+  .transcript-stage-body { grid-column: 1 / -1; font-size: 15px; }
+  .transcript-stage-speaker { text-align: right; }
+  .transcript-role { display: inline; margin-left: 6px; }
+  .transcript-stage-toolbar .switch { margin-left: 0; }
+}

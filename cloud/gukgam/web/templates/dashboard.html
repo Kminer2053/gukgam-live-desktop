@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, loading %}
+{% block title %}대시보드{% endblock %}
+{% block body_class %}page-dashboard{% endblock %}
+{% block content %}
+{% set is_op = me and me.role == 'operator' %}
+<div id="preflight-band" class="pf-band" role="status" hidden></div>
+<div class="page-head">
+  <div>
+    <h1>대시보드</h1>
+    <p>필요할 때만 수집하고, 우리 기관 관련 질의·답변과 후속조치를 놓치지 않도록 정리합니다.</p>
+  </div>
+  {% if is_op %}
+  <a class="btn btn-primary" href="/sessions/new">{{ icon('plus') }}새 수집 세션</a>
+  {% endif %}
+</div>
+
+<section class="section{% if cloud %} cloud-mt-0{% endif %}" aria-labelledby="h-live" {% if not cloud %}style="margin-top:0"{% endif %}>
+  <div class="section-head">
+    <h2 id="h-live">{{ icon('live') }}진행 중인 세션</h2>
+  </div>
+  <div id="live-sessions" class="cards">{{ loading() }}</div>
+</section>
+
+<section class="section card" id="org-schedule-card" aria-labelledby="h-orgsched">
+  <div class="card-head">
+    <h3 id="h-orgsched">{{ icon('calendar') }}우리 기관 국감 일정</h3>
+    <div class="row">
+      <span id="orgsched-at" class="small muted"></span>
+      <button id="orgsched-refresh" class="btn btn-ghost btn-sm btn-icon" type="button" title="다시 조회">{{ icon('refresh') }}<span class="sr-only">다시 조회</span></button>
+    </div>
+  </div>
+  <p class="small muted{% if cloud %} cloud-dashboard-note{% endif %}" {% if not cloud %}style="margin:0 0 8px"{% endif %}>국회 의사중계 일정과 회의별 전체 피감기관 목록에서 설정의 '우리 기관'(이름·별칭)을 찾습니다. 회의명에 "○○ 등"으로만 나오는 동행 기관도 찾아냅니다.</p>
+  <div id="org-schedule">{{ loading() }}</div>
+</section>
+
+<div class="grid-2 section">
+  <section class="card" aria-labelledby="h-asm">
+    <div class="card-head">
+      <h3 id="h-asm">{{ icon('video') }}오늘 국회 중계</h3>
+      <div class="row">
+        <span id="asm-fetched" class="small muted"></span>
+        <button id="asm-refresh" class="btn btn-ghost btn-sm btn-icon" type="button" title="다시 불러오기">{{ icon('refresh') }}<span class="sr-only">다시 불러오기</span></button>
+      </div>
+    </div>
+    <div id="assembly" class="assembly-list">{{ loading() }}</div>
+  </section>
+
+  <section class="card" aria-labelledby="h-items">
+    <div class="card-head">
+      <h3 id="h-items">{{ icon('checklist') }}미처리 후속조치</h3>
+      <a class="btn btn-ghost btn-sm" href="/items?status=open">전체 보기 {{ icon('chevron-right', 'ic-sm') }}</a>
+    </div>
+    <div id="open-items">{{ loading() }}</div>
+  </section>
+</div>
+
+<section class="section" aria-labelledby="h-recent">
+  <div class="section-head">
+    <h2 id="h-recent">{{ icon('list') }}최근 세션</h2>
+    <div class="searchbox{% if cloud %} cloud-dashboard-search{% endif %}" {% if not cloud %}style="width:min(280px,100%)"{% endif %}>
+      {{ icon('search') }}
+      <input id="recent-filter" type="search" placeholder="제목·위원회·기관 거르기" aria-label="최근 세션 거르기">
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table class="tbl" aria-describedby="h-recent">
+      <thead>
+        <tr>
+          <th scope="col">회의</th>
+          <th scope="col">회의일</th>
+          <th scope="col">상태</th>
+          <th scope="col">수집원</th>
+          <th scope="col" class="num">발언</th>
+          <th scope="col" class="num">질의</th>
+          <th scope="col" class="num">후속조치</th>
+          <th scope="col" class="num">언급</th>
+          <th scope="col"><span class="sr-only">작업</span></th>
+        </tr>
+      </thead>
+      <tbody id="recent"><tr><td colspan="9">{{ loading() }}</td></tr></tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}<script type="module" src="/static/js/dashboard.js?v={{ version or '' }}"></script>{% endblock %}

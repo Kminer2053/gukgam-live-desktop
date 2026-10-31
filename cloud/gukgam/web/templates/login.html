@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}로그인{% endblock %}
+{% block body_class %}page-login{% endblock %}
+{% block topnav %}{% endblock %}
+{% block content %}
+{% set next_url = (request.query_params.get('next') if request is defined and request and request.query_params else '') or next or '/' %}
+<div class="login-wrap">
+  <form class="card login-card stack" method="post" action="/login" autocomplete="off">
+    <div class="brand"><img src="/static/img/logo.svg" alt="" width="36" height="36"><span>국감 라이브</span></div>
+    <p class="small muted{% if cloud %} cloud-login-note{% endif %}" {% if not cloud %}style="text-align:center;margin:0"{% endif %}>기관 내부용 국정감사 실시간 기록 서비스입니다.<br>발급받은 패스코드를 입력하세요.</p>
+    {% if error %}<div class="error-box" role="alert">{{ error }}</div>{% endif %}
+    <div class="field">
+      <label for="passcode">패스코드</label>
+      <input id="passcode" name="passcode" type="password" required autofocus autocomplete="current-password" inputmode="text">
+    </div>
+    <div class="field">
+      <label for="login-name">이름(선택)</label>
+      <input id="login-name" name="name" type="text" maxlength="40" autocomplete="name" placeholder="감사 기록·검수 표시에 남습니다">
+    </div>
+    <input type="hidden" name="next" value="{{ next_url if next_url.startswith('/') and not next_url.startswith('//') else '/' }}">
+    <button class="btn btn-primary btn-lg" type="submit">로그인</button>
+    <p class="small faint{% if cloud %} cloud-login-note{% endif %}" {% if not cloud %}style="margin:0;text-align:center"{% endif %}>{% if cloud and shared_passcode %}개인 시험 모드입니다. 공통 패스코드로 로그인하면 운영자 권한을 갖습니다.{% else %}운영자 패스코드는 수집 제어·수정, 열람자 패스코드는 보기만 할 수 있습니다.{% endif %}</p>
+  </form>
+</div>
+{% endblock %}

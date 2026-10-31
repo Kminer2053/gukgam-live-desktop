@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% from "_macros.html" import loading %}
+{% block title %}발언 상세{% endblock %}
+{% block body_class %}page-utterance{% endblock %}
+{% block body_data %}data-uid="{{ uid }}"{% endblock %}
+{% block content %}
+<nav id="crumbs" class="small muted{% if cloud %} cloud-mb-12{% endif %}" aria-label="위치" {% if not cloud %}style="margin-bottom:12px"{% endif %}></nav>
+<div id="u-root">{{ loading('발언을 불러오는 중…') }}</div>
+{% endblock %}
+{% block scripts %}<script type="module" src="/static/js/utterance.js?v={{ version or '' }}"></script>{% endblock %}

@@ -1,0 +1,126 @@
+{
+  "name": "gukgam-live-desktop",
+  "version": "0.1.0-preview.24",
+  "private": true,
+  "description": "코딩 지식 없이 ChatGPT 계정·Ollama·API로 국감 자막과 녹음의 문답·요약·후속조치를 정리하는 Windows 앱",
+  "author": "국감 라이브 기여자",
+  "license": "MIT",
+  "main": "dist/main/index.cjs",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "dev": "npm run build && electron .",
+    "dist": "electron-builder --win nsis"
+  },
+  "dependencies": {
+    "jose": "6.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.0",
+    "electron": "45.0.0",
+    "electron-builder": "26.18.0",
+    "esbuild": "0.25.11",
+    "playwright": "1.64.1",
+    "tsx": "4.20.6",
+    "typescript": "5.9.3"
+  },
+  "build": {
+    "appId": "kr.gukgam.live.desktop",
+    "productName": "국감 라이브 데스크톱",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "package.json",
+      "NOTICE.md",
+      "LICENSES/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "../dist/nemotron-assets",
+        "to": "nemotron-assets",
+        "filter": [
+          "runtimes/nemo-speech-0.2.0-windows-x86_64-cpu.zip",
+          "runtimes/nemo-speech-0.2.0-windows-x86_64-cpu/**/*",
+          "models/nemotron3-diarization/Nemotron-3-Diarization.q8_0.gguf"
+        ]
+      },
+      {
+        "from": "../dist/engine/gukgam-engine",
+        "to": "engine",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "../cloud",
+        "to": "relay-template",
+        "filter": [
+          "**/*",
+          "!**/__pycache__/**",
+          "!**/*.pyc",
+          "!.vercel/**",
+          "!.env*",
+          "!**/.env*"
+        ]
+      },
+      {
+        "from": "relay-cli/package.json",
+        "to": "relay-cli/package.json"
+      },
+      {
+        "from": "relay-cli/node_modules",
+        "to": "relay-cli/node_modules",
+        "filter": [
+          "**/*",
+          "!.cache{,/**/*}"
+        ]
+      },
+      {
+        "from": "../docs/public-release/manual.html",
+        "to": "manual/사용설명서.html"
+      },
+      {
+        "from": "assets/brand/gukgam-live-1024.png",
+        "to": "brand/gukgam-live-1024.png"
+      },
+      {
+        "from": "assets/brand/gukgam-live.svg",
+        "to": "brand/gukgam-live.svg"
+      },
+      {
+        "from": "../LICENSE",
+        "to": "LICENSE.txt"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "Gukgam-Live-Setup-${version}.${ext}",
+      "icon": "assets/brand/gukgam-live.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "installerIcon": "assets/brand/gukgam-live.ico",
+      "uninstallerIcon": "assets/brand/gukgam-live.ico"
+    },
+    "npmRebuild": false
+  },
+  "overrides": {
+    "tar": "7.5.22"
+  }
+}

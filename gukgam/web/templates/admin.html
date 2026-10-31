@@ -1,0 +1,318 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, loading %}
+{% block title %}설정{% endblock %}
+{% block body_class %}page-admin{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>설정</h1>
+    <p>{% if cloud %}우리 기관 정보·감시 키워드·담당 부서 규칙을 정합니다. 수집 PC가 연결돼 있으면 저장한 설정이 바로 적용됩니다.{% else %}우리 기관 정보·감시 키워드·담당 부서 규칙·AI 엔진을 정합니다. 저장하면 진행 중인 세션에도 바로 적용됩니다.{% endif %}</p>
+  </div>
+</div>
+
+<div id="admin-loading">{{ loading('설정을 불러오는 중…') }}</div>
+<div id="admin" class="admin-layout" hidden>
+  <nav class="admin-nav" aria-label="설정 항목">
+    <a href="#sec-org">우리 기관</a>
+    <a href="#sec-watch">감시 키워드</a>
+    <a href="#sec-dept">담당 부서 규칙</a>
+    <a href="#sec-llm">AI 요약 엔진</a>
+    <a href="#sec-stt">음성인식</a>
+    <a href="#sec-retention">보존 기간</a>
+    <a href="#sec-assembly">국회 연동</a>
+    <a href="#sec-health">시스템 상태</a>
+    <a href="#sec-audit">감사 기록</a>
+  </nav>
+
+  <div>
+    <!-- 우리 기관 -->
+    <section id="sec-org" class="card admin-sec" aria-labelledby="h-org">
+      <div class="card-head"><h3 id="h-org">{{ icon('building', 'ic-sm') }}우리 기관</h3></div>
+      <form id="f-org" class="form-grid">
+        <div class="field">
+          <label for="org-name">기관명</label>
+          <input id="org-name" type="text" placeholder="예: 한국도로공사" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="org-aliases">줄임말·별칭</label>
+          <input id="org-aliases" type="text" placeholder="예: 도로공사, 도공" autocomplete="off">
+          <span class="hint">쉼표로 나눕니다. 음성인식이 띄어 써도 잡힙니다.</span>
+        </div>
+        <div class="field">
+          <label for="org-head-title">기관장 직함</label>
+          <input id="org-head-title" type="text" placeholder="예: 사장" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="org-head-name">기관장 이름</label>
+          <input id="org-head-name" type="text" placeholder="예: 홍길동" autocomplete="off">
+        </div>
+        <div class="span-2 form-actions{% if cloud %} cloud-mt-0{% endif %}" {% if not cloud %}style="margin-top:0"{% endif %}><button class="btn btn-primary" type="submit">저장</button></div>
+      </form>
+    </section>
+
+    <!-- 감시 키워드 -->
+    <section id="sec-watch" class="card admin-sec" aria-labelledby="h-watch">
+      <div class="card-head">
+        <h3 id="h-watch">{{ icon('bell', 'ic-sm') }}감시 키워드</h3>
+        <button id="watch-add" class="btn btn-sm" type="button">{{ icon('plus', 'ic-sm') }}추가</button>
+      </div>
+      <p class="small muted">발언에 나오면 ‘우리 기관 언급’ 알림을 띄우고 노란색으로 표시합니다. 기관명·별칭·기관장 이름은 자동으로 포함됩니다.</p>
+      <form id="f-watch">
+        <div id="watch-rows" class="rule-rows"></div>
+        <div class="form-actions"><button class="btn btn-primary" type="submit">저장</button></div>
+      </form>
+    </section>
+
+    <!-- 담당 부서 -->
+    <section id="sec-dept" class="card admin-sec" aria-labelledby="h-dept">
+      <div class="card-head">
+        <h3 id="h-dept">{{ icon('users', 'ic-sm') }}담당 부서 규칙</h3>
+        <button id="dept-add" class="btn btn-sm" type="button">{{ icon('plus', 'ic-sm') }}추가</button>
+      </div>
+      <p class="small muted">요구자료·약속사항에 이 낱말이 들어 있으면 담당 부서를 추천합니다(가장 많이 맞는 부서). 최종 배정은 사람이 확인하세요.</p>
+      <form id="f-dept">
+        <div id="dept-rows" class="rule-rows"></div>
+        <div class="form-actions"><button class="btn btn-primary" type="submit">저장</button></div>
+      </form>
+    </section>
+
+    <!-- AI 엔진 -->
+    {% if cloud %}
+    {% for section_id, heading_id, title, symbol in [
+      ('sec-llm', 'h-llm', 'AI 요약 엔진', 'sparkles'),
+      ('sec-stt', 'h-stt', '음성인식', 'mic'),
+      ('sec-retention', 'h-ret', '보존 기간', 'clock'),
+      ('sec-assembly', 'h-asm', '국회 연동', 'video'),
+    ] %}
+    <section id="{{ section_id }}" class="card admin-sec admin-readonly" aria-labelledby="{{ heading_id }}">
+      <div class="card-head"><h3 id="{{ heading_id }}">{{ icon(symbol, 'ic-sm') }}{{ title }}</h3></div>
+      <p class="small muted">보기 전용 · 이 설정은 수집 PC 화면에서 확인하고 변경하세요.</p>
+    </section>
+    {% endfor %}
+    {% else %}
+    <section id="sec-llm" class="card admin-sec" aria-labelledby="h-llm">
+      <span id="sec-ai" aria-hidden="true"></span>
+      <div class="card-head"><h3 id="h-llm">{{ icon('sparkles', 'ic-sm') }}AI 연결 · 본문 보정과 요약</h3></div>
+      <form id="f-llm" class="stack">
+        <div class="provider-opts" role="radiogroup" aria-label="AI 엔진">
+          {% if not desktop_local %}<label><input type="radio" name="provider" value="local_mlx"><b>이 서버의 macOS MLX</b>기존 Mac 환경용 로컬 모델</label>{% endif %}
+          <label><input type="radio" name="provider" value="desktop_chatgpt"><b>ChatGPT 데스크톱 연결</b>앱에서 연결한 계정 사용</label>
+          <label><input type="radio" name="provider" value="openai_compat"><b>Ollama · 다른 AI 연결</b>내 PC의 로컬 서버 또는 OpenAI 호환 API</label>
+          <label><input type="radio" name="provider" value="anthropic"><b>Anthropic API</b>내 API 키로 연결</label>
+          <label><input type="radio" name="provider" value="rules"><b>규칙 기반</b>AI 없이 문장 발췌</label>
+        </div>
+        <div class="form-grid">
+          <div class="field span-2" data-p="desktop_chatgpt">
+            <span>선택 모델: <b id="llm-desktop-model">계정 기본 모델</b></span>
+            <small>계정과 모델은 데스크톱 앱에서 선택합니다. 선택한 연결을 최종본문 보정과 요약에 함께 사용합니다.</small>
+          </div>
+          <div class="field span-2" data-p="local_mlx">
+            <label for="llm-local-model">로컬 모델</label>
+            <input id="llm-local-model" type="text" autocomplete="off" placeholder="mlx-community/…">
+          </div>
+          <div class="field" data-p="openai_compat">
+            <label for="llm-openai-connection">연결할 AI</label>
+            <select id="llm-openai-connection"><option value="ollama">Ollama · 내 PC</option><option value="lmstudio">LM Studio · 내 PC</option><option value="openai">OpenAI API</option><option value="custom">다른 OpenAI 호환 서버</option></select>
+          </div>
+          <div class="field" data-p="openai_compat">
+            <label for="llm-openai-url">AI 서버 주소</label>
+            <input id="llm-openai-url" type="url" autocomplete="off" placeholder="http://127.0.0.1:11434/v1">
+            <small>서버 주소는 /v1까지 입력합니다. API 키는 주소에 넣지 마세요.</small>
+          </div>
+          <div class="field" data-p="openai_compat">
+            <label for="llm-openai-model">모델 이름</label>
+            <input id="llm-openai-model" type="text" autocomplete="off" placeholder="서버에서 사용할 모델 이름">
+            <small id="llm-openai-help">Ollama나 LM Studio의 서버를 실행하고 이미 준비한 모델 이름을 입력하세요. 모델을 자동 설치하지 않습니다.</small>
+          </div>
+          <div class="field span-2" data-p="openai_compat">
+            <label for="llm-openai-key">API 키 · 필요한 서버만 입력</label>
+            <input id="llm-openai-key" type="password" autocomplete="new-password" placeholder="비워 두면 기존 값을 유지합니다">
+            <small>로컬 서버는 보통 키 없이 연결합니다. Windows에서는 이 사용자 계정으로 보호해 저장합니다. 빈칸은 저장된 키를 유지합니다.</small>
+            <label><input id="llm-openai-clear" type="checkbox"> 저장된 호환 서버 키 삭제</label>
+          </div>
+          <div class="field" data-p="anthropic">
+            <label for="llm-anth-model">모델</label>
+            <input id="llm-anth-model" type="text" autocomplete="off">
+          </div>
+          <div class="field" data-p="anthropic">
+            <label for="llm-anth-key">API 키</label>
+            <input id="llm-anth-key" type="password" autocomplete="new-password" placeholder="비워 두면 기존 값을 유지합니다">
+            <label><input id="llm-anth-clear" type="checkbox"> 저장된 Anthropic 키 삭제</label>
+          </div>
+          <div class="field">
+            <label for="llm-rolling">실시간 요약 주기(초)</label>
+            <input id="llm-rolling" type="number" min="60" max="3600" step="30">
+          </div>
+          <div class="field">
+            <label for="llm-max-tokens">최대 출력 토큰</label>
+            <input id="llm-max-tokens" type="number" min="200" max="8000" step="100">
+          </div>
+          <div class="field span-2">
+            <label class="switch"><input id="llm-auto" type="checkbox"> 질의 블록이 끝나면 자동으로 요약</label>
+          </div>
+        </div>
+        <div id="llm-test-result" class="test-result" hidden role="status"></div>
+        <small>연결 확인은 회의 원문 없이 짧은 예문을 한 번 보냅니다. 설정한 서버가 본문 보정·요약 요청을 받습니다.</small>
+        <div class="form-actions{% if cloud %} cloud-mt-0{% endif %}" {% if not cloud %}style="margin-top:0"{% endif %}>
+          <button id="llm-test" class="btn" type="button">{{ icon('refresh', 'ic-sm') }}짧은 예문으로 연결 확인</button>
+          <button class="btn btn-primary" type="submit">저장</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="sec-speaker-review" class="card admin-sec" aria-labelledby="h-speaker-review">
+      <div class="card-head"><h3 id="h-speaker-review">사전 화자 역할 판정{% if not desktop_local %}·의심 구간 음성 대조{% endif %}</h3></div>
+      <p id="jev-status" class="small muted" role="status"></p>
+      {% if not cloud %}<p class="small muted">설치 앱의 시작 화면 → <strong>추가 판정 모델 · Jev/Julia</strong>에서 Jev 키를 안전하게 저장하고 Julia 파일을 준비할 수 있습니다. Jev 키는 이 기록 화면이나 SQLite에 입력·저장하지 않습니다.</p>{% endif %}
+      <form id="f-speaker-review" class="stack">
+        <label for="role-decision-provider">사전 화자 역할 판정 방식</label>
+        <select id="role-decision-provider">
+          <option value="none">기본 · 추가 판정 모델 없음</option>
+          <option value="jev">Jev · 외부 역할 판정</option>
+          <option value="julia">Julia-1 · 이 PC의 CPU</option>
+        </select>
+        <p id="role-decision-description" class="small muted"></p>
+        <label class="switch"><input id="review-enabled" type="checkbox"> 종료 질의의 역할 검토 허용</label>
+        <label class="switch"><input id="review-auto" type="checkbox"> 질의가 끝나면 자동으로 검토 초안 만들기</label>
+        <p class="small muted">Jev를 선택하면 관련 원문·위원 명단을 Jev에 보내 역할·경계 후보를 판단합니다. 초안은 질의 화면에서 확인하고 채택합니다. Julia는 질의 위원·피감기관 답변·진행 위원장·기타의 네 역할만 판정합니다. 어느 방식에서도 기존 ChatGPT의 전체 문맥 보정·요약을 이어갑니다.</p>
+        <div id="julia-prepare-panel" class="stack" hidden>
+          <label for="julia-threads">Julia CPU 사용량</label>
+          <select id="julia-threads"><option value="1">처리 스레드 1개</option><option value="2">처리 스레드 2개 · 기본</option></select>
+          <p class="small muted">선택만으로 모델을 받거나 실행하지 않습니다. 아래 준비 버튼은 공식 Julia-1 파일 약 0.6GB를 이 앱의 전용 폴더에 받습니다. 최초 준비에는 인터넷과 여유 저장공간이 필요합니다. 모델 파일 크기는 실행 중 메모리 사용량과 다릅니다.</p>
+          <p id="julia-model-status" role="status" class="small muted"></p>
+          <progress id="julia-prepare-progress" max="1" value="0" aria-label="Julia 모델 준비 진행률" hidden></progress>
+          <p id="julia-worker-status" role="status" class="small muted"></p>
+          <p class="small muted">Julia의 선택 점수는 보정된 정확도나 Jev의 확신과 같지 않습니다. 준비·실행에 실패해도 자막 수집과 기록을 유지하고 기존 ChatGPT 처리로 이어갑니다.</p>
+          <div class="form-actions"><button id="julia-prepare" class="btn" type="button">Julia-1 모델 준비</button><button id="julia-prepare-cancel" class="btn" type="button" disabled>모델 준비 취소</button><button id="role-decision-refresh" class="btn" type="button">준비 상태 확인</button></div>
+        </div>
+        <button class="btn btn-primary" type="submit">화자 검토 설정 저장</button>
+      </form>
+      {% if not desktop_local %}
+      <form id="f-audio-review" class="stack">
+        <label class="switch"><input id="audio-review-enabled" type="checkbox"> 자막 수집과 함께 최근 음성 버퍼 유지</label>
+        <label class="switch"><input id="audio-review-stt" type="checkbox"> 요청한 의심 구간을 기존 로컬 모델로 전사</label>
+        <p class="small muted">최대 최근 10분만 유지하며 의심 원음만 세션당 64MiB까지 보관합니다. 전사는 최대 30초씩 처리하고, 자막과 음성 시각은 검수해야 합니다.</p>
+        <button class="btn btn-primary" type="submit">음성 대조 설정 저장</button>
+      </form>
+      {% endif %}
+    </section>
+
+    <!-- 음성인식 -->
+    <section id="sec-stt" class="card admin-sec" aria-labelledby="h-stt">
+      <div class="card-head"><h3 id="h-stt">{{ icon('mic', 'ic-sm') }}음성인식</h3></div>
+      <p class="small muted">국회에서 제공하는 자막은 음성 모델 없이 수집합니다. 직접 받은 음성을 전사할 때만 아래 선택 기능을 사용합니다.</p>
+      <form id="f-stt" class="form-grid">
+        <div class="field">
+          <label for="stt-provider">엔진</label>
+          <select id="stt-provider"><option value="none">사용 안 함 · 국회 제공 자막 사용</option><option value="nemotron_cpu">Nemotron 3.5 ASR · Windows CPU · 시험 기능</option>{% if not desktop_local %}<option value="mlx_whisper">Whisper · macOS MLX · 기존 환경용</option>{% endif %}</select>
+        </div>
+        <div class="field">
+          <label for="stt-language">언어</label>
+          <input id="stt-language" type="text" autocomplete="off" placeholder="ko">
+        </div>
+        <div class="field span-2">
+          <label for="stt-model">모델</label>
+          <input id="stt-model" type="text" autocomplete="off">
+        </div>
+        <div class="field" id="nemotron-core-field" hidden>
+          <label for="stt-cpu-cores">사용할 논리 CPU 코어 상한</label>
+          <select id="stt-cpu-cores"><option value="auto">자동 · 이 PC에서 사용 가능한 CPU 전체</option><option value="1">수동 · 1개</option><option value="2">수동 · 2개</option><option value="4">수동 · 4개</option><option value="8">수동 · 8개</option></select>
+          <span class="hint">자동을 권장합니다. 평소에는 전체 성능을 사용하고 Julia가 동시에 실행될 때만 Julia에 처리 우선권을 줍니다.</span>
+        </div>
+        <div class="field span-2" id="nemotron-prepare-panel" hidden>
+          <p>Nemotron 3.5 ASR로 음성을 전사하고, Nemotron 3 Diarization으로 녹음의 목소리별 발언 구간을 나눕니다. Julia는 전사된 글의 위원·답변·진행 역할 판정을 보조합니다.</p>
+          <p class="small">전사 모델 741,548,352B, 화자 분리 모델 107,012,128B, CPU 실행 도구 5,528,418B가 필요합니다. 화자 분리 모델은 설치파일에 포함하며, 전사 모델은 준비 버튼으로 받습니다. 약 1.1GB 이상의 여유 공간과 AVX2 호환 CPU가 필요합니다. GPU·별도 Python·Node 설치는 필요하지 않습니다.</p>
+          <p class="small">녹음 파일은 전체 음성에서 최대 8명의 목소리를 추적한 뒤 나누어 전사합니다. 화자 번호는 실명이 아니며, 겹쳐 말한 구간의 이름·내용은 확인이 필요합니다. MP3·영상은 변환 도구도 필요합니다.</p>
+          <p class="small">중계·브라우저 음성도 빠른 CPU 설정으로 약 30초의 음성을 모아 화자를 나눕니다. 음성을 받는 동안 전사가 늦게 표시될 수 있으며, 처리 지연이 커지면 화자 표시를 보류하고 전사를 계속합니다.</p>
+          <label class="switch"><input id="stt-diarize-recordings" type="checkbox" checked> 녹음 파일에서 목소리로 화자 분리</label>
+          <p class="small"><a href="https://openmdw.ai/license/1-1/" target="_blank" rel="noopener noreferrer">모델 OpenMDW-1.1 라이선스</a> · <a href="https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b/tree/1c8deaecc64b91f034d73e08dd8b64625eb3395d" target="_blank" rel="noopener noreferrer">공식 모델·고정 판본</a> · <a href="https://github.com/NVIDIA/NeMo-Speech.cpp/tree/v0.2.0" target="_blank" rel="noopener noreferrer">CPU 실행 도구 Apache-2.0·제3자 고지</a></p>
+          <label class="switch"><input id="nemotron-license" type="checkbox"> 라이선스를 확인했으며 이 PC의 앱 전용 폴더에 파일을 준비합니다</label>
+          <p id="nemotron-status" class="small" aria-live="polite">모델 준비 상태를 확인하세요.</p>
+          <progress id="nemotron-progress" max="1" value="0" hidden aria-label="음성 모델 준비 진행률"></progress>
+          <div class="form-actions"><button id="nemotron-prepare" class="btn" type="button">CPU 전사·화자 분리 모델 준비</button><button id="nemotron-cancel" class="btn" type="button" disabled>준비 취소</button><button id="nemotron-refresh" class="btn" type="button">상태 새로고침</button></div>
+        </div>
+        <div class="field span-2">
+          <label for="stt-glossary">인식 보정 용어(한 줄에 하나)</label>
+          <textarea id="stt-glossary" rows="5" placeholder="한국도로공사&#10;하이패스&#10;스마트톨링"></textarea>
+          <span class="hint">위원·기관·사업 이름처럼 잘못 받아쓰기 쉬운 고유명사. 세션 위원 명단은 자동으로 더해집니다.</span>
+        </div>
+        <div class="span-2 form-actions{% if cloud %} cloud-mt-0{% endif %}" {% if not cloud %}style="margin-top:0"{% endif %}><button class="btn btn-primary" type="submit">저장</button></div>
+      </form>
+    </section>
+
+    <!-- 보존 -->
+    <section id="sec-retention" class="card admin-sec" aria-labelledby="h-ret">
+      <div class="card-head"><h3 id="h-ret">{{ icon('clock', 'ic-sm') }}보존 기간</h3></div>
+      <p class="small muted">보존 기간이 지나면 서버가 자동으로 삭제합니다(1시간마다 정리). 수집 중인 세션은 건드리지 않습니다. 세션을 삭제하면 그 세션의 원음·자막 원본·업로드 파일도 함께 지웁니다.</p>
+      <form id="f-retention" class="form-grid">
+        <div class="field">
+          <label for="ret-audio">원음 보존 일수</label>
+          <input id="ret-audio" type="number" min="0" max="3650">
+          <span class="hint">‘원음 저장’을 켠 세션의 음성 파일. 이 일수가 지나면 자동 삭제합니다. 0 이면 원음을 저장하지 않습니다.</span>
+        </div>
+        <div class="field">
+          <label for="ret-raw">국회 자막 원본 보존 일수</label>
+          <input id="ret-raw" type="number" min="1" max="3650">
+          <span class="hint">국회 AI자막 수신 원본 기록(문제 분석용). 이 일수가 지나면 자동 삭제합니다. 기본 30일.</span>
+        </div>
+        <div class="field">
+          <label for="ret-transcript">기록 보존 일수</label>
+          <input id="ret-transcript" type="number" min="0" max="36500">
+          <span class="hint">종료한 뒤 이 일수가 지난 세션은 발언·요약·후속조치까지 통째로 자동 삭제합니다. 0 이면 기한 없이 보관합니다.</span>
+        </div>
+        <div class="span-2 form-actions{% if cloud %} cloud-mt-0{% endif %}" {% if not cloud %}style="margin-top:0"{% endif %}><button class="btn btn-primary" type="submit">저장</button></div>
+      </form>
+    </section>
+
+    <!-- 국회 연동 -->
+    <section id="sec-assembly" class="card admin-sec" aria-labelledby="h-asm">
+      <div class="card-head"><h3 id="h-asm">{{ icon('video', 'ic-sm') }}국회 연동</h3></div>
+      <form id="f-assembly" class="form-grid">
+        <div class="field span-2">
+          <label class="switch"><input id="asm-auto" type="checkbox"> 대시보드에서 ‘우리 기관 국감 일정’ 자동 조회</label>
+          <span class="hint">켜면 이번 달 국회 의사중계 일정과 회의별 전체 피감기관 목록에서 우리 기관(이름·별칭)을 찾습니다(결과 30분 캐시). 끄면 이 조회를 하지 않습니다.</span>
+        </div>
+        <div class="field">
+          <label for="asm-auto-stop">산회 후 자동 종료(분)</label>
+          <input id="asm-auto-stop" type="number" min="0" max="1440" step="5">
+          <span class="hint">국회 AI자막 수신 세션: 국회 중계가 산회·감사종료로 바뀌거나, 생중계가 아닌 채 마지막 자막 뒤 이 시간 동안 아무것도 받지 못하면 수집을 정상 종료합니다(감사 기록 ‘자동 종료’). [종료]를 잊어 다음 날 자막이 섞이는 것을 막습니다. 0 이면 끕니다. 기본 30분.</span>
+        </div>
+        <div class="field span-2">
+          <p class="small muted{% if cloud %} cloud-margin-0{% endif %}" {% if not cloud %}style="margin:0"{% endif %}>대시보드의 ‘오늘 국회 중계’·‘우리 기관 국감 일정’과 세션 생성의 회의 목록은 국회 의사중계(assembly.webcast.go.kr)를 조회합니다. 이 조회를 막으려면 서버 환경변수 GUKGAM_ALLOW_ASSEMBLY_NETWORK=0 으로 실행하세요.</p>
+        </div>
+        <div class="span-2 form-actions{% if cloud %} cloud-mt-0{% endif %}" {% if not cloud %}style="margin-top:0"{% endif %}><button class="btn btn-primary" type="submit">저장</button></div>
+      </form>
+    </section>
+
+    {% endif %}
+
+    <!-- 상태 -->
+    <section id="sec-health" class="card admin-sec" aria-labelledby="h-health">
+      <div class="card-head">
+        <h3 id="h-health">{{ icon('info', 'ic-sm') }}시스템 상태</h3>
+        <button id="health-refresh" class="btn btn-ghost btn-sm btn-icon" type="button" title="새로 고침">{{ icon('refresh', 'ic-sm') }}<span class="sr-only">새로 고침</span></button>
+      </div>
+      <div id="preflight" class="preflight" hidden></div>
+      <div id="health"></div>
+    </section>
+
+    <!-- 감사 기록 -->
+    <section id="sec-audit" class="card admin-sec" aria-labelledby="h-audit">
+      <div class="card-head">
+        <h3 id="h-audit">{{ icon('list', 'ic-sm') }}감사 기록</h3>
+        <div class="row">
+          <input id="audit-filter" class="input-sm{% if cloud %} cloud-audit-filter{% endif %}" type="search" placeholder="거르기" aria-label="감사 기록 거르기" {% if not cloud %}style="width:180px"{% endif %}>
+          <button id="audit-refresh" class="btn btn-ghost btn-sm btn-icon" type="button" title="새로 고침">{{ icon('refresh', 'ic-sm') }}<span class="sr-only">새로 고침</span></button>
+        </div>
+      </div>
+      <div class="table-wrap{% if cloud %} cloud-audit-table{% endif %}" {% if not cloud %}style="max-height:480px;overflow:auto"{% endif %}>
+        <table class="tbl">
+          <thead><tr><th scope="col">시각</th><th scope="col">사용자</th><th scope="col">작업</th><th scope="col">대상</th><th scope="col">내용</th></tr></thead>
+          <tbody id="audit-rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script type="module" src="/static/js/admin.js?v={{ version or '' }}"></script>{% endblock %}

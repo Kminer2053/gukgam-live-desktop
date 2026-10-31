@@ -1,0 +1,12 @@
+{
+  "name": "gukgam-relay-deployment-tool",
+  "version": "0.1.0",
+  "private": true,
+  "description": "설치 앱 전용 Vercel 배포 도구",
+  "dependencies": {
+    "vercel": "59.4.0"
+  },
+  "overrides": {
+    "tar": "7.5.22"
+  }
+}

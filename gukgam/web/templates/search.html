@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}검색{% endblock %}
+{% block body_class %}page-search{% endblock %}
+{% block main_class %}narrow{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>전체 검색</h1>
+    <p>모든 회의의 발언을 찾습니다. 결과를 누르면 회의 화면의 해당 발언으로 이동합니다.</p>
+  </div>
+</div>
+
+<form id="search-form" class="card stack-sm" role="search">
+  <div class="row{% if cloud %} cloud-nowrap{% endif %}" {% if not cloud %}style="flex-wrap:nowrap"{% endif %}>
+    <div class="searchbox grow">
+      {{ icon('search') }}
+      <input id="q" name="q" type="search" placeholder="예: 하도급 도로공사" aria-label="검색어" autocomplete="off" autofocus>
+    </div>
+    <button class="btn btn-primary" type="submit">검색</button>
+  </div>
+  <div class="toolbar">
+    <select id="session" class="input-sm{% if cloud %} cloud-session-filter{% endif %}" {% if not cloud %}style="width:auto;max-width:320px"{% endif %} aria-label="회의"><option value="">모든 회의</option></select>
+    <input id="speaker" class="input-sm{% if cloud %} cloud-speaker-field{% endif %}" type="text" placeholder="화자 이름(정확히)" aria-label="화자" {% if not cloud %}style="width:160px"{% endif %}>
+    <span class="small muted">띄어 쓴 낱말은 모두 들어간 발언을 찾습니다.</span>
+  </div>
+</form>
+
+<div id="summary" class="small muted{% if cloud %} cloud-search-summary{% endif %}" {% if not cloud %}style="margin:16px 0 8px"{% endif %} aria-live="polite"></div>
+<div id="results" class="results"></div>
+<div class="row{% if cloud %} cloud-more-row{% endif %}" {% if not cloud %}style="justify-content:center;margin-top:16px"{% endif %}><button id="more" class="btn" type="button" hidden>더 보기</button></div>
+{% endblock %}
+{% block scripts %}<script type="module" src="/static/js/search.js?v={{ version or '' }}"></script>{% endblock %}

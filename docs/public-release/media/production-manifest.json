@@ -1,0 +1,86 @@
+{
+  "format": {
+    "width": 1080,
+    "height": 1920,
+    "target_seconds": 30,
+    "aspect_ratio": "9:16"
+  },
+  "language": "ko",
+  "assets_kind": "original_brand_and_synthetic_demo",
+  "operating_data_used": false,
+  "social_published": false,
+  "complete": true,
+  "final_video": {
+    "file": "gukgam-live-threads-30s.mp4",
+    "bytes": 8610742,
+    "sha256": "e394c96628938609d2fb42baa962cf99d15fa81344c2481f859eebbeb06058bb",
+    "width": 1080,
+    "height": 1920,
+    "seconds": 30.037333,
+    "audio_stream": true,
+    "video_stream": true,
+    "public_private_token_fields": false
+  },
+  "local_motion": {
+    "file": "promo-motion-master.mp4",
+    "sha256": "dfced3b34e7298fd1f56e18833952db63e964da8adca29ec44b9b5a651983a0e",
+    "seconds": 29.9703,
+    "width": 1080,
+    "height": 1920,
+    "bytes": 15253037,
+    "method": "isolated_existing_edge_canvas_mediarecorder",
+    "credits": 0
+  },
+  "visual_review": {
+    "icon_16_to_256": true,
+    "poster": true,
+    "motion_frames": true,
+    "final_video": true,
+    "reviewed_motion": "original_local_canvas",
+    "final_sampled_seconds": [
+      0.8,
+      4,
+      7.5,
+      12.5,
+      17.5,
+      22.5,
+      28
+    ],
+    "safety_checks": [
+      "large_readable_korean",
+      "synthetic_demo_badges",
+      "original_brand_icon",
+      "no_operating_data",
+      "no_overlap_between_caption_and_ui"
+    ]
+  },
+  "audio_review": {
+    "sample_rate": 48000,
+    "channels": 2,
+    "sample_peak_dbfs": -4.885849742278252,
+    "rms_dbfs": -20.099064015675122,
+    "samples_at_or_above_full_scale": 0,
+    "voice_window": {
+      "rms": 0.11418100474685546,
+      "peak": 0.5697804093360901
+    },
+    "music_outro_window": {
+      "rms": 0.02205776411527702,
+      "peak": 0.09238898754119873
+    },
+    "last_150ms": {
+      "rms": 0.020537653216527934,
+      "peak": 0.06249131262302399
+    },
+    "measurement": "decoded_PCM_sample_peak_and_RMS_not_oversampled_true_peak_or_LUFS",
+    "pronunciation_listening_review": "not_claimed_by_numeric_measurement"
+  },
+  "subtitle_timing": "manually_edited_sentence_cues_not_word_alignment",
+  "owned_browser_processes": "closed_in_finally_after_artifact_render_and_decode",
+  "production_tools": [
+    "original SVG and Canvas artwork",
+    "isolated existing Edge MediaRecorder",
+    "vidIQ voiceover, music and composition"
+  ],
+  "rejected_draft_in_final": false
+}

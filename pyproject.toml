@@ -1,0 +1,10 @@
+[project]
+name = "gukgam-desktop"
+version = "0.1.0a1"
+description = "비개발자 국정감사 담당자용 Windows 설치형 기록·보정·릴레이 앱"
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning"]

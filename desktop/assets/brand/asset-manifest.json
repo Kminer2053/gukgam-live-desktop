@@ -1,0 +1,85 @@
+{
+  "ico_entries": [
+    {
+      "width": 16,
+      "height": 16,
+      "bits": 32
+    },
+    {
+      "width": 24,
+      "height": 24,
+      "bits": 32
+    },
+    {
+      "width": 32,
+      "height": 32,
+      "bits": 32
+    },
+    {
+      "width": 48,
+      "height": 48,
+      "bits": 32
+    },
+    {
+      "width": 64,
+      "height": 64,
+      "bits": 32
+    },
+    {
+      "width": 128,
+      "height": 128,
+      "bits": 32
+    },
+    {
+      "width": 256,
+      "height": 256,
+      "bits": 32
+    }
+  ],
+  "files": {
+    "gukgam-live-1024.png": {
+      "bytes": 71428,
+      "sha256": "90db0cd61e946bf7c4c1adbc069a38dc6d33819cdf2e03bda27ac2172b70e964"
+    },
+    "gukgam-live-128.png": {
+      "bytes": 4494,
+      "sha256": "b048d13cd428d4cf6716d0df44c5824c68d72a7da8d34d233326850abcff3ca1"
+    },
+    "gukgam-live-16.png": {
+      "bytes": 677,
+      "sha256": "8c4161d9adc4d20afcd53f42e965574de4895a35e07527f14c586a947f1ed4e8"
+    },
+    "gukgam-live-24.png": {
+      "bytes": 1031,
+      "sha256": "df90a062719661b97dd99d641d250e428266f1180cc93d4cd8c501aed4839358"
+    },
+    "gukgam-live-256.png": {
+      "bytes": 9345,
+      "sha256": "94e6b8317b3790da354917c827b7c7adbf1e9612dadccec31579d4bfea3e5e24"
+    },
+    "gukgam-live-32.png": {
+      "bytes": 1290,
+      "sha256": "004d8c4c3139f15faff08c2fbe5b8d5cbefafedaac99bbadd8006ebafdbc094b"
+    },
+    "gukgam-live-48.png": {
+      "bytes": 1965,
+      "sha256": "01bc34d80649d385eb4157ceba61dfa0af74fae84f06d13dabfd6270995e9571"
+    },
+    "gukgam-live-64.png": {
+      "bytes": 2394,
+      "sha256": "f64eb42f36cc115e7bb81d56637324d71aeb523b8a907ce313c91962417c8f9f"
+    },
+    "gukgam-live.ico": {
+      "bytes": 21314,
+      "sha256": "55c4b3b1a0a110a1236b969869fb002d63f0f1978901e871d2c7eb18be272480"
+    },
+    "gukgam-live.svg": {
+      "bytes": 1090,
+      "sha256": "fb693c74caf2bec60ddb9b818489ad9a5ee4b8d76954ca7b386e89d395b08766"
+    },
+    "icon-size-review.png": {
+      "bytes": 42202,
+      "sha256": "f25af42430a779e1ee1a403f478a015fe1932732cbd85b0e9c4ae290328e93a6"
+    }
+  }
+}

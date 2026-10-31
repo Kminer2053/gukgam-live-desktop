@@ -1,0 +1,3 @@
+# 실제 DB·포트·외부 통신 없이 MongoDB 저장소를 검증하는 선택 의존성.
+-r requirements-cloud-mongodb.txt
+mongomock>=4.3,<5

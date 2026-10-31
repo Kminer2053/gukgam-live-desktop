@@ -1,0 +1,18 @@
+{# 공용 매크로: 아이콘·배지·빈 상태 #}
+
+{% macro icon(name, cls='') -%}
+<svg class="ic {{ cls }}" aria-hidden="true" focusable="false"><use href="/static/img/icons.svg#{{ name }}"></use></svg>
+{%- endmacro %}
+
+{% macro empty(title, desc='', ic='info') -%}
+<div class="empty">{{ icon(ic) }}<b>{{ title }}</b>{% if desc %}<span>{{ desc }}</span>{% endif %}</div>
+{%- endmacro %}
+
+{% macro loading(text='불러오는 중…') -%}
+<div class="loading" role="status">{{ text }}</div>
+{%- endmacro %}
+
+{% macro nav_link(href, label, ic, path) -%}
+{%- set active = (path == href) or (href != '/' and path.startswith(href)) -%}
+<a href="{{ href }}"{% if active %} aria-current="page"{% endif %}>{{ icon(ic) }}<span>{{ label }}</span></a>
+{%- endmacro %}

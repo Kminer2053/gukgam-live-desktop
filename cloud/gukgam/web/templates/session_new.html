@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}새 수집 세션{% endblock %}
+{% block body_class %}page-session-new{% endblock %}
+{% block main_class %}narrow{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>새 수집 세션</h1>
+    <p>필요한 회의만 골라 수집합니다. 수집은 [시작]을 누를 때부터 이루어집니다.</p>
+  </div>
+</div>
+
+<form id="new-form" class="stack" novalidate>
+  <section class="card">
+    <fieldset>
+      <legend>1. 수집 방법</legend>
+      <div class="source-cards" role="radiogroup" aria-label="수집 방법">
+        {% set sources = [
+          ('assembly_caption', '국회 AI자막 수신', '국회 의사중계 AI자막을 실시간으로 받습니다. 가장 빠르고 서버 부담이 적습니다.', 'caption', True),
+          ('assembly_hls', '국회 중계영상 음성인식', '중계영상 음성을 이 서버가 직접 받아쓰기합니다. 자막이 없을 때 씁니다.', 'video', False),
+          ('browser', '브라우저 마이크·탭 음성', '이 PC의 마이크나 브라우저 탭 소리를 보내 받아쓰기합니다.', 'mic', False),
+          ('file', '녹음 파일', '녹음·녹화 파일을 올려 받아쓰기합니다(사후 정리).', 'file', False),
+          ('replay', '리플레이(시연용)', '저장된 국감 자막으로 화면과 기능을 시연합니다.', 'replay', False),
+          ('caption_replay', '저장 국회 자막 재생', '보관한 원수신 JSONL을 선택해 보정·요약을 시험합니다. 실방송 수신이 아닙니다.', 'replay', False),
+          ('manual', '수기 입력', '속기 보조처럼 운영자가 발언을 직접 입력합니다.', 'keyboard', False),
+        ] %}
+        {% for key, label, desc, ic, rec in sources %}
+        {% if not cloud or key in ['assembly_caption', 'assembly_hls', 'manual'] %}
+        <label class="source-card">
+          <input type="radio" name="source_type" value="{{ key }}"{% if loop.first %} checked{% endif %}>
+          <span class="sc-ic">{{ icon(ic, 'ic-lg') }}</span>
+          <span><span class="sc-t">{{ label }}</span><span class="sc-d{% if cloud %} cloud-block{% endif %}" {% if not cloud %}style="display:block"{% endif %}>{{ desc }}</span></span>
+          {% if rec %}<span class="rec badge b-blue badge-sm">권장</span>{% endif %}
+        </label>
+        {% endif %}
+        {% endfor %}
+      </div>
+    </fieldset>
+  </section>
+
+  <section class="card" data-for="assembly_caption assembly_hls">
+    <fieldset>
+      <legend>2. 국회 회의 선택</legend>
+      <div class="form-grid">
+        <div class="field span-2">
+          <label for="asm-select">오늘 국회 중계 중인 회의</label>
+          <div class="row{% if cloud %} cloud-nowrap{% endif %}" {% if not cloud %}style="flex-wrap:nowrap"{% endif %}>
+            <select id="asm-select" class="grow"><option value="">불러오는 중…</option></select>
+            <button id="asm-reload" type="button" class="btn btn-icon" title="다시 불러오기">{{ icon('refresh') }}<span class="sr-only">회의 목록 다시 불러오기</span></button>
+          </div>
+          <span id="asm-hint" class="hint">회의를 고르면 회의 코드·제목·위원 명단이 자동으로 채워집니다.</span>
+        </div>
+        <div class="field">
+          <label for="xcode">회의 코드(xcode)<span class="req" aria-hidden="true">*</span></label>
+          <input id="xcode" name="xcode" type="text" inputmode="numeric" autocomplete="off" placeholder="예: 25">
+        </div>
+        <div class="field">
+          <label for="xcgcd">회의 일련번호(xcgcd)</label>
+          <input id="xcgcd" name="xcgcd" type="text" autocomplete="off" placeholder="선택">
+        </div>
+        {% if not cloud %}
+        <div class="field span-2" data-for="assembly_caption">
+          <details>
+            <summary class="small muted{% if cloud %} cloud-pointer{% endif %}" {% if not cloud %}style="cursor:pointer"{% endif %}>고급: 자막 서버 주소 직접 지정</summary>
+            <div class="field{% if cloud %} cloud-mt-8{% endif %}" {% if not cloud %}style="margin-top:8px"{% endif %}>
+              <label for="xsami">자막 웹소켓 주소(xsami)</label>
+              <input id="xsami" name="xsami" type="text" autocomplete="off" placeholder="비워 두면 자동으로 찾습니다">
+            </div>
+          </details>
+        </div>
+        <div class="field span-2" data-for="assembly_hls">
+          <label for="hls_url">HLS 주소(선택)</label>
+          <input id="hls_url" name="hls_url" type="url" autocomplete="off" placeholder="비워 두면 회의 코드로 찾습니다(…/playlist.m3u8)">
+        </div>
+        {% endif %}
+      </div>
+    </fieldset>
+  </section>
+
+  {% if not cloud %}
+  <section class="card" data-for="file">
+    <fieldset>
+      <legend>2. 녹음 파일</legend>
+      <div class="form-grid">
+        <div class="field span-2">
+          <label for="file-input">파일<span class="req" aria-hidden="true">*</span></label>
+          <input id="file-input" type="file" accept=".wav,.mp3,.m4a,.mp4,.webm,.ogg,.aac,.flac">
+          <span class="hint">올릴 수 있는 형식: wav, mp3, m4a, mp4, webm, ogg, aac, flac. 세션을 만든 뒤 서버로 올립니다. 큰 파일은 시간이 걸릴 수 있습니다.</span>
+        </div>
+        <div class="field">
+          <label for="base_time">파일 시작 시각(선택)</label>
+          <input id="base_time" type="datetime-local" step="1">
+          <span class="hint">녹음 0초의 실제 시각. 비우면 업로드 시각 기준.</span>
+        </div>
+      </div>
+    </fieldset>
+  </section>
+
+  <section class="card" data-for="replay">
+    <fieldset>
+      <legend>2. 리플레이 설정</legend>
+      <div class="form-grid">
+        <div class="field span-2">
+          <label for="fixture">자막 파일 경로</label>
+          <input id="fixture" type="text" autocomplete="off" placeholder="비워 두면 tests/fixtures/gukto_20261007_tail.txt">
+        </div>
+        <div class="field">
+          <label for="speed">재생 배속</label>
+          <input id="speed" type="number" min="1" max="200" step="1" value="20">
+        </div>
+        <div class="field{% if cloud %} cloud-end{% endif %}" {% if not cloud %}style="justify-content:flex-end"{% endif %}>
+          <label class="check"><input id="with_hints" type="checkbox"> 화자 정보 함께 보내기</label>
+        </div>
+      </div>
+    </fieldset>
+  </section>
+
+  <section class="card" data-for="caption_replay">
+    <fieldset>
+      <legend>2. 보관한 국회 원수신 자막 선택</legend>
+      <p class="note info">저장 자료 재생 · 실방송 아님. 원본 파일의 독립 사본을 이 앱에 보관하고 실제 자막 처리 경로로 재생합니다. 화자·본문 보정과 요약을 같은 자료로 비교할 때 사용하세요.</p>
+      <div class="form-grid">
+        <div class="field span-2">
+          <label for="caption-replay-input">국회 원수신 JSONL 파일<span class="req" aria-hidden="true">*</span></label>
+          <input id="caption-replay-input" type="file" accept=".jsonl,application/x-ndjson">
+          <span class="hint">앱의 원수신 보관 파일 형식(rx·msg)만 사용합니다. 최대 16MB·20,000건. 원본 파일과 기존 회의 기록은 바꾸지 않습니다.</span>
+        </div>
+        <div class="field">
+          <label for="caption-replay-speed">저장 자막 재생 배속</label>
+          <input id="caption-replay-speed" type="number" min="0.5" max="10" step="0.5" value="1">
+        </div>
+      </div>
+    </fieldset>
+  </section>
+
+  <section class="card" data-for="browser">
+    <div class="note info">세션 화면의 ‘음성 보내기’ 패널에서 마이크 또는 브라우저 탭 소리를 고릅니다. 이 PC에서 소리가 나는 동안 음성을 서버로 보내 받아쓰기합니다.</div>
+  </section>
+  {% endif %}
+  <section class="card" data-for="manual">
+    <div class="note info">세션 화면 아래 입력창에서 화자를 고르고 Enter 로 발언을 입력합니다. 입력한 발언도 질의 블록·후속조치 추출에 쓰입니다.</div>
+  </section>
+
+  <section class="card">
+    <fieldset>
+      <legend>3. 회의 정보</legend>
+      <div class="form-grid">
+        <div class="field span-2">
+          <label for="title">회의 제목<span class="req" aria-hidden="true">*</span></label>
+          <input id="title" name="title" type="text" required autocomplete="off" placeholder="예: 2026년도 국정감사 국토교통위원회(한국도로공사 등)">
+        </div>
+        <div class="field">
+          <label for="committee">위원회</label>
+          <input id="committee" name="committee" type="text" list="committee-list" autocomplete="off" placeholder="예: 국토교통위원회">
+          <datalist id="committee-list">
+            {% for c in ['국회운영위원회','법제사법위원회','정무위원회','재정경제기획위원회','교육위원회','과학기술정보방송통신위원회','외교통일위원회','국방위원회','행정안전위원회','문화체육관광위원회','농림축산식품해양수산위원회','산업통상자원중소벤처기업위원회','보건복지위원회','기후에너지환경노동위원회','국토교통위원회','정보위원회','성평등가족위원회','예산결산특별위원회'] %}
+            <option value="{{ c }}"></option>
+            {% endfor %}
+          </datalist>
+        </div>
+        <div class="field">
+          <label for="meeting_date">회의일</label>
+          <input id="meeting_date" name="meeting_date" type="date">
+        </div>
+        <div class="field span-2">
+          <label for="agencies">피감기관</label>
+          <input id="agencies" name="agencies" type="text" autocomplete="off" placeholder="예: 한국도로공사 등">
+        </div>
+        <div class="field span-2">
+          <label for="notes">메모·공식 회의록 링크</label>
+          <input id="notes" name="notes" type="text" autocomplete="off" placeholder="국감 후 공개되는 공식 회의록 주소 등">
+        </div>
+        <div class="field span-2" data-for="{{ 'assembly_hls' if cloud else 'assembly_hls browser file' }}">
+          <label class="check"><input id="save_audio" type="checkbox"> 원음 저장(설정의 원음 보존 일수가 지나면 자동 삭제)</label>
+        </div>
+      </div>
+    </fieldset>
+  </section>
+
+  <section class="card">
+    <fieldset>
+      <legend>4. 위원 명단</legend>
+      <div class="field">
+        <div class="row-between">
+          <label for="roster_text">한 줄에 한 명 — 이름, (위원장), 정당</label>
+          <button id="roster-load" type="button" class="btn btn-sm" data-for="assembly_caption assembly_hls">{{ icon('users', 'ic-sm') }}국회 명단 불러오기</button>
+        </div>
+        <textarea id="roster_text" name="roster_text" rows="8" spellcheck="false" placeholder="유의동 위원장 국민의힘&#10;김남근 더불어민주당&#10;김미애 국민의힘"></textarea>
+        <span id="roster-count" class="hint">명단이 있으면 위원장 호명·자기소개로 질의 위원을 더 정확히 찾습니다. 나중에 세션 화면에서도 고칠 수 있습니다.</span>
+      </div>
+    </fieldset>
+  </section>
+
+  <div id="form-error" class="error-box" role="alert" hidden></div>
+  <div class="form-actions">
+    <a class="btn" href="/">취소</a>
+    <button id="btn-create" class="btn" type="submit" value="create">만들기</button>
+    <button id="btn-create-start" class="btn btn-primary" type="submit" value="start">{{ icon('play', 'ic-sm') }}만들고 바로 시작</button>
+  </div>
+</form>
+{% endblock %}
+{% block scripts %}<script type="module" src="/static/js/session-new.js?v={{ version or '' }}"></script>{% endblock %}

@@ -1,0 +1,32 @@
+.venv/
+data/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.sqlite3*
+.DS_Store
+models/
+.claude/settings.local.json
+.env
+.env.*
+!.env.example
+/outputs/
+.vercel/
+
+# 데스크톱 설치 빌드·개인 설정
+node_modules/
+desktop/dist/
+desktop/release/
+/build/
+/dist/
+/vendor/
+*.exe
+*.msi
+*.dmg
+*.blockmap
+*.log
+*.enc
+engine-config*.json
+
+# 원본 개발자의 실행 설정은 새 앱에서 재사용하지 않는다.
+.claude/

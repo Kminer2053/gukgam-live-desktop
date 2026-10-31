@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, loading %}
+{% block title %}상황보고{% if session_title %} · {{ session_title }}{% endif %}{% endblock %}
+{% block body_class %}page-report{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/report.css?v={{ version or '' }}">{% endblock %}
+{% block body_data %}data-sid="{{ sid }}"{% endblock %}
+{% block content %}
+<nav class="small muted{% if cloud %} cloud-mb-12{% endif %}" aria-label="위치" {% if not cloud %}style="margin-bottom:12px"{% endif %}>
+  <a href="/">대시보드</a> › <a id="back" href="/s/{{ sid }}">{{ session_title or '회의' }}</a> › 상황보고
+</nav>
+<div class="page-head">
+  <div>
+    <h1>국정감사 상황보고</h1>
+    <p id="rp-sub">질의·답변 요지와 후속조치를 한눈에 확인하고, 필요한 상세만 펼쳐 읽습니다.</p>
+  </div>
+  <div class="row">
+    <button id="rp-copy" class="btn btn-primary" type="button">{{ icon('copy', 'ic-sm') }}복사</button>
+    <div class="dropdown">
+      <button id="rp-dl" class="btn" type="button" aria-haspopup="menu" aria-expanded="false">{{ icon('download', 'ic-sm') }}내려받기</button>
+    </div>
+  </div>
+</div>
+
+<section class="card card-tight rp-controls">
+  <div class="toolbar">
+    <div class="btn-group" role="tablist" aria-label="보기 형식">
+      <button id="v-report" class="btn btn-sm" type="button" role="tab" aria-selected="true" aria-pressed="true">보고서</button>
+      <button id="v-text" class="btn btn-sm" type="button" role="tab" aria-selected="false" aria-pressed="false">메신저용(평문)</button>
+      <button id="v-md" class="btn btn-sm" type="button" role="tab" aria-selected="false" aria-pressed="false">마크다운</button>
+    </div>
+    <label class="switch"><input id="org-only" type="checkbox"> 우리 기관 관련만</label>
+    <label class="switch"><input id="auto" type="checkbox"> 1분마다 갱신</label>
+    <span class="grow"></span>
+    <span id="rp-time" class="small muted"></span>
+    <button id="rp-refresh" class="btn btn-sm btn-ghost" type="button">{{ icon('refresh', 'ic-sm') }}새로고침</button>
+  </div>
+</section>
+
+<p id="rp-status" class="small muted" role="status" aria-live="polite"></p>
+<div id="rp-body">{{ loading('저장된 상황보고를 불러오는 중…') }}</div>
+<p class="small faint rp-page-note{% if cloud %} cloud-mt-12{% endif %}" {% if not cloud %}style="margin-top:12px"{% endif %}>※요약의 생성 출처와 검수 표시를 확인하고 원문과 대조하세요. 보고서의 ‘담당·조치계획’은 민감 정보이므로 배포 범위에 유의하세요.</p>
+{% endblock %}
+{% block scripts %}<script type="module" src="/static/js/report.js?v={{ version or '' }}"></script>{% endblock %}

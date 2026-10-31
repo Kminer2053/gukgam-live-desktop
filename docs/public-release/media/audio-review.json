@@ -1,0 +1,26 @@
+{
+  "file": "gukgam-live-threads-30s.mp4",
+  "seconds": 30.037333333333333,
+  "sample_rate": 48000,
+  "channels": 2,
+  "sample_peak": 0.5697804093360901,
+  "sample_peak_dbfs": -4.885849742278252,
+  "rms": 0.09886596260652844,
+  "rms_dbfs": -20.099064015675122,
+  "samples_at_or_above_full_scale": 0,
+  "voice_window": {
+    "rms": 0.11418100474685546,
+    "peak": 0.5697804093360901
+  },
+  "music_outro_window": {
+    "rms": 0.02205776411527702,
+    "peak": 0.09238898754119873
+  },
+  "last_150ms": {
+    "rms": 0.020537653216527934,
+    "peak": 0.06249131262302399
+  },
+  "measurement": "decoded_PCM_sample_peak_and_RMS_not_oversampled_true_peak_or_LUFS",
+  "playback": false,
+  "http_requests_allowed": false
+}

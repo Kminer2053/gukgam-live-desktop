@@ -1,0 +1,97 @@
+{%- from "_macros.html" import icon, nav_link -%}
+{#- 템플릿 컨텍스트(최소): request, me={role,name}, auth_enabled, version, sid/uid, notice. 데이터는 JS 가 /api 로 가져온다. -#}
+{%- set role = (me.role if me and me.role else 'viewer') -%}
+{%- set uname = (me.name if me and me.name else '') -%}
+{%- set is_op = role == 'operator' -%}
+{%- set ver = version or '' -%}
+{%- set path = (request.url.path if request is defined and request and request.url else '') -%}
+{%- set notice_text = notice or 'AI 음성인식·요약 결과로 오류가 있을 수 있습니다 · 내부 업무용(국회법 제149조② 상업적 이용 금지)' -%}
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="robots" content="noindex, nofollow">
+  <title>{% block title %}국감 라이브{% endblock %} · 국감 라이브</title>
+  <link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/css/app.css?v={{ ver }}">
+  {#- 모듈 사이 import('./common.js')도 버전 쿼리를 붙여 배포 후 옛 캐시를 쓰지 않게 한다 #}
+  {% if not cloud %}
+  <script type="importmap">{"imports": {
+    "/static/js/common.js": "/static/js/common.js?v={{ ver }}",
+    "/static/js/closed-block-view.js": "/static/js/closed-block-view.js?v={{ ver }}",
+    "/static/js/report-view.js": "/static/js/report-view.js?v={{ ver }}",
+    "/static/js/audio-capture.js": "/static/js/audio-capture.js?v={{ ver }}"
+  }}</script>
+  {% endif %}
+  {% block head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}"
+      data-role="{{ role }}" data-name="{{ uname }}" data-auth="{{ '1' if auth_enabled else '0' }}" data-version="{{ ver }}"{% if cloud %}
+      data-cloud="1" data-agent="{{ agent|default({}, true)|tojson|forceescape }}"{% endif %}
+      {% block body_data %}{% endblock %}>
+  <a class="skip-link" href="#main">본문 바로가기</a>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="국감 라이브 대시보드">
+      <img src="/static/img/logo.svg" alt="" width="26" height="26"><span>국감 라이브</span>
+    </a>
+    {% if cloud %}
+    {% set agent_state = agent|default({}, true) %}
+    {% set online = agent_state.online|default(false) %}
+    {% set idle = agent_state.mode|default('idle') == 'idle' %}
+    {% set delayed = agent_state.read_mode|default('mirror') != 'source' and agent_state.push_delay_ms|default(0, true)|int >= 120000 %}
+    <span id="cloud-agent-badge" class="badge cloud-agent-badge {{ 'b-red' if not online else 'b-gray' if idle else 'b-orange' if delayed else 'b-green' }}" role="status" aria-live="polite">
+      {{ icon('monitor', 'ic-sm') }}
+      <span id="cloud-agent-label">수집 PC {% if not online %}끊김{% if agent_state.heartbeat_at|default(0, true)|int %}{% set heartbeat_ms = agent_state.heartbeat_at|int %}(마지막 신호 {{ '%02d:%02d'|format(((heartbeat_ms // 3600000) + 9) % 24, (heartbeat_ms // 60000) % 60) }}){% else %}(마지막 신호 없음){% endif %}{% elif idle %}대기 중{% elif delayed %}연결됨(지연){% else %}연결됨{% endif %}</span>
+    </span>
+    {% endif %}
+    {% block topnav %}
+    {% if offline %}
+    <nav class="nav" aria-label="저장 회의 메뉴">
+      <a href="#offline-feed" class="nav-link">전체 발언</a>
+      <a href="#offline-members" class="nav-link">위원별</a>
+      <a href="#offline-items" class="nav-link">후속조치</a>
+      <a href="#offline-search" class="nav-link">검색</a>
+      <a href="#offline-report" class="nav-link">상황보고</a>
+    </nav><span class="badge b-navy">단독 열람본</span>
+    {% else %}
+    <nav class="nav" aria-label="주 메뉴">
+      {{ nav_link('/', '대시보드', 'home', path) }}
+      {% if is_op %}{{ nav_link('/sessions/new', '새 세션', 'plus', path) }}{% endif %}
+      {{ nav_link('/items', '후속조치', 'checklist', path) }}
+      {{ nav_link('/search', '검색', 'search', path) }}
+      {% if is_op %}{{ nav_link('/admin', '설정', 'sliders', path) }}{% endif %}
+    </nav>
+    <div class="userbox">
+      <span class="badge {{ 'b-blue' if is_op else 'b-gray' }}" title="현재 권한">{{ '운영자' if is_op else '열람자' }}</span>
+      {% if uname %}<span class="uname">{{ uname }}</span>{% endif %}
+      {% if cloud and is_op and cloud_read_mode|default('mirror') != 'source' %}<button id="cloud-resync" class="btn btn-ghost btn-sm" type="button">{{ icon('refresh', 'ic-sm') }}클라우드 다시 맞추기</button>{% endif %}
+      {% if auth_enabled %}<a href="/logout" class="btn btn-ghost btn-sm" title="로그아웃">{{ icon('logout') }}<span class="sr-only">로그아웃</span></a>{% endif %}
+    </div>
+    {% endif %}
+    {% endblock %}
+  </header>
+  {% if not auth_enabled and not desktop_local %}
+  <div class="sysbanner warn" role="note">
+    {{ icon('alert') }}
+    <span><strong>인증이 꺼져 있습니다.</strong> 접속한 모든 사람이 운영자 권한을 가집니다. 내부망에서만 사용하고, 운영 시 패스코드(GUKGAM_OPERATOR_PASSCODE)를 설정하세요.</span>
+  </div>
+  {% endif %}
+  {% block banner %}{% endblock %}
+  {% if offline %}<div class="sysbanner" role="note">전체 기록을 담은 단독 열람본 · 서버 없이 검색·원문 대조·상황보고·내보내기 사용 · 로그인 없이 열리는 내부 보관용 파일입니다. 수집·새 AI 분석·서버 수정은 제외하며 북마크 변경은 현재 열람 중에만 유지됩니다.</div>{% endif %}
+
+  <main id="main" class="container {% block main_class %}{% endblock %}" tabindex="-1">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-foot">
+    <p class="notice">{{ icon('info', 'ic-sm') }}<span>{{ notice_text }}</span></p>
+    <p class="notice">국감 라이브{% if ver %} v{{ ver }}{% endif %}</p>
+  </footer>
+
+  <div id="toasts" class="toasts" aria-live="polite" aria-relevant="additions"></div>
+  <div id="sr-live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

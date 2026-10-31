@@ -1,0 +1,11 @@
+# Windows 설치판의 엔진 빌드 의존성. 직원 PC에는 Python 설치가 필요 없다.
+-r requirements.txt
+-r requirements-julia-cpu.txt
+
+# CPU 실행기는 동봉하되 모델 파일은 사용자 선택 때 별도로 준비한다.
+pyinstaller==6.22.3
+# Windows의 Asia/Seoul 등 IANA 시간대 자료를 동봉한다.
+tzdata>=2024.1
+
+# 앱이 승인된 새 릴레이 DB의 스키마를 준비할 때만 불러온다.
+psycopg[binary]>=3.2,<4

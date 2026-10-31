@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, loading %}
+{% block title %}{{ session_title or '회의 중계' }}{% endblock %}
+{% block body_class %}page-session{% endblock %}
+{% block body_data %}data-sid="{{ sid }}"{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/transcript-stages.css?v={{ version or '' }}">{% endblock %}
+{% block content %}
+{% set is_op = me and me.role == 'operator' %}
+<div id="sess-loading">{{ loading('회의 기록을 불러오는 중…') }}</div>
+<div id="sess-error" hidden></div>
+
+<div id="sess" hidden>
+  <!-- 헤더: 상태·위원회 배지, 회의명, 메타, 운영자 제어, 수집원 상태 -->
+  <section class="card sess-head" aria-labelledby="sh-title">
+    <div class="sh-main">
+      <div class="sh-badges">
+        <span id="sh-status" class="badge"></span>
+        <span id="sh-committee" class="badge b-navy" hidden></span>
+        <span id="sh-kind" class="badge b-outline" hidden></span>
+        <span id="sh-source" class="badge b-gray"></span>
+      </div>
+      <h1 id="sh-title" class="sh-title"></h1>
+      <div id="sh-meta" class="sh-meta"></div>
+    </div>
+    <div class="sh-side">
+      {% if is_op %}
+      <div class="sh-controls" role="group" aria-label="수집 제어">
+        <button id="c-start" class="btn btn-live btn-sm" type="button">{{ icon('play', 'ic-sm') }}<span>시작</span></button>
+        <button id="c-pause" class="btn btn-sm" type="button">{{ icon('pause', 'ic-sm') }}<span>일시정지</span></button>
+        <button id="c-stop" class="btn btn-danger btn-sm" type="button">{{ icon('stop', 'ic-sm') }}<span>종료</span></button>
+        <button id="c-marker" class="btn btn-sm" type="button" title="정회·속개·중계 중단 같은 기록 표지를 남깁니다">{{ icon('flag', 'ic-sm') }}<span>기록 표지</span></button>
+        <div class="dropdown">
+          <button id="c-more" class="btn btn-sm btn-icon" type="button" aria-haspopup="menu" aria-expanded="false" title="세션 메뉴">{{ icon('more') }}<span class="sr-only">세션 메뉴</span></button>
+        </div>
+      </div>
+      {% endif %}
+      <div class="sh-conn" aria-live="off">
+        <span id="conn-sse" class="seg" title="실시간 연결 상태"><i class="dot"></i><span>연결 중</span></span>
+        <span id="conn-src" class="seg" title="수집원 상태" hidden></span>
+      </div>
+      <details id="src-details" class="src-details" hidden>
+        <summary>수집 상세·로그 보기</summary>
+        <div id="src-log" class="src-log"></div>
+      </details>
+    </div>
+  </section>
+
+  <p id="audio-transcript-note" class="small muted" role="note" hidden></p>
+
+  <!-- 주요 이슈(최신 회의 요약) -->
+  <details id="issues" class="card issues" hidden>
+    <summary>
+      {{ icon('sparkles') }}
+      <span>주요 이슈 <b id="iss-n">0</b>건</span>
+      <span class="iss-hint">· 제목을 누르면 해당 발언으로 이동</span>
+      <span id="iss-time" class="small faint{% if cloud %} cloud-ml-auto{% endif %}" {% if not cloud %}style="margin-left:auto"{% endif %}></span>
+      {{ icon('chevron-down', 'chev') }}
+    </summary>
+    <div class="issues-b">
+      <ol id="iss-list" class="iss-list"></ol>
+      <div id="iss-tags" class="chips"></div>
+    </div>
+  </details>
+
+  <div class="sess-grid">
+    <div class="sess-main">
+      <div class="tabs" role="tablist" aria-label="회의 기록 보기">
+        <button class="tab" role="tab" id="tb-feed" aria-controls="tab-feed" aria-selected="true">{{ icon('list') }}전체 발언</button>
+        <button class="tab" role="tab" id="tb-members" aria-controls="tab-members" aria-selected="false" tabindex="-1">{{ icon('users') }}위원별 <span id="cnt-members" class="cnt">0</span></button>
+        <button class="tab" role="tab" id="tb-items" aria-controls="tab-items" aria-selected="false" tabindex="-1">{{ icon('checklist') }}후속조치 <span id="cnt-items" class="cnt">0</span></button>
+        <button class="tab" role="tab" id="tb-alerts" aria-controls="tab-alerts" aria-selected="false" tabindex="-1">{{ icon('bell') }}우리 기관 언급 <span id="cnt-alerts" class="cnt">0</span></button>
+        <button class="tab" role="tab" id="tb-summary" aria-controls="tab-summary" aria-selected="false" tabindex="-1">{{ icon('sparkles') }}요약</button>
+      </div>
+
+      <!-- 전체 발언 -->
+      <section id="tab-feed" role="tabpanel" aria-labelledby="tb-feed">
+        <section id="transcript-stages" class="transcript-stages" aria-label="전체 발언" hidden>
+          <div class="transcript-stage-head">
+            <div class="transcript-stage-tabs" role="tablist" aria-label="자막 판본 선택">
+              <button id="transcript-tab-corrected" type="button" role="tab" aria-controls="transcript-panel-corrected" aria-selected="true">전체 발언</button>
+              <button id="transcript-tab-live" type="button" role="tab" aria-controls="transcript-panel-live" aria-selected="false" tabindex="-1">원자막</button>
+            </div>
+            <button id="transcript-legacy-toggle" type="button" class="btn btn-xs btn-ghost" aria-controls="transcript-legacy" aria-expanded="false">이전 기록</button>
+          </div>
+          <p id="transcript-stage-guide" class="transcript-stage-guide"></p>
+          <div class="transcript-stage-toolbar">
+            <button id="transcript-stage-older" type="button" class="btn btn-sm" hidden>이전 자막 더 보기</button>
+            <span id="transcript-stage-count" class="small muted"></span>
+            <label class="switch"><input id="transcript-stage-follow" type="checkbox" checked> 최신 자막 따라가기</label>
+          </div>
+          <p id="transcript-stage-status" class="small muted" role="status" aria-live="polite"></p>
+          <section id="transcript-panel-live" role="tabpanel" aria-labelledby="transcript-tab-live" tabindex="0" hidden><div id="transcript-list-live" class="transcript-stage-list"></div></section>
+          <section id="transcript-panel-corrected" role="tabpanel" aria-labelledby="transcript-tab-corrected" tabindex="0"><div id="transcript-list-corrected" class="transcript-stage-list"></div></section>
+        </section>
+        <div id="transcript-legacy">
+        <div class="feed-head">
+          <div class="feed-title">
+            <h2>전체 발언</h2>
+            <span id="feed-live" class="live-label" hidden><i class="dot live"></i>실시간 수집 중</span>
+            <span id="feed-total" class="total">총 0개 발언</span>
+            <button id="help-btn" class="btn btn-xs btn-ghost btn-icon" type="button" title="단축키 (?)">{{ icon('keyboard', 'ic-sm') }}<span class="sr-only">단축키 안내</span></button>
+          </div>
+          <div class="toolbar">
+            <div class="searchbox">
+              {{ icon('search') }}
+              <input id="q" type="search" placeholder="발언 검색 (/)" aria-label="발언 검색" autocomplete="off">
+              <span id="q-count" class="count" aria-live="polite"></span>
+            </div>
+            <button id="f-bm" class="btn btn-sm" type="button" aria-pressed="false" title="북마크한 발언만 보기">{{ icon('star', 'ic-sm') }}<span class="lbl">북마크</span></button>
+            <span class="sep" aria-hidden="true"></span>
+            <label class="switch" title="새 발언이 오면 아래로 따라갑니다"><input id="t-auto" type="checkbox" checked> <span class="lbl">자동 스크롤</span></label>
+            <label class="switch"><input id="t-time" type="checkbox" checked> <span class="lbl">타임스탬프</span></label>
+            <span class="sep" aria-hidden="true"></span>
+            <div class="btn-group" role="group" aria-label="글자 크기">
+              <button id="fs-dec" class="btn btn-sm btn-icon" type="button" title="글자 작게">가<span class="sr-only">글자 작게</span>−</button>
+              <button id="fs-inc" class="btn btn-sm btn-icon" type="button" title="글자 크게">가<span class="sr-only">글자 크게</span>+</button>
+            </div>
+            <div class="dropdown">
+              <button id="export-btn" class="btn btn-sm" type="button" aria-haspopup="menu" aria-expanded="false">{{ icon('download', 'ic-sm') }}<span class="lbl">내보내기</span></button>
+            </div>
+          </div>
+          <div id="f-chips" class="filter-chips"></div>
+        </div>
+        <div id="feed" class="feed" aria-label="발언 목록"></div>
+        <div id="feed-empty" hidden></div>
+        </div>
+      </section>
+
+      <!-- 위원별 -->
+      <section id="tab-members" class="tabpanel" role="tabpanel" aria-labelledby="tb-members" hidden>
+        <p class="small muted">질의 블록을 위원별로 모았습니다. 회차·시간은 기록 확인용이며 평가 지표가 아닙니다.</p>
+        <div id="mem-list" class="mem-list"></div>
+      </section>
+
+      <!-- 후속조치 -->
+      <section id="tab-items" class="tabpanel" role="tabpanel" aria-labelledby="tb-items" hidden>
+        <div class="toolbar{% if cloud %} cloud-mb-12{% endif %}" {% if not cloud %}style="margin-bottom:12px"{% endif %}>
+          <select id="it-kind" class="input-sm{% if cloud %} cloud-width-auto{% endif %}" {% if not cloud %}style="width:auto"{% endif %} aria-label="종류로 거르기"><option value="">모든 종류</option></select>
+          <select id="it-status" class="input-sm{% if cloud %} cloud-width-auto{% endif %}" {% if not cloud %}style="width:auto"{% endif %} aria-label="상태로 거르기">
+            <option value="">상태 전체(제외 빼고)</option><option value="open">미처리</option><option value="in_progress">처리중</option><option value="done">완료</option><option value="dismissed">제외</option>
+          </select>
+          <label class="switch"><input id="it-hide-ritual" type="checkbox"> 의례적 답변 숨기기</label>
+          <span class="grow"></span>
+          <a id="it-csv" class="btn btn-sm" href="#">{{ icon('download', 'ic-sm') }}CSV</a>
+          {% if is_op %}<button id="it-add" class="btn btn-sm btn-primary" type="button">{{ icon('plus', 'ic-sm') }}후속조치 등록</button>{% endif %}
+        </div>
+        <div class="table-wrap">
+          <table class="tbl tbl-compact">
+            <thead><tr>
+              <th scope="col">시각</th><th scope="col">종류·강도</th><th scope="col">요지</th>
+              <th scope="col">요구·발언</th><th scope="col">담당·기한</th><th scope="col">상태</th>
+            </tr></thead>
+            <tbody id="it-body"></tbody>
+          </table>
+        </div>
+        <datalist id="dept-list"></datalist>
+        <datalist id="due-list"></datalist>
+      </section>
+
+      <!-- 우리 기관 언급 -->
+      <section id="tab-alerts" class="tabpanel" role="tabpanel" aria-labelledby="tb-alerts" hidden>
+        <div class="toolbar{% if cloud %} cloud-mb-12{% endif %}" {% if not cloud %}style="margin-bottom:12px"{% endif %}>
+          <label class="switch"><input id="al-unack" type="checkbox"> 미확인만</label>
+          <span class="grow"></span>
+          <button id="al-ack-all" class="btn btn-sm" type="button">{{ icon('check', 'ic-sm') }}모두 확인</button>
+        </div>
+        <ul id="al-list" class="alert-feed{% if cloud %} cloud-max-height-none{% endif %}" {% if not cloud %}style="max-height:none"{% endif %}></ul>
+      </section>
+
+      <!-- 요약 -->
+      <section id="tab-summary" class="tabpanel" role="tabpanel" aria-labelledby="tb-summary" hidden>
+        <div id="sum-box"></div>
+      </section>
+    </div>
+
+    <!-- 우측 사이드바 -->
+    <aside class="sess-side" aria-label="회의 보조 정보">
+      <section class="side-card" aria-labelledby="h-cur">
+        <h3 id="h-cur">{{ icon('user', 'ic-sm') }}현재 질의</h3>
+        <div id="cur-card"></div>
+      </section>
+
+      <section id="src-card" class="side-card" aria-labelledby="h-src" hidden>
+        <h3 id="h-src"></h3>
+        <div id="src-panel"></div>
+      </section>
+
+      {% if is_op and not cloud and not desktop_local %}
+      <details id="audio-recording-panel" class="side-card audio-recording" hidden>
+        <summary>검증용 연속 녹음</summary>
+        <div class="stack-sm">
+          <p class="small muted">별도로 수신 중인 음성을 최대 15분 저장하는 자료 보관 기능입니다. 자막·화자는 바꾸지 않습니다. 블록 보정에는 사용하지 않습니다.</p>
+          <label for="audio-recording-duration" class="small">녹음 길이</label>
+          <select id="audio-recording-duration" class="input-sm">
+            <option value="600">10분</option><option value="900" selected>15분</option>
+          </select>
+          <div class="row" role="group" aria-label="검증용 녹음 제어">
+            <button id="audio-recording-start" class="btn btn-sm" type="button" disabled>{{ icon('mic', 'ic-sm') }}녹음 시작</button>
+            <button id="audio-recording-stop" class="btn btn-sm" type="button" hidden>{{ icon('stop', 'ic-sm') }}녹음 중지</button>
+            <button id="audio-recording-refresh" class="btn btn-xs btn-ghost" type="button">상태 새로고침</button>
+          </div>
+          <div id="audio-recording-status" class="small" role="status" aria-live="polite">녹음 상태 확인 중</div>
+          <progress id="audio-recording-progress" max="900" value="0" aria-label="실제 저장한 음성 길이" hidden></progress>
+          <div id="audio-recording-time" class="small muted" hidden></div>
+          <p id="audio-recording-detail" class="small muted"></p>
+          <a id="audio-recording-download" class="btn btn-sm" hidden>{{ icon('download', 'ic-sm') }}원음·자막 자료 내려받기</a>
+          <p class="small muted">녹음 중에도 수집은 계속됩니다. 끊긴 녹음은 연속 구간으로 보지 않으며, 저장한 자료로 화자 정확도를 별도 검증합니다.</p>
+        </div>
+      </details>
+      {% endif %}
+
+      <section class="side-card" aria-labelledby="h-al">
+        <h3 id="h-al">{{ icon('bell', 'ic-sm') }}우리 기관 언급 알림
+          <span class="acts">
+            <button id="al-sound" class="btn btn-ghost btn-icon btn-xs" type="button" aria-pressed="false" title="알림 소리">{{ icon('volume-off', 'ic-sm') }}<span class="sr-only">알림 소리</span></button>
+            <button id="al-notify" class="btn btn-ghost btn-icon btn-xs" type="button" aria-pressed="false" title="브라우저 알림">{{ icon('bell-off', 'ic-sm') }}<span class="sr-only">브라우저 알림</span></button>
+          </span>
+        </h3>
+        <ul id="al-feed" class="alert-feed"></ul>
+      </section>
+
+      <section class="side-card" aria-labelledby="h-ai">
+        <h3 id="h-ai">{{ icon('sparkles', 'ic-sm') }}AI 기능</h3>
+        <div class="ai-tools">
+          {% if is_op %}
+          <button id="ai-block" class="btn btn-sm" type="button" title="선택(또는 현재) 질의 블록 요약">{{ icon('message', 'ic-sm') }}블록 요약</button>
+          <button id="ai-session" class="btn btn-sm" type="button">{{ icon('sparkles', 'ic-sm') }}회의 전체 요약</button>
+          {% endif %}
+          <a id="ai-report" class="btn btn-sm full" href="#">{{ icon('report', 'ic-sm') }}상황보고 만들기</a>
+          <button id="ai-keywords" class="btn btn-sm full" type="button">{{ icon('hash', 'ic-sm') }}키워드 분석</button>
+        </div>
+        <div id="ai-status" class="ai-status"></div>
+      </section>
+
+      <section class="side-card" aria-labelledby="h-roll">
+        <h3 id="h-roll">{{ icon('clock', 'ic-sm') }}실시간 요약 <span id="roll-time" class="small faint{% if cloud %} cloud-time-caption{% endif %}" {% if not cloud %}style="margin-left:auto;font-weight:500"{% endif %}></span></h3>
+        <div id="rolling" class="rolling"></div>
+      </section>
+    </aside>
+  </div>
+</div>
+
+{% if is_op %}
+<div id="manual-bar" class="manual-bar" hidden>
+  <form id="manual-form" autocomplete="off">
+    <input id="m-spk" class="m-spk input-sm" type="text" list="roster-list" placeholder="화자(이름)" aria-label="화자">
+    <select id="m-role" class="m-role input-sm" aria-label="역할">
+      <option value="member">위원</option><option value="chair">위원장</option><option value="answer">답변</option><option value="other">기타</option>
+    </select>
+    <input id="m-text" class="m-text input-sm" type="text" placeholder="발언 내용을 입력하고 Enter" aria-label="발언 내용"{% if cloud %} maxlength="2000"{% endif %} required>
+    <button class="btn btn-primary btn-sm" type="submit">입력</button>
+  </form>
+</div>
+{% endif %}
+<datalist id="roster-list"></datalist>
+
+<button id="to-latest" class="to-latest" type="button" hidden>{{ icon('arrow-down', 'ic-sm') }}<span id="to-latest-t">최신 발언으로</span></button>
+
+<div class="fab" id="fab" role="group" aria-label="화면 이동" hidden>
+  <button type="button" id="fab-top" title="맨 위로">{{ icon('arrow-up') }}<span class="sr-only">맨 위로</span></button>
+  <button type="button" id="fab-inc" title="글자 크게">가+<span class="sr-only">글자 크게</span></button>
+  <button type="button" id="fab-search" title="검색 (/)">{{ icon('search') }}<span class="sr-only">검색</span></button>
+  <button type="button" id="fab-dec" title="글자 작게">가−<span class="sr-only">글자 작게</span></button>
+  <button type="button" id="fab-bottom" title="최신 발언으로 (G)">{{ icon('arrow-down') }}<span class="sr-only">최신 발언으로</span></button>
+</div>
+
+<div id="scrubber" class="scrubber" hidden>
+  <span id="scrub-start" class="scrub-start"></span>
+  <div id="scrub-track" class="scrub-track" role="slider" tabindex="0" aria-label="타임라인: 끌어서 해당 시각 발언으로 이동"
+       aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="">
+    <div class="scrub-rail"></div>
+    <div id="scrub-fill" class="scrub-fill"></div>
+    <div id="scrub-ticks"></div>
+    <div id="scrub-thumb" class="scrub-thumb"></div>
+    <div id="scrub-tip" class="scrub-tip" hidden></div>
+  </div>
+  <span id="scrub-end" class="scrub-end"></span>
+  <span id="scrub-cur" class="scrub-cur" title="지금 보고 있는 발언 시각"></span>
+</div>
+
+<template id="tpl-help">
+  <dl class="kv{% if cloud %} cloud-help-grid{% endif %}" {% if not cloud %}style="grid-template-columns:120px 1fr"{% endif %}>
+    <dt><kbd>/</kbd></dt><dd>발언 검색</dd>
+    <dt><kbd>J</kbd> / <kbd>K</kbd></dt><dd>다음 / 이전 발언으로 포커스</dd>
+    <dt><kbd>G</kbd></dt><dd>최신 발언으로(자동 스크롤 다시 켜기)</dd>
+    <dt><kbd>Shift</kbd>+<kbd>Q</kbd></dt><dd>포커스한 발언 중요 표시(북마크)</dd>
+    <dt><kbd>Shift</kbd>+<kbd>S</kbd></dt><dd>발언자 지정(질의 블록이면 질의 위원, 아니면 발언 화자)</dd>
+    <dt><kbd>Enter</kbd></dt><dd>포커스한 발언 메뉴 열기</dd>
+    <dt><kbd>Esc</kbd></dt><dd>검색어·거르기 지우기</dd>
+    <dt><kbd>?</kbd></dt><dd>이 안내</dd>
+  </dl>
+  <p class="small muted{% if cloud %} cloud-mt-12{% endif %}" {% if not cloud %}style="margin-top:12px"{% endif %}>발언 행을 누르면 포커스됩니다.</p>
+</template>
+{% endblock %}
+{% block scripts %}
+<script type="module" src="/static/js/session.js?v={{ version or '' }}"></script>
+<script type="module" src="/static/js/transcript-stages.js?v={{ version or '' }}"></script>
+{% endblock %}

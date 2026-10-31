@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, loading %}
+{% block title %}후속조치 트래커{% endblock %}
+{% block body_class %}page-items{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>후속조치 트래커</h1>
+    <p>요구자료·약속·지적사항을 담당 부서와 기한까지 챙깁니다. AI·규칙 추출 항목은 원문과 대조해 확인하세요.</p>
+  </div>
+  <div class="row">
+    <button id="csv" class="btn" type="button">{{ icon('download', 'ic-sm') }}CSV 내려받기</button>
+  </div>
+</div>
+
+<section class="card card-tight" aria-label="거르기">
+  <div class="toolbar">
+    <select id="f-session" class="input-sm{% if cloud %} cloud-item-session{% endif %}" {% if not cloud %}style="width:auto;max-width:280px"{% endif %} aria-label="세션"><option value="">모든 세션</option></select>
+    <select id="f-kind" class="input-sm{% if cloud %} cloud-width-auto{% endif %}" {% if not cloud %}style="width:auto"{% endif %} aria-label="종류"><option value="">모든 종류</option></select>
+    <select id="f-status" class="input-sm{% if cloud %} cloud-width-auto{% endif %}" {% if not cloud %}style="width:auto"{% endif %} aria-label="상태">
+      <option value="">상태 전체(제외 빼고)</option><option value="open">미처리</option><option value="in_progress">처리중</option><option value="done">완료</option><option value="dismissed">제외</option>
+    </select>
+    <input id="f-dept" class="input-sm{% if cloud %} cloud-dept-field{% endif %}" type="text" list="dept-list" placeholder="담당 부서" aria-label="담당 부서" {% if not cloud %}style="width:140px"{% endif %}>
+    <div class="searchbox{% if cloud %} cloud-search-grow{% endif %}" {% if not cloud %}style="flex:1 1 200px"{% endif %}>
+      {{ icon('search') }}
+      <input id="f-q" class="input-sm{% if cloud %} cloud-search-height{% endif %}" type="search" placeholder="요지·위원·원문 검색" aria-label="요지 검색" {% if not cloud %}style="height:30px"{% endif %}>
+    </div>
+    <label class="switch"><input id="f-ritual" type="checkbox"> 의례적 답변 숨기기</label>
+  </div>
+</section>
+
+<div id="kpi" class="chips{% if cloud %} cloud-kpi-margin{% endif %}" {% if not cloud %}style="margin:12px 0"{% endif %}></div>
+
+<div class="table-wrap">
+  <table class="tbl tbl-compact">
+    <thead><tr>
+      <th scope="col">회의</th><th scope="col">시각</th><th scope="col">종류·강도</th><th scope="col">요지</th>
+      <th scope="col">요구·발언</th><th scope="col">담당·기한</th><th scope="col">상태</th>
+    </tr></thead>
+    <tbody id="rows"><tr><td colspan="7">{{ loading() }}</td></tr></tbody>
+  </table>
+</div>
+<datalist id="dept-list"></datalist>
+<datalist id="due-list"></datalist>
+{% endblock %}
+{% block scripts %}<script type="module" src="/static/js/items.js?v={{ version or '' }}"></script>{% endblock %}

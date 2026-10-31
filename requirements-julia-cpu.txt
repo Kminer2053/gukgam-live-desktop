@@ -1,0 +1,4 @@
+# 선택한 Julia-1 CPU 판정용. 모델 가중치는 설치물에 넣지 않는다.
+onnxruntime==1.31.0
+tokenizers==0.23.3
+numpy==2.5.4
