@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "status": "stable_prepared_github_draft_gitlab_pending",
+  "status": "stable_github_published_gitlab_pending",
   "product_name": "국감 라이브 데스크톱",
   "release_version": "0.1.0",
   "source_release_ref": "v0.1.0",
@@ -61,8 +61,11 @@
     "id": 430110807,
     "tag": "v0.1.0",
     "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/tag/v0.1.0",
-    "published": false,
-    "prerelease": false
+    "published": true,
+    "prerelease": false,
+    "published_at": "2026-10-31T19:29:05Z",
+    "asset_count": 9,
+    "asset_digests_verified": true
   },
   "gitlab": {
     "source_published": false,
@@ -125,5 +128,6 @@
       "sha256": "0f3dd9e962f7aa48f0a8e6d43cb89a1a07c1aa7b02beab02db21bbdeccc843e8",
       "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/SHA256SUMS.txt"
     }
-  ]
+  ],
+  "source_release_commit": "16a259ede8b005cc6155c672cd49f9a5cd315098"
 }
