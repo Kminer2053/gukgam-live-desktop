@@ -18,6 +18,13 @@ node_modules/
 desktop/dist/
 desktop/release/
 desktop/release-public/
+desktop/release-real-ui/
+
+# 홍보영상의 중간 렌더·검토 산출물은 최종 자산과 분리한다.
+/docs/public-release/media/*-review/
+/docs/public-release/media/gukgam-live-threads-30s-real-ui.mp4
+/docs/public-release/media/poster-real-ui.png
+/docs/public-release/media/real-ui-design.manifest.json
 /build/
 /dist/
 /vendor/

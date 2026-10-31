@@ -1,0 +1,119 @@
+{
+  "captures": {
+    "connection": "01-ai-connection.jpg",
+    "overview": "02-session-overview.jpg",
+    "dialogue": "12-speaker-turns.jpg",
+    "followups": "05-followups.jpg",
+    "captionSetup": "06-caption-setup.jpg",
+    "recordingSetup": "07-recording-setup.jpg",
+    "export": "08-export-menu.jpg",
+    "summary": "04-summary.jpg",
+    "corrected": "11-original-detail.jpg"
+  },
+  "crops": {
+    "connectionWide": [
+      233,
+      215,
+      1001,
+      386
+    ],
+    "connectionFocus": [
+      241,
+      234,
+      505,
+      330
+    ],
+    "captionChoice": [
+      180,
+      189,
+      295,
+      108
+    ],
+    "recordingChoice": [
+      180,
+      301,
+      295,
+      108
+    ],
+    "overviewHeader": [
+      16,
+      72,
+      867,
+      120
+    ],
+    "overviewFull": [
+      16,
+      72,
+      1217,
+      592
+    ],
+    "dialogueContext": [
+      16,
+      170,
+      866,
+      230
+    ],
+    "dialogueFocusStart": [
+      100,
+      246,
+      540,
+      190
+    ],
+    "dialogueFocusEnd": [
+      174,
+      246,
+      466,
+      190
+    ],
+    "followupsWide": [
+      16,
+      200,
+      867,
+      510
+    ],
+    "followupsFocus": [
+      89,
+      300,
+      520,
+      391
+    ],
+    "exportContext": [
+      16,
+      200,
+      867,
+      465
+    ],
+    "exportMenu": [
+      650,
+      326,
+      232,
+      269
+    ],
+    "summaryContext": [
+      17,
+      370,
+      866,
+      110
+    ],
+    "summary": [
+      452,
+      445,
+      418,
+      190
+    ],
+    "correctedHeader": [
+      388,
+      48,
+      450,
+      48
+    ],
+    "corrected": [
+      388,
+      260,
+      450,
+      270
+    ]
+  },
+  "status": "actual_captures_ready_for_local_render_and_review",
+  "disclosure": "실제 설치 앱 화면 · 가상 시연 자료"
+}

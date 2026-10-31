@@ -1,34 +1,25 @@
 {
-  "gukgam-live-threads-30s.mp4": {
-    "bytes": 8610742,
-    "sha256": "e394c96628938609d2fb42baa962cf99d15fa81344c2481f859eebbeb06058bb"
-  },
-  "poster.png": {
-    "bytes": 304021,
-    "sha256": "2955e0c31f6ed2363e8d0c00a442d99dcfa8599b8b4a5f823f3251e80d257ec0"
-  },
-  "poster.svg": {
-    "bytes": 15592,
-    "sha256": "e052d76eeb1bb67e56d265cf90f38f69dc2321680e23fe3f64ca670178180060"
-  },
-  "promo.ko.srt": {
-    "bytes": 668,
-    "sha256": "f1f57890369c2e0c892e50f9b1297a565daa78b494e967f9b8ba07dbdfe73f72"
-  },
-  "promo-script.ko.txt": {
-    "bytes": 364,
-    "sha256": "af19e3585b4d31ddfd629e38c715808f54cafc225af1fc2f870b74ff59e0a8e8"
-  },
-  "promo-motion-master.mp4": {
-    "bytes": 15253037,
-    "sha256": "dfced3b34e7298fd1f56e18833952db63e964da8adca29ec44b9b5a651983a0e"
-  },
-  "promo-canvas.html": {
-    "bytes": 8815,
-    "sha256": "0a9c54a004aee88c3918b7f356728d44a34617a573c8f4afe39f94d6dd9183ff"
-  },
-  "threads-caption.ko.txt": {
-    "bytes": 585,
-    "sha256": "d2b1bd485f07c9d26b2469ab421fc7caf3c699895ac0d778e6434370a48a731a"
-  }
+  "revision": "real_ui_preview25",
+  "files": [
+    {
+      "file": "docs/public-release/manual.html",
+      "bytes": 1220157,
+      "sha256": "ee50f97c7227eede6deabe6dd70aa3918deee4a5339b50cff43ba126d639b636"
+    },
+    {
+      "file": "docs/public-release/media/gukgam-live-threads-30s.mp4",
+      "bytes": 19467794,
+      "sha256": "4908d0fb795a6f0df8a195be4ae1d473c2eeaa83c38a452be494d6e625b08296"
+    },
+    {
+      "file": "docs/public-release/media/poster.png",
+      "bytes": 712582,
+      "sha256": "e999c3878792c8b9cd44f7dc5627757a2ae26919344af4320abe8b25925f8bce"
+    },
+    {
+      "file": "desktop/assets/brand/gukgam-live.ico",
+      "bytes": 21314,
+      "sha256": "55c4b3b1a0a110a1236b969869fb002d63f0f1978901e871d2c7eb18be272480"
+    }
+  ]
 }

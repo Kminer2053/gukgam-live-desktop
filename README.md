@@ -14,7 +14,7 @@ Windows x64 · 국회 제공 자막 · CPU 녹음 전사 · 원문 대조 · 단
 
 </div>
 
-> **Windows preview24 설치판을 준비하고 있습니다. 설치파일은 아직 게시되지 않았습니다.** 게시 후 [GitHub Releases](https://github.com/Kminer2053/gukgam-live-desktop/releases)에 버전·SHA-256과 함께 안내합니다. 프로젝트 소스코드는 [MIT 라이선스](LICENSE)로 제공합니다.
+> **Windows preview.25 · 실제 화면으로 배우는 국감 기록 앱.** 설치파일·HTML 매뉴얼·홍보영상과 SHA-256은 [GitHub Releases](https://github.com/Kminer2053/gukgam-live-desktop/releases)에서 확인하세요. 프로젝트 소스코드는 [MIT 라이선스](LICENSE)로 제공합니다.
 
 ## 기록은 쌓이는데, 다시 확인하는 데 시간이 걸리나요?
 
@@ -64,7 +64,7 @@ AI 결과는 검토할 초안입니다. 이름·숫자·부정 표현·문답 �
 
 Windows 10/11 x64, Core i5급·메모리 16GB를 기준으로 준비합니다. 음성 CPU 기능은 AVX2와 모델·녹음·임시 변환 파일을 둘 저장공간이 필요합니다.
 
-일반 사용자는 Python·Node.js·Git을 따로 설치하지 않습니다. 설치파일이 게시되면 [공식 릴리스](https://github.com/Kminer2053/gukgam-live-desktop/releases)에서 버전·SHA-256을 확인해 설치하세요. 현재 준비 중인 버전은 **0.1.0-preview.24**입니다.
+일반 사용자는 Python·Node.js·Git을 따로 설치하지 않습니다. [공식 릴리스](https://github.com/Kminer2053/gukgam-live-desktop/releases)에서 Windows 설치파일과 `SHA256SUMS.txt`를 확인하세요. **0.1.0-preview.25**는 실제 화면 10장을 넣은 매뉴얼을 포함합니다. 기록·보정 엔진과 화면 동작은 preview.24와 같습니다.
 
 설치 후 시작 화면의 **설치·활용 매뉴얼**을 누르면 인터넷 없이 설명서를 볼 수 있습니다. 설치 전에는 [HTML 매뉴얼 원본](docs/public-release/manual.html)을 파일로 저장해 브라우저에서 여세요. GitHub에서는 HTML 소스가 먼저 표시될 수 있습니다.
 
@@ -73,7 +73,11 @@ Windows 10/11 x64, Core i5급·메모리 16GB를 기준으로 준비합니다. �
 
 [30초 시연 영상 보기](docs/public-release/media/gukgam-live-threads-30s.mp4) · [포스터 보기](docs/public-release/media/poster.png)
 
-가상 기관·가상 문답으로 사용 흐름을 소개합니다. 영상은 1080×1920 세로 화면이며 한국어 내레이션·음악·자막을 포함합니다.
+실제 설치 앱에 가상 기관·문답을 넣고 화면을 촬영했습니다. 영상은 1080×1920 세로 화면이며 한국어 내레이션·음악·자막을 포함합니다. 자막·녹음 선택부터 화자·문답, 요약·자료요구, 원문 대조와 내보내기까지 실제 화면으로 보여 줍니다.
+
+![실제 앱의 문답 검토 화면 · 가상 시연 자료](docs/public-release/media/screenshots/12-speaker-turns.jpg)
+
+화자 확인 필요 표시는 사람이 원문과 대조해야 하는 초안입니다. 화면에 표시된 불확실성과 검수 상태를 함께 확인하세요.
 
 ## 개인 기록과 공유
 
@@ -89,6 +93,6 @@ Windows 10/11 x64, Core i5급·메모리 16GB를 기준으로 준비합니다. �
 - [배포 확인 메타데이터](docs/public-release/RELEASE_MANIFEST.json)
 - [제삼자 고지](docs/public-release/THIRD_PARTY_NOTICES.md)
 
-소스와 배포 소식은 [공식 GitHub 저장소](https://github.com/Kminer2053/gukgam-live-desktop)에서 안내합니다. GitLab 미러는 주소가 확정되면 추가합니다.
+소스와 배포 소식은 [공식 GitHub 저장소](https://github.com/Kminer2053/gukgam-live-desktop)에서 안내합니다. [공공 GitLab](https://gitlab.aigov.go.kr/Kminer2053/gukgam-live-desktop)에도 공개 프로젝트를 준비했으며, 현재 게시 상태는 배포 확인 메타데이터에 기록합니다.
 
 프로젝트 소스코드는 [MIT 라이선스](LICENSE)입니다. 모델·재사용 코드·의존성에는 [제삼자 고지](docs/public-release/THIRD_PARTY_NOTICES.md)에 적힌 개별 라이선스가 적용됩니다.

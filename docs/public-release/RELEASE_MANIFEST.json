@@ -1,24 +1,29 @@
 {
   "schema_version": 1,
-  "status": "public_source_and_installer_prepared",
+  "status": "preview25_artifacts_verified",
   "product_name": "국감 라이브 데스크톱",
   "target": "windows-x64",
-  "release_version": "0.1.0-preview.24",
-  "source_commit": "c06189e3a2934d76c5a63257aa4db5ed8cd74a2d",
+  "release_version": "0.1.0-preview.25",
+  "source_commit": "e4173eb0d9ef38045425875a9c5bfa17782f2631",
   "license_spdx": "MIT",
   "public_github_url": "https://github.com/Kminer2053/gukgam-live-desktop",
-  "public_gitlab_url": null,
+  "public_gitlab_url": "https://gitlab.aigov.go.kr/Kminer2053/gukgam-live-desktop",
   "installer": {
-    "filename": "Gukgam-Live-Setup-0.1.0-preview.24.exe",
-    "sha256": "192462c30525235d5b89cee1bfc60f53a48ac62f2ecb319ece97dfbe339982dd",
-    "bytes": 325401245
+    "filename": "Gukgam-Live-Setup-0.1.0-preview.25.exe",
+    "bytes": 326105818,
+    "sha256": "ccc6f7367944367b1580035e50794a7fdbea81f22574dbbec39b6ec90cd32c78"
   },
   "manual": {
     "source": "docs/public-release/manual.html",
     "installer_resource": "manual/사용설명서.html",
     "standalone": true,
     "external_assets": false,
-    "real_meeting_examples": false
+    "real_meeting_examples": false,
+    "bytes": 1220157,
+    "sha256": "ee50f97c7227eede6deabe6dd70aa3918deee4a5339b50cff43ba126d639b636",
+    "actual_app_screenshots": 10,
+    "capture_app_version": "0.1.0-preview.24",
+    "all_examples_synthetic": true
   },
   "public_source_strategy": {
     "kind": "new_clean_snapshot_repository",
@@ -33,14 +38,14 @@
   },
   "gates": {
     "license_confirmed": true,
-    "public_destinations_confirmed": false,
+    "public_destinations_confirmed": true,
     "additional_llm_caption_same_block_actual_reviewed": true,
     "additional_llm_recording_same_block_actual_reviewed": true,
     "final_installer_and_hash_verified": true,
     "clean_snapshot_privacy_reviewed": true,
     "third_party_assets_and_licenses_verified": true,
     "synthetic_public_examples_and_video_reviewed": true,
-    "final_publication_ready": false,
+    "final_publication_ready": true,
     "packaged_manual_included_and_render_reviewed": true,
     "github_destination_confirmed": true,
     "github_release_assets_prepared": true
@@ -49,23 +54,13 @@
   "contains_account_or_deployment_credentials": false,
   "license_file": "LICENSE",
   "license_scope": "프로젝트 코드. 모델·재사용 코드·실행 도구·의존성은 각 원 라이선스와 고지를 별도로 유지.",
-  "gitlab_address_status": "awaiting_user_entered_url",
+  "gitlab_address_status": "confirmed",
   "manual_verification_observation": {
-    "packaged_manual_open_verified": false,
-    "observed_evidence_before_mit_document_revision": {
-      "nsis_extracted_assets": 7,
-      "manual_hash_matched_then_source": true,
-      "source_desktop_and_mobile_render_reviewed": true,
-      "ipc_contract_reviewed": true
-    },
-    "native_button_click": "not_observed_due_to_automation_geometry_limit",
-    "interpretation": "관측 한계이며 이 도구 제한만으로 별도 배포 승인이나 사용자 추가 클릭을 요구하지 않음.",
-    "mit_document_revision": "source_and_public_candidate_updated_only; installer_not_rebuilt_in_this_task",
-    "license_resource_mapping": {
-      "from": "../LICENSE",
-      "to": "LICENSE.txt"
-    },
-    "final_repackaged_nsis_license_verification": "pending_root_after_same_block_trials"
+    "exact_embedded_sha256_verified": true,
+    "embedded_images": 10,
+    "desktop_and_mobile_render_reviewed": true,
+    "native_button_open_observed": false,
+    "native_button_observation_limit": "Existing automation cannot deliver the native button click; no extra user click or reinstall is required for this document revision."
   },
   "observations": {
     "packaged_manual_native_button_open_observed": false,
@@ -73,12 +68,32 @@
     "quality_provider": "desktop_chatgpt",
     "local_model_connection": "Ollama 0.32.9 / gemma4:e2b synthetic example successful",
     "remote_api_real_keys_used": false,
-    "real_meeting_content_in_public_source": false
+    "real_meeting_content_in_public_source": false,
+    "runtime_engine_and_compiled_ui_same_as_preview24": true,
+    "actual_question_a_reruns_for_document_revision": 0,
+    "current_installed_app_reinstalled": false,
+    "actual_ui_captures_with_synthetic_data": true
   },
   "publication": {
-    "github_source": "published",
-    "github_release_assets": "upload_pending",
-    "gitlab": "destination_pending"
+    "github_source": "preview25_update_prepared",
+    "github_release_assets": "verified_upload_pending",
+    "gitlab": "public_empty_project; previous_large_push_received_http_502; small_source_snapshot_pending"
   },
-  "source_commit_kind": "public_source_base"
+  "source_commit_kind": "unchanged_runtime_base_public_tag",
+  "source_release_ref": "v0.1.0-preview.25",
+  "media": {
+    "video": {
+      "name": "Gukgam-Live-Threads-30s.mp4",
+      "bytes": 19467794,
+      "sha256": "4908d0fb795a6f0df8a195be4ae1d473c2eeaa83c38a452be494d6e625b08296"
+    },
+    "actual_app_captures_used_in_video": 9,
+    "aspect_ratio": "9:16",
+    "width": 1080,
+    "height": 1920,
+    "seconds": 30.287767,
+    "additional_paid_credits": 0,
+    "social_published": false
+  },
+  "publication_snapshot_kind": "artifact_preparation_before_external_publication"
 }

@@ -1,0 +1,85 @@
+{
+  "scope": "public-safe real-app captures supplied separately; synthetic demo data only",
+  "captures": [
+    {
+      "file": "01-ai-connection.jpg",
+      "sha256": "991777b9d8cb90703a128d3a1819a92cd3c271b01b5c4cdbad93588ca7229707",
+      "bytes": 74320,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "file": "02-session-overview.jpg",
+      "sha256": "c5154f79919bf59fe73956983eb0eb9a9153dd6356d36861179c9567b9830ae3",
+      "bytes": 98746,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "file": "04-summary.jpg",
+      "sha256": "8e5db8e5afdc38aae0e9977c92503e72bf97ecd8ac7ddcb178910b49d13750c1",
+      "bytes": 104456,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "file": "05-followups.jpg",
+      "sha256": "6b378e87618bda214c7efecc73b68c0bd439807f83b91924518ba75d6dfa842d",
+      "bytes": 117858,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "file": "06-caption-setup.jpg",
+      "sha256": "5156dab01a4944e900382fd5713ce5e635c9d3fe97c2fc97de467f606af99675",
+      "bytes": 66136,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "file": "07-recording-setup.jpg",
+      "sha256": "0f94856bdb6cc43fe681b3a14d410b685016c0329b1396ad5fede15adebdcb4a",
+      "bytes": 63945,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "file": "08-export-menu.jpg",
+      "sha256": "69f20121a3c0fee866809f4fbece3733667c4085b9bcd75057f243a66b519f0a",
+      "bytes": 104306,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "file": "09-local-api-connection.jpg",
+      "sha256": "8c1b785bfb546cdd431872b1450ae4cf5a5404c2187a97573ee2f7271d507529",
+      "bytes": 65200,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "file": "11-original-detail.jpg",
+      "sha256": "aa9a93dc1eb05de72e1efe93559857116113ee4a978b55ad8df4116271584050",
+      "bytes": 82074,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "file": "12-speaker-turns.jpg",
+      "sha256": "6e136b05834fe0ae501fecb19a1573b8e7a5adf2aea8fee2e3d2e4ffcfbfd19d",
+      "bytes": 107393,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    }
+  ]
+}

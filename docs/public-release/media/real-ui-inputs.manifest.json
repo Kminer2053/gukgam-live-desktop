@@ -1,0 +1,333 @@
+{
+  "version": 1,
+  "status": "reviewed_and_copied_to_canonical",
+  "scope": "artifact_renderer_only; approved screenshots supplied separately",
+  "assets_kind": "real_installed_app_screenshots_with_synthetic_demo_data",
+  "width": 1080,
+  "height": 1920,
+  "target_seconds": 30,
+  "paid_credits": 0,
+  "actual_app_automation": false,
+  "model_calls": 0,
+  "http_requests_allowed": false,
+  "speaker_playback": false,
+  "disclosure": "실제 설치 앱 화면 · 가상 시연 자료",
+  "source_audio": {
+    "file": "docs/public-release/media/gukgam-live-threads-30s.mp4",
+    "sha256": "e394c96628938609d2fb42baa962cf99d15fa81344c2481f859eebbeb06058bb",
+    "bytes": 8610742,
+    "reused_existing_final_mix": true,
+    "note": "Existing promo mix used before canonical replacement. The original is preserved privately; subsequent renders may reuse the current canonical mix.",
+    "source_revision": "v0.1.0-preview.24",
+    "file_is_historical_input": true
+  },
+  "captures": [
+    {
+      "id": "connection",
+      "file": "01-ai-connection.jpg",
+      "sha256": "991777b9d8cb90703a128d3a1819a92cd3c271b01b5c4cdbad93588ca7229707",
+      "bytes": 74320,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "id": "overview",
+      "file": "02-session-overview.jpg",
+      "sha256": "c5154f79919bf59fe73956983eb0eb9a9153dd6356d36861179c9567b9830ae3",
+      "bytes": 98746,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "id": "dialogue",
+      "file": "12-speaker-turns.jpg",
+      "sha256": "6e136b05834fe0ae501fecb19a1573b8e7a5adf2aea8fee2e3d2e4ffcfbfd19d",
+      "bytes": 107393,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "id": "followups",
+      "file": "05-followups.jpg",
+      "sha256": "6b378e87618bda214c7efecc73b68c0bd439807f83b91924518ba75d6dfa842d",
+      "bytes": 117858,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "id": "captionSetup",
+      "file": "06-caption-setup.jpg",
+      "sha256": "5156dab01a4944e900382fd5713ce5e635c9d3fe97c2fc97de467f606af99675",
+      "bytes": 66136,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "id": "recordingSetup",
+      "file": "07-recording-setup.jpg",
+      "sha256": "0f94856bdb6cc43fe681b3a14d410b685016c0329b1396ad5fede15adebdcb4a",
+      "bytes": 63945,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "id": "export",
+      "file": "08-export-menu.jpg",
+      "sha256": "69f20121a3c0fee866809f4fbece3733667c4085b9bcd75057f243a66b519f0a",
+      "bytes": 104306,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "id": "summary",
+      "file": "04-summary.jpg",
+      "sha256": "8e5db8e5afdc38aae0e9977c92503e72bf97ecd8ac7ddcb178910b49d13750c1",
+      "bytes": 104456,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "id": "corrected",
+      "file": "11-original-detail.jpg",
+      "sha256": "aa9a93dc1eb05de72e1efe93559857116113ee4a978b55ad8df4116271584050",
+      "bytes": 82074,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    }
+  ],
+  "crops": {
+    "connectionWide": [
+      233,
+      215,
+      1001,
+      386
+    ],
+    "connectionFocus": [
+      241,
+      234,
+      505,
+      330
+    ],
+    "captionChoice": [
+      180,
+      189,
+      295,
+      108
+    ],
+    "recordingChoice": [
+      180,
+      301,
+      295,
+      108
+    ],
+    "overviewHeader": [
+      16,
+      72,
+      867,
+      120
+    ],
+    "overviewFull": [
+      16,
+      72,
+      1217,
+      592
+    ],
+    "dialogueContext": [
+      16,
+      170,
+      866,
+      230
+    ],
+    "dialogueFocusStart": [
+      100,
+      246,
+      540,
+      190
+    ],
+    "dialogueFocusEnd": [
+      174,
+      246,
+      466,
+      190
+    ],
+    "followupsWide": [
+      16,
+      200,
+      867,
+      510
+    ],
+    "followupsFocus": [
+      89,
+      300,
+      520,
+      391
+    ],
+    "exportContext": [
+      16,
+      200,
+      867,
+      465
+    ],
+    "exportMenu": [
+      650,
+      326,
+      232,
+      269
+    ],
+    "summaryContext": [
+      17,
+      370,
+      866,
+      110
+    ],
+    "summary": [
+      452,
+      445,
+      418,
+      190
+    ],
+    "correctedHeader": [
+      388,
+      48,
+      450,
+      48
+    ],
+    "corrected": [
+      388,
+      260,
+      450,
+      270
+    ]
+  },
+  "sampled_seconds": [
+    2.4,
+    4.9,
+    8.1,
+    11.1,
+    13,
+    15.4,
+    18.3,
+    21.5,
+    27.9
+  ],
+  "original_canonical_unchanged": true,
+  "pending_captures": [],
+  "output": {
+    "file": "gukgam-live-threads-30s-real-ui.mp4",
+    "bytes": 19467794,
+    "sha256": "4908d0fb795a6f0df8a195be4ae1d473c2eeaa83c38a452be494d6e625b08296",
+    "mime": "video/mp4;codecs=avc1.42001E,mp4a.40.2",
+    "audio_seconds": 30.037333333333333,
+    "published_file": "gukgam-live-threads-30s.mp4"
+  },
+  "capture_base_directory": "screenshots",
+  "capture_collection_manifest": "screenshots/manifest.json",
+  "public_capture_set": [
+    {
+      "file": "01-ai-connection.jpg",
+      "sha256": "991777b9d8cb90703a128d3a1819a92cd3c271b01b5c4cdbad93588ca7229707",
+      "bytes": 74320,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "file": "02-session-overview.jpg",
+      "sha256": "c5154f79919bf59fe73956983eb0eb9a9153dd6356d36861179c9567b9830ae3",
+      "bytes": 98746,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "file": "04-summary.jpg",
+      "sha256": "8e5db8e5afdc38aae0e9977c92503e72bf97ecd8ac7ddcb178910b49d13750c1",
+      "bytes": 104456,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "file": "05-followups.jpg",
+      "sha256": "6b378e87618bda214c7efecc73b68c0bd439807f83b91924518ba75d6dfa842d",
+      "bytes": 117858,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "file": "06-caption-setup.jpg",
+      "sha256": "5156dab01a4944e900382fd5713ce5e635c9d3fe97c2fc97de467f606af99675",
+      "bytes": 66136,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "file": "07-recording-setup.jpg",
+      "sha256": "0f94856bdb6cc43fe681b3a14d410b685016c0329b1396ad5fede15adebdcb4a",
+      "bytes": 63945,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "file": "08-export-menu.jpg",
+      "sha256": "69f20121a3c0fee866809f4fbece3733667c4085b9bcd75057f243a66b519f0a",
+      "bytes": 104306,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "file": "09-local-api-connection.jpg",
+      "sha256": "8c1b785bfb546cdd431872b1450ae4cf5a5404c2187a97573ee2f7271d507529",
+      "bytes": 65200,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "file": "11-original-detail.jpg",
+      "sha256": "aa9a93dc1eb05de72e1efe93559857116113ee4a978b55ad8df4116271584050",
+      "bytes": 82074,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "file": "12-speaker-turns.jpg",
+      "sha256": "6e136b05834fe0ae501fecb19a1573b8e7a5adf2aea8fee2e3d2e4ffcfbfd19d",
+      "bytes": 107393,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    }
+  ],
+  "reproducibility": {
+    "default_input_directory": "screenshots",
+    "source_audio": "Current canonical MP4 or explicit --source-audio local MP4",
+    "backup_policy": "Ignored outputs/real-ui-video-original/by-sha256/<input-sha256>.mp4",
+    "encoding": "Design reproducibility, not a byte-identical MP4 guarantee"
+  },
+  "final_review": {
+    "file": "real-ui-final-review.json",
+    "visual_review": "root approved ten decoded-video samples",
+    "audio_review": "PCM sample peak, RMS and source-mix envelope alignment; no listening or forced-alignment claim",
+    "width": 1080,
+    "height": 1920,
+    "seconds": 30.287767,
+    "audio_sample_peak_dbfs": -4.821483439495271,
+    "samples_at_or_above_full_scale": 0,
+    "estimated_voice_start_seconds": 0.75
+  }
+}

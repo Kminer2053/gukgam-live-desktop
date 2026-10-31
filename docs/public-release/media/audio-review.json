@@ -1,26 +1,22 @@
 {
-  "file": "gukgam-live-threads-30s.mp4",
-  "seconds": 30.037333333333333,
+  "scope": "current_real_ui_final_video",
+  "sha256": "4908d0fb795a6f0df8a195be4ae1d473c2eeaa83c38a452be494d6e625b08296",
+  "seconds": 29.973,
   "sample_rate": 48000,
   "channels": 2,
-  "sample_peak": 0.5697804093360901,
-  "sample_peak_dbfs": -4.885849742278252,
-  "rms": 0.09886596260652844,
-  "rms_dbfs": -20.099064015675122,
+  "sample_peak_dbfs": -4.821483439495271,
+  "rms_dbfs": -20.11854913655035,
   "samples_at_or_above_full_scale": 0,
-  "voice_window": {
-    "rms": 0.11418100474685546,
-    "peak": 0.5697804093360901
+  "source_mix_seconds": 30.037333333333333,
+  "mix_envelope_alignment": {
+    "offset_seconds": 0,
+    "correlation": 0.9999736791590557,
+    "envelope_step_seconds": 0.005,
+    "comparison_seconds": 10
   },
-  "music_outro_window": {
-    "rms": 0.02205776411527702,
-    "peak": 0.09238898754119873
-  },
-  "last_150ms": {
-    "rms": 0.020537653216527934,
-    "peak": 0.06249131262302399
-  },
-  "measurement": "decoded_PCM_sample_peak_and_RMS_not_oversampled_true_peak_or_LUFS",
-  "playback": false,
-  "http_requests_allowed": false
+  "source_voice_start_seconds": 0.75,
+  "estimated_output_voice_start_seconds": 0.75,
+  "voice_start_method": "Inherited source cue plus RMS-envelope alignment; not speech forced alignment or listening verification.",
+  "measurement": "Decoded PCM sample peak/RMS; not oversampled true peak or LUFS.",
+  "speaker_playback": false
 }

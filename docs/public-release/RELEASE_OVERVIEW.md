@@ -4,7 +4,7 @@
 
 **[설치·활용 매뉴얼](manual.html) · [30초 시연 영상](media/gukgam-live-threads-30s.mp4) · [공식 GitHub](https://github.com/Kminer2053/gukgam-live-desktop)**
 
-Windows **0.1.0-preview.24** 설치판을 준비하고 있습니다. 설치파일은 아직 게시되지 않았으며, 게시 후 [GitHub Releases](https://github.com/Kminer2053/gukgam-live-desktop/releases)에 버전·SHA-256과 함께 안내합니다.
+Windows **0.1.0-preview.25**의 설치파일·HTML 매뉴얼·홍보영상과 SHA-256은 [GitHub Releases](https://github.com/Kminer2053/gukgam-live-desktop/releases)에서 확인할 수 있습니다. 실제 화면 10장을 넣은 매뉴얼을 동봉하며, 기록·보정 엔진과 화면 동작은 preview.24와 같습니다.
 
 ## 제공하는 흐름
 
@@ -41,10 +41,10 @@ Windows 10/11 x64에서 사용하며 일반 사용자는 Python·Node.js·Git을
 
 ChatGPT 계정을 연결하거나, 시작 화면의 **Ollama·API 연결 설정**에서 사용할 서버와 모델을 지정합니다. ChatGPT 계정 이용과 유료 API 키는 별개이며, 로컬 무인증 서버는 키 없이 설정할 수 있습니다. Ollama·LM Studio와 해당 모델은 먼저 준비해야 합니다. 연결 시험 성공이 모든 모델의 결과 품질을 보장하지는 않습니다.
 
-HTML 매뉴얼을 설치 전에 보려면 [원본 파일](manual.html)을 저장해 브라우저에서 여세요. GitHub에서는 HTML 소스가 먼저 표시될 수 있습니다. [시연 영상](media/gukgam-live-threads-30s.mp4)은 가상 문답으로 만든 30초 세로 영상입니다.
+HTML 매뉴얼을 설치 전에 보려면 [원본 파일](manual.html)을 저장해 브라우저에서 여세요. GitHub에서는 HTML 소스가 먼저 표시될 수 있습니다. [시연 영상](media/gukgam-live-threads-30s.mp4)은 실제 설치 앱에 가상 문답을 넣고 촬영한 약 30초 세로 영상입니다.
 
 ## 라이선스와 배포 소식
 
 프로젝트 소스코드는 [MIT 라이선스](../../LICENSE)로 제공합니다. 모델·재사용 코드·의존성은 [제삼자 고지](THIRD_PARTY_NOTICES.md)의 개별 조건을 따릅니다.
 
-배포 소식은 [공식 GitHub 저장소](https://github.com/Kminer2053/gukgam-live-desktop)에서 안내합니다. GitLab 미러는 주소가 확정되면 추가합니다. 소스 묶음의 기술적 범위는 [공개 파일 범위](EXPORT_REVIEW.md)에서 확인할 수 있습니다.
+배포 소식은 [공식 GitHub 저장소](https://github.com/Kminer2053/gukgam-live-desktop)에서 안내합니다. [공공 GitLab](https://gitlab.aigov.go.kr/Kminer2053/gukgam-live-desktop)의 현재 게시 상태는 배포 확인 메타데이터에 기록합니다. 소스 묶음의 기술적 범위는 [공개 파일 범위](EXPORT_REVIEW.md)에서 확인할 수 있습니다.
