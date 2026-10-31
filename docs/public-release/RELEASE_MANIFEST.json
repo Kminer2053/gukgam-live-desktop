@@ -71,7 +71,9 @@
     "source_published": false,
     "last_observed_remote_refs": 0,
     "previous_push_error": "HTTP 502",
-    "web_sign_in_pending": true
+    "web_sign_in_pending": true,
+    "last_push_exit_code": 1,
+    "last_push_error": "error: RPC failed; curl 28 Operation too slow. Less than 1024 bytes/sec transferred the last 30 seconds\nsend-pack: unexpected disconnect while reading sideband packet\nfatal: the remote end hung up unexpectedly\nEverything up-to-date"
   },
   "release_assets": [
     {
