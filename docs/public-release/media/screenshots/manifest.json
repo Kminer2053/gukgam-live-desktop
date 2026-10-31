@@ -80,6 +80,48 @@
       "mime_type": "image/jpeg",
       "width": 1265,
       "height": 712
+    },
+    {
+      "file": "13-web-chatgpt-account.jpg",
+      "sha256": "affc285dcf985f397db06f2961aeeaf0dec88a378457d91e92b3335e99c4a559",
+      "bytes": 74312,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712,
+      "capture_kind": "actual_web_AI_account_usage_settings",
+      "login_button_present": false
+    },
+    {
+      "file": "14-search-highlight.jpg",
+      "bytes": 87574,
+      "sha256": "ba2f4cf4b857ccb3ea89dbee8ae5c822bfe290ff11525f80941f6c25b592c74b",
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "file": "15-timeline-start.jpg",
+      "bytes": 102874,
+      "sha256": "7745fc13cfb9b3ce832b7fc5f65b501be00a3f8cb3b5db9caef5a0aa0348281b",
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "file": "16-timeline-end.jpg",
+      "bytes": 108022,
+      "sha256": "a58b4b3f5ea4b6714df3f871621002d0438c800ed2ce8831b5a67c070db4d924",
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
+    },
+    {
+      "file": "17-member-summary.jpg",
+      "bytes": 104253,
+      "sha256": "dee99b3bd0018728baa80e21d82a23af6443f242c76b554253c03862fc8ce87c",
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712
     }
   ]
 }

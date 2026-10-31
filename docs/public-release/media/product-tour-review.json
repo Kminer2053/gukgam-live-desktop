@@ -1,0 +1,147 @@
+{
+  "scope": "local_artifact_review_only",
+  "file": "gukgam-live-product-tour.mp4",
+  "bytes": 23572846,
+  "sha256": "ee10b95704e3e4400216fbc71c54693f35e46ce038c868f1e39751741910063a",
+  "width": 1080,
+  "height": 1920,
+  "seconds": 36.013,
+  "frame_seconds": [
+    0.05,
+    2.8868229166666666,
+    7.768041666666666,
+    12.184249999999999,
+    16.71546875,
+    21.11178125,
+    25.250656250000002,
+    31.199406250000006,
+    35.812999999999995
+  ],
+  "audio": {
+    "seconds": 35.29620833333333,
+    "clips": [
+      {
+        "index": 0,
+        "start": 0.35,
+        "end": 5.623645833333333,
+        "scene_start": 0,
+        "scene_end": 5.773645833333333
+      },
+      {
+        "index": 1,
+        "start": 5.923645833333333,
+        "end": 9.612437499999999,
+        "scene_start": 5.773645833333333,
+        "scene_end": 9.762437499999999
+      },
+      {
+        "index": 2,
+        "start": 9.9124375,
+        "end": 14.456062499999998,
+        "scene_start": 9.762437499999999,
+        "scene_end": 14.606062499999998
+      },
+      {
+        "index": 3,
+        "start": 14.756062499999999,
+        "end": 18.674875,
+        "scene_start": 14.606062499999998,
+        "scene_end": 18.824875
+      },
+      {
+        "index": 4,
+        "start": 18.974875,
+        "end": 23.248687500000003,
+        "scene_start": 18.824875,
+        "scene_end": 23.3986875
+      },
+      {
+        "index": 5,
+        "start": 23.548687500000003,
+        "end": 26.952625000000005,
+        "scene_start": 23.3986875,
+        "scene_end": 27.102625000000003
+      },
+      {
+        "index": 6,
+        "start": 27.252625000000005,
+        "end": 33.19618750000001,
+        "scene_start": 27.102625000000003,
+        "scene_end": 35.29618750000001
+      }
+    ],
+    "source_music_seconds": [
+      24,
+      29.6
+    ],
+    "playback_rate": 1,
+    "time_stretch": false,
+    "sample_peak_dbfs": -5.724349656853368,
+    "rms_dbfs": -22.314981118983177,
+    "samples_at_or_above_full_scale": 0,
+    "measurement": "Same clip/music hashes, timing, rendered PCM peak/RMS as the previously reviewed output; latest MP4 PCM not measured again.",
+    "new_tts_generation": 0,
+    "speaker_playback": false,
+    "unchanged_mix_inputs_verified": true,
+    "latest_encoded_output_pcm_remeasured": false
+  },
+  "narration_slots": [
+    {
+      "index": 0,
+      "start": 0.35,
+      "end": 5.623645833333333,
+      "scene_start": 0,
+      "scene_end": 5.773645833333333
+    },
+    {
+      "index": 1,
+      "start": 5.923645833333333,
+      "end": 9.612437499999999,
+      "scene_start": 5.773645833333333,
+      "scene_end": 9.762437499999999
+    },
+    {
+      "index": 2,
+      "start": 9.9124375,
+      "end": 14.456062499999998,
+      "scene_start": 9.762437499999999,
+      "scene_end": 14.606062499999998
+    },
+    {
+      "index": 3,
+      "start": 14.756062499999999,
+      "end": 18.674875,
+      "scene_start": 14.606062499999998,
+      "scene_end": 18.824875
+    },
+    {
+      "index": 4,
+      "start": 18.974875,
+      "end": 23.248687500000003,
+      "scene_start": 18.824875,
+      "scene_end": 23.3986875
+    },
+    {
+      "index": 5,
+      "start": 23.548687500000003,
+      "end": 26.952625000000005,
+      "scene_start": 23.3986875,
+      "scene_end": 27.102625000000003
+    },
+    {
+      "index": 6,
+      "start": 27.252625000000005,
+      "end": 33.19618750000001,
+      "scene_start": 27.102625000000003,
+      "scene_end": 35.29618750000001
+    }
+  ],
+  "source_music_seconds": [
+    24,
+    29.6
+  ],
+  "new_tts_generation": 0,
+  "new_model_calls": 0,
+  "paid_credits": 0,
+  "http_requests_allowed": false
+}

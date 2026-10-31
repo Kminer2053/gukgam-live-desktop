@@ -1,0 +1,208 @@
+{
+  "variant": "product_tour_search_navigation_summary",
+  "width": 1080,
+  "height": 1920,
+  "lead_seconds": 0.35,
+  "gap_seconds": 0.3,
+  "tail_seconds": 2.1,
+  "narration_provenance": {
+    "method": "installed Windows SAPI / Microsoft Heami Desktop",
+    "clips": 7,
+    "rate": 0,
+    "additional_paid_credits": 0
+  },
+  "captures": {
+    "search": "14-search-highlight.jpg",
+    "timelineStart": "15-timeline-start.jpg",
+    "timelineEnd": "16-timeline-end.jpg",
+    "summary": "17-member-summary.jpg",
+    "followups": "05-followups.jpg",
+    "export": "08-export-menu.jpg",
+    "account": "13-web-chatgpt-account.jpg"
+  },
+  "crops": {
+    "searchContext": [
+      16,
+      109,
+      866,
+      270
+    ],
+    "searchBox": [
+      16,
+      142,
+      392,
+      36
+    ],
+    "keyword": [
+      253,
+      341,
+      385,
+      28
+    ],
+    "timelineStartContext": [
+      16,
+      340,
+      866,
+      145
+    ],
+    "timelineEndContext": [
+      18,
+      533,
+      864,
+      66
+    ],
+    "timelineBar": [
+      8,
+      667,
+      1230,
+      39
+    ],
+    "timelineStartFocus": [
+      8,
+      667,
+      280,
+      39
+    ],
+    "timelineEndFocus": [
+      977,
+      667,
+      280,
+      39
+    ],
+    "summaryTabs": [
+      18,
+      205,
+      866,
+      40
+    ],
+    "memberHeading": [
+      20,
+      287,
+      800,
+      91
+    ],
+    "summaryFirstPoint": [
+      101,
+      507,
+      724,
+      74
+    ],
+    "summaryFocus": [
+      130,
+      533,
+      410,
+      47
+    ],
+    "followupHeading": [
+      16,
+      299,
+      867,
+      35
+    ],
+    "request": [
+      88,
+      335,
+      525,
+      90
+    ],
+    "promise": [
+      88,
+      435,
+      525,
+      90
+    ],
+    "exportMenu": [
+      650,
+      326,
+      232,
+      269
+    ],
+    "accountContext": [
+      233,
+      215,
+      1001,
+      188
+    ],
+    "accountFocus": [
+      246,
+      257,
+      245,
+      94
+    ]
+  },
+  "clips": [
+    {
+      "file": "voice-01.wav",
+      "spoken": "바이브코딩 몰라도, 내 챗지피티 계정으로 시작하세요.",
+      "caption": [
+        "바이브코딩 몰라도,",
+        "내 GPT 계정으로 시작하세요."
+      ],
+      "seconds": 5.273650793650794,
+      "sha256": "9a2fde89520a5dec121e9dd670264b728a0132173f56b9f4b1adf1cf34465ba8"
+    },
+    {
+      "file": "voice-02.wav",
+      "spoken": "키워드 검색으로 원하는 발언을 바로 찾고,",
+      "caption": [
+        "키워드 검색으로",
+        "원하는 발언을 바로 찾고,"
+      ],
+      "seconds": 3.6887981859410433,
+      "sha256": "5ce4ed747915a4098de2f5dfaddfc84fa446314028efa74c6ce910b09773a426"
+    },
+    {
+      "file": "voice-03.wav",
+      "spoken": "시간 막대를 움직여 필요한 대목으로 빠르게 이동하세요.",
+      "caption": [
+        "시간 막대를 움직여",
+        "필요한 대목으로 빠르게 이동하세요."
+      ],
+      "seconds": 4.5436281179138325,
+      "sha256": "9691e100251a6073f58a51d0d2ec77f55feb7f967d7bb413d82dc3d8c2bf805e"
+    },
+    {
+      "file": "voice-04.wav",
+      "spoken": "질의별 자동 요약은 질의자별로 모아 보세요.",
+      "caption": [
+        "질의별 자동 요약은",
+        "질의자별로 모아 보세요."
+      ],
+      "seconds": 3.9188208616780047,
+      "sha256": "490f7bb7519b65eebe87bedc70e61ecae773cc96184067eb311ce5c087aa4915"
+    },
+    {
+      "file": "voice-05.wav",
+      "spoken": "자료 요구와 제출 약속도 한곳에서 관리하고,",
+      "caption": [
+        "자료 요구와 제출 약속도",
+        "한곳에서 관리하고,"
+      ],
+      "seconds": 4.273832199546486,
+      "sha256": "347a21dfecdffa65e05c27d4cfa665bb6c186bf4eef0e56c0cc7424e5085b667"
+    },
+    {
+      "file": "voice-06.wav",
+      "spoken": "정리한 기록은 보고서로 내보내세요.",
+      "caption": [
+        "정리한 기록은",
+        "보고서로 내보내세요."
+      ],
+      "seconds": 3.4039455782312924,
+      "sha256": "84bd953d6d5cc855b76c14859e0a154ff6665c28c44f6a290dd93474d6190ea8"
+    },
+    {
+      "file": "voice-07.wav",
+      "spoken": "바이브코딩 몰라도, 내 지피티 계정으로 국정감사 회의록 정리.",
+      "caption": [
+        "바이브코딩 몰라도 내 GPT 계정으로",
+        "국정감사 회의록 정리"
+      ],
+      "seconds": 5.943582766439909,
+      "sha256": "57695f5d6da9463638c97803f64984ef4dabeca6f36297d1ff9674ef4764bc2d"
+    }
+  ],
+  "summary_scope": "Question-block summaries grouped by questioner in the members tab; no claim of one merged summary of every utterance by a person.",
+  "actual_ui_pixels_modified": false,
+  "presentation": "Product/features only; crop and annotation over supplied actual screenshots."
+}

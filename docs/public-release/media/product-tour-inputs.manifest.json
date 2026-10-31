@@ -1,0 +1,308 @@
+{
+  "scope": "local_product_tour_artifact_only",
+  "complete": true,
+  "published": true,
+  "file": "gukgam-live-product-tour.mp4",
+  "bytes": 23572846,
+  "sha256": "ee10b95704e3e4400216fbc71c54693f35e46ce038c868f1e39751741910063a",
+  "width": 1080,
+  "height": 1920,
+  "target_seconds": 35.29620833333333,
+  "encoder": "video/mp4;codecs=avc1.42001E,mp4a.40.2",
+  "captures": [
+    {
+      "id": "search",
+      "file": "14-search-highlight.jpg",
+      "bytes": 87574,
+      "sha256": "ba2f4cf4b857ccb3ea89dbee8ae5c822bfe290ff11525f80941f6c25b592c74b",
+      "mime_type": "image/jpeg"
+    },
+    {
+      "id": "timelineStart",
+      "file": "15-timeline-start.jpg",
+      "bytes": 102874,
+      "sha256": "7745fc13cfb9b3ce832b7fc5f65b501be00a3f8cb3b5db9caef5a0aa0348281b",
+      "mime_type": "image/jpeg"
+    },
+    {
+      "id": "timelineEnd",
+      "file": "16-timeline-end.jpg",
+      "bytes": 108022,
+      "sha256": "a58b4b3f5ea4b6714df3f871621002d0438c800ed2ce8831b5a67c070db4d924",
+      "mime_type": "image/jpeg"
+    },
+    {
+      "id": "summary",
+      "file": "17-member-summary.jpg",
+      "bytes": 104253,
+      "sha256": "dee99b3bd0018728baa80e21d82a23af6443f242c76b554253c03862fc8ce87c",
+      "mime_type": "image/jpeg"
+    },
+    {
+      "id": "followups",
+      "file": "05-followups.jpg",
+      "bytes": 117858,
+      "sha256": "6b378e87618bda214c7efecc73b68c0bd439807f83b91924518ba75d6dfa842d",
+      "mime_type": "image/jpeg"
+    },
+    {
+      "id": "export",
+      "file": "08-export-menu.jpg",
+      "bytes": 104306,
+      "sha256": "69f20121a3c0fee866809f4fbece3733667c4085b9bcd75057f243a66b519f0a",
+      "mime_type": "image/jpeg"
+    },
+    {
+      "id": "account",
+      "file": "13-web-chatgpt-account.jpg",
+      "bytes": 74312,
+      "sha256": "affc285dcf985f397db06f2961aeeaf0dec88a378457d91e92b3335e99c4a559",
+      "mime_type": "image/jpeg"
+    }
+  ],
+  "crops": {
+    "searchContext": [
+      16,
+      109,
+      866,
+      270
+    ],
+    "searchBox": [
+      16,
+      142,
+      392,
+      36
+    ],
+    "keyword": [
+      253,
+      341,
+      385,
+      28
+    ],
+    "timelineStartContext": [
+      16,
+      340,
+      866,
+      145
+    ],
+    "timelineEndContext": [
+      18,
+      533,
+      864,
+      66
+    ],
+    "timelineBar": [
+      8,
+      667,
+      1230,
+      39
+    ],
+    "timelineStartFocus": [
+      8,
+      667,
+      280,
+      39
+    ],
+    "timelineEndFocus": [
+      977,
+      667,
+      280,
+      39
+    ],
+    "summaryTabs": [
+      18,
+      205,
+      866,
+      40
+    ],
+    "memberHeading": [
+      20,
+      287,
+      800,
+      91
+    ],
+    "summaryFirstPoint": [
+      101,
+      507,
+      724,
+      74
+    ],
+    "summaryFocus": [
+      130,
+      533,
+      410,
+      47
+    ],
+    "followupHeading": [
+      16,
+      299,
+      867,
+      35
+    ],
+    "request": [
+      88,
+      335,
+      525,
+      90
+    ],
+    "promise": [
+      88,
+      435,
+      525,
+      90
+    ],
+    "exportMenu": [
+      650,
+      326,
+      232,
+      269
+    ],
+    "accountContext": [
+      233,
+      215,
+      1001,
+      188
+    ],
+    "accountFocus": [
+      246,
+      257,
+      245,
+      94
+    ]
+  },
+  "narration_provenance": {
+    "method": "installed Windows SAPI / Microsoft Heami Desktop",
+    "clips": 7,
+    "rate": 0,
+    "additional_paid_credits": 0
+  },
+  "clips": [
+    {
+      "file": "voice-01.wav",
+      "bytes": 232614,
+      "sha256": "9a2fde89520a5dec121e9dd670264b728a0132173f56b9f4b1adf1cf34465ba8",
+      "spoken": "바이브코딩 몰라도, 내 챗지피티 계정으로 시작하세요."
+    },
+    {
+      "file": "voice-02.wav",
+      "bytes": 162722,
+      "sha256": "5ce4ed747915a4098de2f5dfaddfc84fa446314028efa74c6ce910b09773a426",
+      "spoken": "키워드 검색으로 원하는 발언을 바로 찾고,"
+    },
+    {
+      "file": "voice-03.wav",
+      "bytes": 200420,
+      "sha256": "9691e100251a6073f58a51d0d2ec77f55feb7f967d7bb413d82dc3d8c2bf805e",
+      "spoken": "시간 막대를 움직여 필요한 대목으로 빠르게 이동하세요."
+    },
+    {
+      "file": "voice-04.wav",
+      "bytes": 172866,
+      "sha256": "490f7bb7519b65eebe87bedc70e61ecae773cc96184067eb311ce5c087aa4915",
+      "spoken": "질의별 자동 요약은 질의자별로 모아 보세요."
+    },
+    {
+      "file": "voice-05.wav",
+      "bytes": 188522,
+      "sha256": "347a21dfecdffa65e05c27d4cfa665bb6c186bf4eef0e56c0cc7424e5085b667",
+      "spoken": "자료 요구와 제출 약속도 한곳에서 관리하고,"
+    },
+    {
+      "file": "voice-06.wav",
+      "bytes": 150160,
+      "sha256": "84bd953d6d5cc855b76c14859e0a154ff6665c28c44f6a290dd93474d6190ea8",
+      "spoken": "정리한 기록은 보고서로 내보내세요."
+    },
+    {
+      "file": "voice-07.wav",
+      "bytes": 262158,
+      "sha256": "57695f5d6da9463638c97803f64984ef4dabeca6f36297d1ff9674ef4764bc2d",
+      "spoken": "바이브코딩 몰라도, 내 지피티 계정으로 국정감사 회의록 정리."
+    }
+  ],
+  "audio": {
+    "seconds": 35.29620833333333,
+    "clips": [
+      {
+        "index": 0,
+        "start": 0.35,
+        "end": 5.623645833333333,
+        "scene_start": 0,
+        "scene_end": 5.773645833333333
+      },
+      {
+        "index": 1,
+        "start": 5.923645833333333,
+        "end": 9.612437499999999,
+        "scene_start": 5.773645833333333,
+        "scene_end": 9.762437499999999
+      },
+      {
+        "index": 2,
+        "start": 9.9124375,
+        "end": 14.456062499999998,
+        "scene_start": 9.762437499999999,
+        "scene_end": 14.606062499999998
+      },
+      {
+        "index": 3,
+        "start": 14.756062499999999,
+        "end": 18.674875,
+        "scene_start": 14.606062499999998,
+        "scene_end": 18.824875
+      },
+      {
+        "index": 4,
+        "start": 18.974875,
+        "end": 23.248687500000003,
+        "scene_start": 18.824875,
+        "scene_end": 23.3986875
+      },
+      {
+        "index": 5,
+        "start": 23.548687500000003,
+        "end": 26.952625000000005,
+        "scene_start": 23.3986875,
+        "scene_end": 27.102625000000003
+      },
+      {
+        "index": 6,
+        "start": 27.252625000000005,
+        "end": 33.19618750000001,
+        "scene_start": 27.102625000000003,
+        "scene_end": 35.29618750000001
+      }
+    ],
+    "source_music_seconds": [
+      24,
+      29.6
+    ],
+    "playback_rate": 1,
+    "time_stretch": false,
+    "sample_peak_dbfs": -5.724349656853368,
+    "rms_dbfs": -22.314981118983177,
+    "samples_at_or_above_full_scale": 0,
+    "measurement": "Rendered PCM sample peak/RMS; not true peak or LUFS.",
+    "new_tts_generation": 0,
+    "speaker_playback": false
+  },
+  "source_music": {
+    "sha256": "4908d0fb795a6f0df8a195be4ae1d473c2eeaa83c38a452be494d6e625b08296",
+    "source_seconds": [
+      24,
+      29.6
+    ],
+    "old_narration_included": false
+  },
+  "source_audio": null,
+  "summary_scope": "Question-block summaries grouped by questioner in the members tab; no claim of one merged summary of every utterance by a person.",
+  "source_image_pixels_modified": false,
+  "paid_credits": 0,
+  "new_tts_generation": 0,
+  "new_model_calls": 0,
+  "actual_app_control": false,
+  "http_requests_allowed": false,
+  "private_absolute_paths_in_manifest": false,
+  "review_file": "product-tour-review.json",
+  "public_release_url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/tag/v0.1.0-preview.25"
+}

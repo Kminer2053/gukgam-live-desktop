@@ -1,5 +1,5 @@
 {
-  "revision": "real_ui_preview25",
+  "revision": "product_tour_media_r1",
   "files": [
     {
       "file": "docs/public-release/manual.html",
@@ -7,14 +7,24 @@
       "sha256": "ee50f97c7227eede6deabe6dd70aa3918deee4a5339b50cff43ba126d639b636"
     },
     {
+      "file": "docs/public-release/media/gukgam-live-product-tour.mp4",
+      "bytes": 23572846,
+      "sha256": "ee10b95704e3e4400216fbc71c54693f35e46ce038c868f1e39751741910063a"
+    },
+    {
       "file": "docs/public-release/media/gukgam-live-threads-30s.mp4",
-      "bytes": 19467794,
-      "sha256": "4908d0fb795a6f0df8a195be4ae1d473c2eeaa83c38a452be494d6e625b08296"
+      "bytes": 23572846,
+      "sha256": "ee10b95704e3e4400216fbc71c54693f35e46ce038c868f1e39751741910063a"
+    },
+    {
+      "file": "docs/public-release/media/poster-product-tour.png",
+      "bytes": 647271,
+      "sha256": "e434a73499a6a19f91c0178c247c20d2c5c246d6d4c58ae26c9bbd83660fd71f"
     },
     {
       "file": "docs/public-release/media/poster.png",
-      "bytes": 712582,
-      "sha256": "e999c3878792c8b9cd44f7dc5627757a2ae26919344af4320abe8b25925f8bce"
+      "bytes": 647271,
+      "sha256": "e434a73499a6a19f91c0178c247c20d2c5c246d6d4c58ae26c9bbd83660fd71f"
     },
     {
       "file": "desktop/assets/brand/gukgam-live.ico",
