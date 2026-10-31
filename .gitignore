@@ -17,6 +17,7 @@ models/
 node_modules/
 desktop/dist/
 desktop/release/
+desktop/release-public/
 /build/
 /dist/
 /vendor/
