@@ -1,21 +1,17 @@
 # 국감 라이브 소개영상
 
-현재 소개영상은 `gukgam-live-product-tour.mp4`, 포스터는 `poster-product-tour.png`입니다. 검색, 시간바로 기록 발언 이동, 질의자별로 모은 질의 요약, 자료 요구·약속, 보고서 내보내기와 내 ChatGPT 계정 사용을 보여 줍니다.
+Sign in with ChatGPT와 제작 배경을 먼저 소개한 뒤 실제 앱의 검색·시간 막대·질의자별 요약·자료 요구·보고서를 보여 줍니다. 세로형 9:16과 가로형 16:9는 각각 54.167초·30fps입니다. 일반 사용자는 영상 제작 도구를 설치할 필요가 없습니다.
 
-`gukgam-live-threads-30s.mp4`와 `poster.png`는 기존 링크를 위한 동일 내용의 호환 파일명입니다. 현재 영상의 실제 길이는 `product-tour-review.json`에 기록합니다.
+완성 영상 두 가지는 정식 0.1.0 GitHub 릴리스에서 제공합니다. 이 폴더의 `gukgam-live-product-tour.mp4`와 `gukgam-live-threads-30s.mp4`는 기존 링크를 위한 세로형 호환 파일명입니다. 파일명과 별개로 실제 길이는 검수 명세를 따릅니다.
 
-## 제작 소스
+## 제작 소스 재구성
 
-- `promo-product-tour.html`, `render-product-tour.mjs`, `product-tour-shots.json`: 장면·캡처·편집 구성.
-- `promo-script.ko.txt`, `promo.ko.srt`: 현재 내레이션 원고·자막.
-- `screenshots/manifest.json`, `product-tour-inputs.manifest.json`: 캡처 및 오디오 출처·파일 해시.
-- `product-tour-review.json`, `production-manifest.json`, `deliverables.sha256.json`: 최종 파일 관측·배포 자산 정보.
-
-개발 의존성이 준비된 저장소 루트에서 다음과 같이 재구성할 수 있습니다. 같은 7발화 타이밍의 완성 영상 오디오를 재사용하며, 모든 기본 출력은 `outputs/product-tour-rerender/`에 분리합니다. 원래 7개 WAV는 필요하지 않습니다.
+기존 Node·Playwright·Edge 개발 환경에서 완성 영상의 AAC를 그대로 재사용합니다. 원 WAV·음악 파일이나 추가 유료 생성은 필요하지 않습니다.
 
 ```powershell
-node docs/public-release/media/render-product-tour.mjs --node-modules desktop/node_modules --source-audio docs/public-release/media/gukgam-live-product-tour.mp4
-node docs/public-release/media/review-product-tour.mjs --input-dir outputs/product-tour-rerender
+node docs/public-release/media/render-stable-launch.mjs --source-audio docs/public-release/media/gukgam-live-product-tour.mp4 --output-dir outputs/introduction-rebuild
 ```
 
-직원용 앱 사용에는 이 명령이나 개발 도구가 필요하지 않습니다. 시연 입력의 출처와 범위는 내부 제작 메타데이터에 기록하며, 별도 실회의 처리 속도·정확도 측정으로 사용하지 않습니다. 화면·음성 제작에 추가 유료 생성 비용은 없으며 실제 Threads 게시를 수행하지 않았습니다.
+`stable-launch-shots.json`은 장면·실제 사진·대본을, `introduction-inputs.manifest.json`과 `introduction-review.json`은 입력 해시·일정한 프레임·오디오·실제 표본 검수를 기록합니다. 제작 자료는 합성 예시이며 실제 회의의 모델 품질 측정으로 사용하지 않습니다. 실제 사진의 픽셀과 출처 표시는 변조하지 않았습니다.
+
+이전 `product-tour-*` 명세와 `render-product-tour.mjs`는 preview.25의 7장면 제작 이력입니다. 현재 영상의 검수와 재구성에는 `introduction-*` 명세와 `render-stable-launch.mjs`를 사용하세요.

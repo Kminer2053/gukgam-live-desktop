@@ -44,6 +44,8 @@ class Config:
     desktop_bridge: Any = field(default=None, repr=False, compare=False)
     desktop_organization: str = ""
     desktop_model: str = ""
+    desktop_relay_policy: dict | None = None
+    desktop_relay_revision: str = ""
 
     def __post_init__(self) -> None:
         if self.cloud_read_mode not in {"mirror", "source"}:

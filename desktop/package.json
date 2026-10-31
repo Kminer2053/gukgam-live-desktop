@@ -1,6 +1,6 @@
 {
   "name": "gukgam-live-desktop",
-  "version": "0.1.0-preview.25",
+  "version": "0.1.0",
   "private": true,
   "description": "코딩 지식 없이 ChatGPT 계정·Ollama·API로 국감 자막과 녹음의 문답·요약·후속조치를 정리하는 Windows 앱",
   "author": "국감 라이브 기여자",

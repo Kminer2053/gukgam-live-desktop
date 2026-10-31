@@ -51,11 +51,13 @@ class CloudSync:
                  idle_heartbeat_s: float = 300, backfill_interval_s: float = 1800,
                  retry_initial_s: float = 1, retry_max_s: float = 30,
                  command_wait_s: float = 20, command_timeout_s: float = 55,
-                 command_poll_retry_s: float = 1, command_result_retry_s: float = 1):
+                  command_poll_retry_s: float = 1, command_result_retry_s: float = 1,
+                  connection_allowed=None):
         self.rt, self.app, self.config = rt, app, rt.config
         self.read_mode = getattr(self.config, "cloud_read_mode", "mirror")
         if self.read_mode not in {"mirror", "source"}:
             raise ValueError("클라우드 열람 방식은 mirror 또는 source여야 합니다")
+        self._connection_allowed = connection_allowed
         self.enabled = bool(self.config.cloud_url and self.config.agent_token)
         self.batch_interval, self.queue_limit = batch_interval, queue_limit
         self.max_batch_ops = max_batch_ops
@@ -102,6 +104,19 @@ class CloudSync:
         self._live_turn_cache: dict[str, dict[str, dict]] = {}
         self._source_guess_cache: dict[str, dict[str, dict]] = {}
         self._read_executor = None
+
+    @property
+    def enabled(self) -> bool:
+        if not self._enabled:
+            return False
+        try:
+            return self._connection_allowed is None or bool(self._connection_allowed())
+        except Exception:
+            return False
+
+    @enabled.setter
+    def enabled(self, value: bool) -> None:
+        self._enabled = bool(value)
 
     @property
     def command_runner(self):
@@ -1183,7 +1198,7 @@ class CloudSync:
                 task.cancel()
             await asyncio.gather(*self._tasks, return_exceptions=True)
             self._tasks.clear()
-        if self.enabled:
+        if self.enabled and flush_timeout > 0:
             await self.flush(timeout=flush_timeout)
         if self._backfill_cursor is not None:
             self._mark_backfill_retry(self._backfill_scope)

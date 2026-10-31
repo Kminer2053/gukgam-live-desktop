@@ -266,9 +266,9 @@ def scan_anchors(text: str, roster: list[dict[str, Any]]) -> list[dict[str, Any]
 
     if members:
         names = "(?:" + "|".join(re.escape(name) for name in members) + ")"
-        call = re.compile(r"(?<![가-힣])(?P<name>" + names + r")\s*(?:위원|의원)(?:님)?\s*"
+        call = re.compile(r"(?<![가-힣])(?:존경하는\s+)?(?P<name>" + names + r")\s*(?:위원|의원)(?:님)?\s*"
             r"(?:(?:(?:의사진행|신상|보충|추가)\s*)?(?P<turn>발언|질의|질문|(?:증인\s*)?신문)(?:을|를)?\s*"
-            r"(?:해\s*주시기\s*바랍니다|해\s*주십시오|해\s*주세요|하십시오|하시기\s*바랍니다|하시죠|드리겠습니다)"
+            r"(?:해\s*주시기\s*바랍니다|해\s*주십시오|해\s*주세요|해\s*주시겠습니다|하십시오|하시기\s*바랍니다|하시죠|드리겠습니다)"
             r"|말씀(?:을)?\s*계속(?:하십시오|해\s*주십시오|해\s*주세요|해\s*주시기\s*바랍니다))")
         for match in call.finditer(text):
             if _direct_prefix(text, match.start()) or _CHAIR_LEAD.fullmatch(text[:match.start()].strip()):

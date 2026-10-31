@@ -38,7 +38,9 @@ function updateButtons() {
   element<HTMLButtonElement>('back').disabled=step===0;
   element<HTMLButtonElement>('check-relay').disabled=availability.checkRelayDisabled;
   element<HTMLButtonElement>('deploy').disabled=availability.deployDisabled;
+  element<HTMLButtonElement>('open-relay-settings').disabled=state?.engine.state!=='ready';
   for(const id of ['organization','relay-url','relay-token'])input(id).disabled=availability.settingsDisabled;
+  for(const id of ['relay-enabled','relay-start-date','relay-end-date'])input(id).disabled=availability.settingsDisabled;
   element<HTMLSelectElement>('model').disabled=availability.settingsDisabled;
   element('engine-state').textContent=state?.engine.message??'기록 엔진 상태를 확인하고 있습니다.';
   element('workspace-account-note').textContent=state?.chatgpt.connected?'ChatGPT 계정이 연결돼 있습니다. 실제 사용할 AI는 기록 화면의 설정에서 선택하세요.':'ChatGPT 미연결 상태입니다. Ollama·API를 연결하거나 ChatGPT에 로그인해 AI 보정과 요약을 사용할 수 있습니다. 회의 기록과 수집은 먼저 시작할 수 있습니다.';
@@ -61,7 +63,7 @@ async function refresh(fill=false) {
     for(const name of state.chatgpt.models) {const option=document.createElement('option');option.value=name;option.textContent=name;model.append(option);}
     if(selected&&!state.chatgpt.models.includes(selected)){const option=document.createElement('option');option.value=selected;option.textContent=`${selected} · 계정 목록 재확인 필요`;model.append(option);}
     model.value=selected;
-    if(initial||fill) {input('organization').value=state.setup.organization;input('relay-url').value=state.setup.relayUrl??'';initial=false;}
+    if(initial||fill) {input('organization').value=state.setup.organization;input('relay-url').value=state.setup.relayUrl??'';input('relay-enabled').checked=state.setup.relayEnabled===true;input('relay-start-date').value=state.setup.relayStartDate??'';input('relay-end-date').value=state.setup.relayEndDate??'';initial=false;}
     updateButtons();
   }finally{--refreshInFlight;}
 }
@@ -115,7 +117,8 @@ element('relay-next').addEventListener('click',()=>showStep(3));
 for(const id of ['role-from-account','role-from-workspace'])element(id).addEventListener('click',()=>showStep(4));
 element('role-records').addEventListener('click',()=>showStep(2));
 element('deploy').addEventListener('click',()=>void run('relay-help',()=>api.openHelp(),'기본 브라우저에 사이트 준비 화면을 열었습니다. 표시된 절차를 계속 진행하세요.'));
-element('save-relay').addEventListener('click',()=>void run('settings',async()=>{await api.saveSetup(settings({relayToken:input('relay-token').value}));input('relay-token').value='';},'릴레이 설정을 저장했습니다. 다음 기록 엔진 시작 때 적용하며 현재 PC 연결은 아직 검증하지 않았습니다.'));
+element('save-relay').addEventListener('click',()=>void run('settings',async()=>{await api.saveSetup(settings({relayToken:input('relay-token').value,applyRelayPolicy:true,relayEnabled:input('relay-enabled').checked,relayStartDate:input('relay-start-date').value,relayEndDate:input('relay-end-date').value}));input('relay-token').value='';},'릴레이 설정을 저장했습니다. 다음 기록 엔진 시작 때 적용하며 현재 PC 연결은 아직 검증하지 않았습니다.'));
+element('open-relay-settings').addEventListener('click',()=>void run('relay-help',()=>api.openRelaySettingsPage()));
 element('check-relay').addEventListener('click',()=>void run('relay-check',async()=>{const result=await api.checkRelay(input('relay-url').value);element('relay-status').textContent=result.message;}));
 element('back').addEventListener('click',()=>showStep(Math.max(0,step-1)));
 element('refresh').addEventListener('click',()=>void run('refresh',()=>refresh(),'연결 상태를 새로 확인했습니다.'));

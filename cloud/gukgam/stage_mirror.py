@@ -19,7 +19,8 @@ def _objects(value, project) -> list[dict]:
 
 def public_source(row: dict) -> dict:
     out = _fields(row, ("id", "source_key", "segment", "revision", "first_rx", "last_rx", "final", "scd",
-                        "text", "transcript", "replayed"))
+                        "text", "transcript", "replayed", "source_kind", "source_hash", "origin_utterance_id",
+                        "origin_seq", "acoustic_speaker_id", "acoustic_speaker_label", "acoustic_overlap"))
     out["parts"] = _objects(row.get("parts"), lambda p: _fields(p, ("label", "text")))
     guess = _public_guess(row.get("speaker_guess"))
     if guess is not None:
@@ -45,7 +46,8 @@ def public_live_turn(row: dict) -> dict:
     """로컬에서 확인한 기존 발언의 표시 필드만 미러로 보낸다."""
     out = _fields(row, ("id", "seq", "block_id", "ts_start", "ts_end", "speaker", "speaker_role",
                         "speaker_source", "original_text", "text", "is_final", "analyzed", "updated_at",
-                        "protected", "raw_revision", "source_order", "turn_id", "boundary_reason"))
+                        "protected", "raw_revision", "source_order", "turn_id", "boundary_reason",
+                        "source_kind", "origin_utterance_id", "acoustic_speaker_id", "acoustic_speaker_label", "acoustic_overlap"))
     out["source_ids"] = [value for value in row.get("source_ids", []) if type(value) is int and value > 0]
     refs = row.get("source_revisions") or {}
     out["source_revisions"] = ({str(key): value for key, value in refs.items() if type(value) is int}
@@ -289,10 +291,40 @@ def document_source_ready(document: dict, source: dict, *, declaration_sources: 
                 and source["id"] in policy["unconfirmed_source_ids"])
 
 
+def processing_receipts(row: dict) -> dict:
+    """자막·녹음 공통 실행 영수증. 요청 본문·키·경로·모델 확률은 공개하지 않는다."""
+    decision = row.get("role_decision") or {}
+    text = row.get("text_provider") or {}
+    metrics = row.get("metrics") or {}
+    decision = decision if isinstance(decision, dict) else {}
+    text = text if isinstance(text, dict) else {}
+    metrics = metrics if isinstance(metrics, dict) else {}
+    out = {"role_decision": _fields(decision, ("provider", "model", "status")),
+           "text_provider": _fields(text, ("provider", "model", "connection"))}
+    out["role_decision"].setdefault("provider", "none")
+    out["role_decision"].setdefault("status", "not_executed")
+    out["role_decision"]["executed"] = decision.get("executed") is True
+    out["text_provider"].setdefault("provider", "none")
+    for key in ("calls_started", "calls_completed"):
+        value = text.get(key)
+        out["text_provider"][key] = value if type(value) is int and 0 <= value < 2 ** 53 else 0
+    out["text_provider"]["executed"] = text.get("executed") is True and out["text_provider"]["calls_completed"] > 0
+    fields = ("source_count", "input_sentence_count", "sentence_count", "role_decision_successful_sentences",
+              "role_llm_calls", "readability_calls", "summary_calls", "llm_ms", "summary_ms", "latency_ms", "cancelled")
+    out["processing"] = {}
+    for key in fields:
+        value = metrics.get(key)
+        if key == "cancelled" and type(value) is bool or key != "cancelled" and type(value) is int and 0 <= value < 2 ** 53:
+            out["processing"][key] = value
+        elif row.get("mode") == "closed_block_v1":
+            out["processing"][key] = False if key == "cancelled" else 0
+    return out
+
+
 def public_document(row: dict) -> dict:
     """중첩 필드도 허용목록으로 새로 구성해 과거 원음·모델 요청을 차단한다."""
     out = _fields(row, ("id", "input_hash", "status", "created_at", "updated_at", "first_rx", "last_rx",
-                        "mode", "editor_version", "block_id", "questioner"))
+                        "mode", "editor_version", "block_id", "questioner", "source_kind"))
     out["source_ids"] = [v for v in row.get("source_ids", []) if type(v) is int]
     refs = row.get("source_revisions") or {}
     out["source_revisions"] = {str(k): v for k, v in refs.items() if type(v) is int} if isinstance(refs, dict) else {}
@@ -308,4 +340,5 @@ def public_document(row: dict) -> dict:
             "bullets": _strings(summary.get("bullets")),
             "evidence": _objects(summary.get("evidence"), lambda e: {
                 **_fields(e, ("bullet",)), "sentence_ids": _strings(e.get("sentence_ids"))})}
+    out.update(processing_receipts(row))
     return out

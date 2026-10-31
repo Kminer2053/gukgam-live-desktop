@@ -199,6 +199,10 @@ else {
       diagnostics?.log('engine.stop',{engineState:'stopping'});const result=await engine.stop();diagnostics?.log('engine.state',{engineState:result.state});return result;
     });
     handle('open-workspace',showWorkspace);
+    handle('open-relay-settings-page',async()=>{
+      await showWorkspace();
+      if(workspace&&!workspace.isDestroyed())await workspace.loadURL(`${ENGINE_ORIGIN}/admin#sec-relay`);
+    });
     handle('open-llm-settings-page',async()=>{
       if(connectingManagedRelay||preparingRelay)throw Error('릴레이 연결·구성이 진행 중입니다. 완료한 뒤 AI 연결 설정을 여세요.');
       const generation=engine.status().state==='ready'?startGeneration:(await startOwnedEngine(false)).generation;

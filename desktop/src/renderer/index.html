@@ -82,11 +82,19 @@
       <div id="relay-configuration-approval-slot"><div id="relay-approval-panel" class="status-card" hidden><h3 id="relay-approval-title">사이트 구성 이어가기</h3><p id="relay-approval-help">완료되지 않은 사이트 구성이 있을 때 기존 설정으로 이어갑니다. 외부 승인이 필요한 경우에만 승인 페이지를 안내합니다.</p><button id="relay-open-approval" type="button" hidden>승인 페이지 열기</button><label id="relay-approval-confirm-row" class="check-row" hidden><input id="relay-approval-confirm" type="checkbox">브라우저에서 필요한 승인을 완료했습니다.</label><button id="relay-resume" type="button" class="primary">이어서 구성</button></div></div>
       <div class="actions"><button id="relay-cancel" type="button">사이트 준비 작업 취소</button></div>
       <div id="relay-created-url-row" hidden><label for="relay-created-url">준비된 사이트 주소</label><input id="relay-created-url" readonly autocomplete="off"><div class="actions"><button id="relay-open-site-address" type="button">이 주소로 사이트 열기</button></div><p class="hint">현재 PC 연결 확인은 위의 연결 버튼 한 번으로 진행합니다. 기록 엔진은 이 앱 안에서 시작되며 별도 설치나 설정은 필요 없습니다.</p></div>
+      <h3>중계 운영기간</h3>
+      <label><input id="relay-enabled" type="checkbox"> 중계 서비스 사용</label>
+      <label for="relay-start-date">시작일 (한국시간)</label><input id="relay-start-date" type="date">
+      <label for="relay-end-date">종료일 (이 날짜까지)</label><input id="relay-end-date" type="date">
+      <p class="hint">처음에는 꺼져 있습니다. 사용을 켜고 기간을 정한 뒤 아래의 연결 설정을 저장하세요. 종료일 밤 12시에 PC의 중계 전송·명령 조회를 자동 중단하며 수집과 로컬 기록은 계속합니다. 서버 호스팅 자체를 삭제하거나 모든 비용을 없애는 기능은 아닙니다.</p>
+      <button id="open-relay-settings">실행 중인 중계 서비스 켜기·끄기</button>
+      <p class="hint">기록 엔진이 실행 중이면 위 버튼으로 기록 화면의 설정을 열어 바로 변경하세요. 아래 저장값은 다음 기록 엔진 시작 때 적용됩니다.</p>
+      <button id="save-relay" class="primary">중계 주소·운영기간 저장</button>
       <details><summary>이미 준비한 사이트 직접 연결 · 고급</summary>
       <details open><summary>기관 관리자 최초 준비</summary><ol><li>기관에서 승인한 비공개 새 저장소를 준비합니다.</li><li>Vercel Import에서 해당 비공개 저장소 접근 권한을 연결합니다.</li><li>Root Directory를 <code>cloud</code>로 지정하고 배포 안내에 따라 DB·스키마·비밀값을 설정합니다.</li><li>정상 배포한 HTTPS 기본 주소를 아래에 입력합니다.</li></ol><p class="hint">이 버튼은 Vercel의 프로젝트 가져오기 페이지를 엽니다. 외부 가입·DB 생성·보안 설정·배포를 자동 완료하지 않습니다.</p><button id="deploy">Vercel Import 열기</button></details>
       <label for="relay-url">배포된 릴레이 주소</label><input id="relay-url" type="url" placeholder="https://기관-릴레이.vercel.app" autocomplete="off">
       <details><summary>고급 설정 · 기관 관리자에게 받은 연결 토큰</summary><p class="hint">관리자 준비가 끝난 뒤 안내받은 경우에만 입력하세요. ChatGPT 로그인 토큰이나 사용자 패스코드를 넣지 않습니다. 같은 주소에서 비워 두면 기존 토큰을 유지합니다. 주소를 바꾸면 토큰도 다시 입력해야 합니다.</p><label for="relay-token">릴레이 연결 토큰</label><input id="relay-token" type="password" autocomplete="new-password"><p id="relay-token-state" class="hint"></p></details>
-      <div class="actions"><button id="save-relay" class="primary">주소 저장</button><button id="check-relay">상태 확인 · 인증 필요 가능</button></div><p id="relay-status" role="status" class="hint">현재 릴레이는 상태 조회에도 웹 로그인이 필요할 수 있습니다. 이 버튼은 계정 정보를 보내지 않아 로그인 필요 안내만 나올 수 있습니다. 현재 PC·토큰·원본 조회 권한은 별도 확인이 필요합니다.</p>
+      <div class="actions"><button id="check-relay">상태 확인 · 인증 필요 가능</button></div><p id="relay-status" role="status" class="hint">현재 릴레이는 상태 조회에도 웹 로그인이 필요할 수 있습니다. 이 버튼은 계정 정보를 보내지 않아 로그인 필요 안내만 나올 수 있습니다. 현재 PC·토큰·원본 조회 권한은 별도 확인이 필요합니다.</p>
       <p class="hint">기록 엔진이 켜져 있으면 먼저 종료한 뒤 연결 설정을 저장하세요. 다음 시작 때 설정을 읽습니다. 동료 로그인 패스코드는 릴레이 운영 절차에 따라 관리자가 직접 설정합니다.</p>
       </details>
     </section>

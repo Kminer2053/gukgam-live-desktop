@@ -11,7 +11,7 @@ const api:DesktopApi={
   testChatGPT:()=>invoke('test-chatgpt'),disconnectChatGPT:()=>invoke('disconnect-chatgpt'),
   startEngine:()=>invoke('start-engine'),stopEngine:()=>invoke('stop-engine'),
   openWorkspace:()=>invoke('open-workspace'),openHelp:()=>invoke('open-help'),checkRelay:value=>invoke('check-relay',value),
-  openLlmSettingsPage:()=>invoke('open-llm-settings-page'),openUserManual:()=>invoke('open-user-manual'),
+  openLlmSettingsPage:()=>invoke('open-llm-settings-page'),openRelaySettingsPage:()=>invoke('open-relay-settings-page'),openUserManual:()=>invoke('open-user-manual'),
   roleSettingsStatus:()=>invoke('role-settings-status'),saveJevKey:value=>invoke('save-jev-key',value),
   deleteJevKey:()=>invoke('delete-jev-key'),saveRoleSettings:value=>invoke('save-role-settings',value),
   prepareJulia:()=>invoke('prepare-julia'),cancelJulia:()=>invoke('cancel-julia'),openRoleSettingsPage:()=>invoke('open-role-settings-page'),

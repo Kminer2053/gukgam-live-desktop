@@ -41,6 +41,10 @@ class Runtime:
                 if self.repo.get_setting(key) is None:
                     settings.update(self.repo, key, value)
             bootstrap = {"organization": config.desktop_organization, "model": config.desktop_model}
+            if config.desktop_relay_policy is not None:
+                bootstrap["relay"] = config.desktop_relay_policy
+                if config.desktop_relay_revision:
+                    bootstrap["relay_revision"] = config.desktop_relay_revision
             previous = self.repo.get_setting("desktop_bootstrap")
             if isinstance(previous, dict):
                 # 마법사에서 명시적으로 바꾼 필드만 갱신한다. 같은 입력의 재부팅은 UI 수정을 보존한다.
@@ -48,6 +52,10 @@ class Runtime:
                     settings.update(self.repo, "org", {"name": config.desktop_organization})
                 if previous.get("model") != bootstrap["model"]:
                     settings.update(self.repo, "llm", {"desktop_model": config.desktop_model})
+            if "relay" in bootstrap and (not isinstance(previous, dict) or previous.get("relay") != bootstrap["relay"]
+                    or bool(config.desktop_relay_revision) and previous.get("relay_revision") != config.desktop_relay_revision):
+                # 시작 화면에서 명시적으로 바꾼 경우만 반영한다. 같은 입력의 재시작은 기록 화면의 변경을 보존한다.
+                settings.update(self.repo, "relay", bootstrap["relay"])
             if previous != bootstrap:
                 self.repo.set_setting("desktop_bootstrap", bootstrap)
         # 국회 자막은 부분 갱신이 잦아 재접속 재전송 여유를 넉넉히 둔다(채널당 2000건)
@@ -58,6 +66,7 @@ class Runtime:
         self.role_model_prepare_error = ""
         self.stt_model_prepare_task: asyncio.Task | None = None
         self.cloud: CloudSync | None = None
+        self.relay = None
         # 아래 서비스는 start() 에서 늦게 만든다(순환 import 방지)
         self.analysis: AnalysisService
         self.stt: STTService
@@ -116,12 +125,24 @@ class Runtime:
 
     async def attach_app(self, app) -> None:
         """로컬 앱이 런타임을 붙인 뒤 설정된 클라우드 동기화만 시작한다."""
-        if self.cloud is not None or not (self.config.cloud_url and self.config.agent_token):
+        if self.relay is not None:
+            await self.relay.reconcile()
             return
-        from .cloudsync import CloudSync
+        from .relay_lifecycle import RelayLifecycle
+        self.relay = RelayLifecycle(self, app)
+        await self.relay.start()
 
-        self.cloud = CloudSync(self, app)
-        await self.cloud.start()
+    async def apply_relay_policy(self) -> None:
+        if self.relay is not None:
+            await self.relay.reconcile(reload=True)
+
+    def relay_status(self) -> dict:
+        if self.relay is not None:
+            return self.relay.status()
+        from . import settings
+        from .relay_policy import policy_status
+        return policy_status(settings.get(self.repo, "relay"),
+                             configured=bool(self.config.cloud_url and self.config.agent_token))
 
     async def tick_pipelines(self) -> int:
         """미확정·분석 대기 발언이 남은 파이프라인만 tick 한다(다 처리된 종료 세션은 건너뜀). tick 한 개수."""
@@ -148,7 +169,12 @@ class Runtime:
         if prepare is not None and not prepare.done():
             prepare.cancel()
             await asyncio.gather(prepare, return_exceptions=True)
-        if self.cloud is not None:
+        if self.relay is not None:
+            try:
+                await self.relay.close()
+            except Exception as exc:
+                log.warning("중계 연결 종료 실패(%s)", type(exc).__name__)
+        elif self.cloud is not None:
             try:
                 # stop이 탭·작업을 멈춘 뒤 남은 push를 이 한도 안에 보내고 연결을 닫는다.
                 await self.cloud.stop(flush_timeout=2)

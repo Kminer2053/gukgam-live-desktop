@@ -19,12 +19,26 @@
     <a href="#sec-llm">AI 요약 엔진</a>
     <a href="#sec-stt">음성인식</a>
     <a href="#sec-retention">보존 기간</a>
+    {% if not cloud %}<a href="#sec-relay">중계 서비스</a>{% endif %}
     <a href="#sec-assembly">국회 연동</a>
     <a href="#sec-health">시스템 상태</a>
     <a href="#sec-audit">감사 기록</a>
   </nav>
 
   <div>
+    {% if not cloud %}
+    <section id="sec-relay" class="card admin-sec" aria-labelledby="h-relay">
+      <div class="card-head"><h3 id="h-relay">중계 서비스</h3></div>
+      <p>동료가 웹에서 이 PC의 기록을 볼 기간을 정합니다. 사용 여부를 바꾸거나 기간이 끝나도 이 PC의 수집·기록·AI 처리는 계속됩니다.</p>
+      <form id="f-relay" class="form-grid">
+        <div class="field span-2"><label><input id="relay-enabled" type="checkbox"> 중계 서비스 사용</label><span class="hint">처음에는 꺼져 있습니다. 중계 사이트 연결은 앱 시작 화면의 ‘릴레이 열람 준비’에서 진행하세요.</span></div>
+        <div class="field"><label for="relay-start-date">시작일 (한국시간)</label><input id="relay-start-date" type="date"></div>
+        <div class="field"><label for="relay-end-date">종료일 (이 날짜까지)</label><input id="relay-end-date" type="date"><span class="hint">종료일의 밤 12시에 자동으로 연결을 끊습니다.</span></div>
+        <div class="field span-2"><p id="relay-period-status" role="status">연결 상태를 확인하는 중…</p><p class="small muted">사용하지 않을 때는 체크를 끄고 저장하세요. 이 PC의 수집·기록·AI 정리는 계속됩니다. 동료 화면에 꺼짐이 반영되기까지 잠시 걸릴 수 있습니다.</p><details class="small muted"><summary>중계 비용과 보관 자료 안내</summary><p>중계 사이트와 저장소의 이용 요금은 별도로 남을 수 있습니다. 전에 공유한 자료를 자동으로 삭제하는 설정은 아닙니다.</p></details></div>
+        <div class="span-2 form-actions"><button class="btn btn-primary" type="submit">중계 설정 저장</button></div>
+      </form>
+    </section>
+    {% endif %}
     <!-- 우리 기관 -->
     <section id="sec-org" class="card admin-sec" aria-labelledby="h-org">
       <div class="card-head"><h3 id="h-org">{{ icon('building', 'ic-sm') }}우리 기관</h3></div>
@@ -91,35 +105,44 @@
     {% endfor %}
     {% else %}
     <section id="sec-llm" class="card admin-sec" aria-labelledby="h-llm">
-      <div class="card-head"><h3 id="h-llm">{{ icon('sparkles', 'ic-sm') }}AI 요약 엔진</h3></div>
+      <span id="sec-ai" aria-hidden="true"></span>
+      <div class="card-head"><h3 id="h-llm">{{ icon('sparkles', 'ic-sm') }}AI 연결 · 본문 보정과 요약</h3></div>
       <form id="f-llm" class="stack">
         <div class="provider-opts" role="radiogroup" aria-label="AI 엔진">
-          <label><input type="radio" name="provider" value="local_mlx"><b>이 서버(로컬 모델)</b>외부 전송 없음 · 맥 MLX</label>
+          {% if not desktop_local %}<label><input type="radio" name="provider" value="local_mlx"><b>이 서버의 macOS MLX</b>기존 Mac 환경용 로컬 모델</label>{% endif %}
           <label><input type="radio" name="provider" value="desktop_chatgpt"><b>ChatGPT 데스크톱 연결</b>앱에서 연결한 계정 사용</label>
-          <label><input type="radio" name="provider" value="openai_compat"><b>사내 AI 서버</b>OpenAI 호환(vLLM·Ollama 등)</label>
-          <label><input type="radio" name="provider" value="anthropic"><b>Anthropic API</b>외부 전송 — 보안 검토 필요</label>
+          <label><input type="radio" name="provider" value="openai_compat"><b>Ollama · 다른 AI 연결</b>내 PC의 로컬 서버 또는 OpenAI 호환 API</label>
+          <label><input type="radio" name="provider" value="anthropic"><b>Anthropic API</b>내 API 키로 연결</label>
           <label><input type="radio" name="provider" value="rules"><b>규칙 기반</b>AI 없이 문장 발췌</label>
         </div>
         <div class="form-grid">
           <div class="field span-2" data-p="desktop_chatgpt">
             <span>선택 모델: <b id="llm-desktop-model">계정 기본 모델</b></span>
-            <small>계정과 모델은 데스크톱 앱에서 선택합니다. 연결 시험은 실제 텍스트 요청을 한 번 보냅니다.</small>
+            <small>계정과 모델은 데스크톱 앱에서 선택합니다. 선택한 연결을 최종본문 보정과 요약에 함께 사용합니다.</small>
           </div>
           <div class="field span-2" data-p="local_mlx">
             <label for="llm-local-model">로컬 모델</label>
             <input id="llm-local-model" type="text" autocomplete="off" placeholder="mlx-community/…">
           </div>
           <div class="field" data-p="openai_compat">
-            <label for="llm-openai-url">서버 주소(base URL)</label>
-            <input id="llm-openai-url" type="url" autocomplete="off" placeholder="http://10.0.0.5:8000/v1">
+            <label for="llm-openai-connection">연결할 AI</label>
+            <select id="llm-openai-connection"><option value="ollama">Ollama · 내 PC</option><option value="lmstudio">LM Studio · 내 PC</option><option value="openai">OpenAI API</option><option value="custom">다른 OpenAI 호환 서버</option></select>
+          </div>
+          <div class="field" data-p="openai_compat">
+            <label for="llm-openai-url">AI 서버 주소</label>
+            <input id="llm-openai-url" type="url" autocomplete="off" placeholder="http://127.0.0.1:11434/v1">
+            <small>서버 주소는 /v1까지 입력합니다. API 키는 주소에 넣지 마세요.</small>
           </div>
           <div class="field" data-p="openai_compat">
             <label for="llm-openai-model">모델 이름</label>
-            <input id="llm-openai-model" type="text" autocomplete="off">
+            <input id="llm-openai-model" type="text" autocomplete="off" placeholder="서버에서 사용할 모델 이름">
+            <small id="llm-openai-help">Ollama나 LM Studio의 서버를 실행하고 이미 준비한 모델 이름을 입력하세요. 모델을 자동 설치하지 않습니다.</small>
           </div>
           <div class="field span-2" data-p="openai_compat">
-            <label for="llm-openai-key">API 키</label>
+            <label for="llm-openai-key">API 키 · 필요한 서버만 입력</label>
             <input id="llm-openai-key" type="password" autocomplete="new-password" placeholder="비워 두면 기존 값을 유지합니다">
+            <small>로컬 서버는 보통 키 없이 연결합니다. Windows에서는 이 사용자 계정으로 보호해 저장합니다. 빈칸은 저장된 키를 유지합니다.</small>
+            <label><input id="llm-openai-clear" type="checkbox"> 저장된 호환 서버 키 삭제</label>
           </div>
           <div class="field" data-p="anthropic">
             <label for="llm-anth-model">모델</label>
@@ -128,6 +151,7 @@
           <div class="field" data-p="anthropic">
             <label for="llm-anth-key">API 키</label>
             <input id="llm-anth-key" type="password" autocomplete="new-password" placeholder="비워 두면 기존 값을 유지합니다">
+            <label><input id="llm-anth-clear" type="checkbox"> 저장된 Anthropic 키 삭제</label>
           </div>
           <div class="field">
             <label for="llm-rolling">실시간 요약 주기(초)</label>
@@ -142,8 +166,9 @@
           </div>
         </div>
         <div id="llm-test-result" class="test-result" hidden role="status"></div>
+        <small>연결 확인은 회의 원문 없이 짧은 예문을 한 번 보냅니다. 설정한 서버가 본문 보정·요약 요청을 받습니다.</small>
         <div class="form-actions{% if cloud %} cloud-mt-0{% endif %}" {% if not cloud %}style="margin-top:0"{% endif %}>
-          <button id="llm-test" class="btn" type="button">{{ icon('refresh', 'ic-sm') }}연결 테스트</button>
+          <button id="llm-test" class="btn" type="button">{{ icon('refresh', 'ic-sm') }}짧은 예문으로 연결 확인</button>
           <button class="btn btn-primary" type="submit">저장</button>
         </div>
       </form>
@@ -205,8 +230,8 @@
         </div>
         <div class="field" id="nemotron-core-field" hidden>
           <label for="stt-cpu-cores">사용할 논리 CPU 코어 상한</label>
-          <select id="stt-cpu-cores"><option value="1">1개</option><option value="2">2개</option></select>
-          <span class="hint">이 앱의 음성 작업자에만 적용합니다. 내부 스레드 수 제한과는 다릅니다.</span>
+          <select id="stt-cpu-cores"><option value="auto">자동 · 이 PC에서 사용 가능한 CPU 전체</option><option value="1">수동 · 1개</option><option value="2">수동 · 2개</option><option value="4">수동 · 4개</option><option value="8">수동 · 8개</option></select>
+          <span class="hint">자동을 권장합니다. 평소에는 전체 성능을 사용하고 Julia가 동시에 실행될 때만 Julia에 처리 우선권을 줍니다.</span>
         </div>
         <div class="field span-2" id="nemotron-prepare-panel" hidden>
           <p>Nemotron 3.5 ASR로 음성을 전사하고, Nemotron 3 Diarization으로 녹음의 목소리별 발언 구간을 나눕니다. Julia는 전사된 글의 위원·답변·진행 역할 판정을 보조합니다.</p>

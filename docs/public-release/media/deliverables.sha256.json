@@ -1,35 +1,50 @@
 {
-  "revision": "product_tour_media_r1",
+  "revision": "stable_0_1_0",
   "files": [
     {
-      "file": "docs/public-release/manual.html",
-      "bytes": 1220157,
-      "sha256": "ee50f97c7227eede6deabe6dd70aa3918deee4a5339b50cff43ba126d639b636"
+      "file": "Gukgam-Live-Setup-0.1.0.exe",
+      "bytes": 326369746,
+      "sha256": "7fc58e72bb0938f2018aaddfb80816ed32223816adc0b31d4bd3cc36065c606d"
     },
     {
-      "file": "docs/public-release/media/gukgam-live-product-tour.mp4",
-      "bytes": 23572846,
-      "sha256": "ee10b95704e3e4400216fbc71c54693f35e46ce038c868f1e39751741910063a"
+      "file": "Gukgam-Live-Manual-ko.html",
+      "bytes": 2259106,
+      "sha256": "e9dcbe2f95ece9ab8c2e2411d28a35bb32b3a3308e63707bdc6942778d63e7e8"
     },
     {
-      "file": "docs/public-release/media/gukgam-live-threads-30s.mp4",
-      "bytes": 23572846,
-      "sha256": "ee10b95704e3e4400216fbc71c54693f35e46ce038c868f1e39751741910063a"
-    },
-    {
-      "file": "docs/public-release/media/poster-product-tour.png",
-      "bytes": 647271,
-      "sha256": "e434a73499a6a19f91c0178c247c20d2c5c246d6d4c58ae26c9bbd83660fd71f"
-    },
-    {
-      "file": "docs/public-release/media/poster.png",
-      "bytes": 647271,
-      "sha256": "e434a73499a6a19f91c0178c247c20d2c5c246d6d4c58ae26c9bbd83660fd71f"
-    },
-    {
-      "file": "desktop/assets/brand/gukgam-live.ico",
+      "file": "Gukgam-Live-Icon.ico",
       "bytes": 21314,
       "sha256": "55c4b3b1a0a110a1236b969869fb002d63f0f1978901e871d2c7eb18be272480"
+    },
+    {
+      "file": "LICENSE.txt",
+      "bytes": 1089,
+      "sha256": "2f325006e1161f3413aa99680346bbbe7567309d7f8280e133cd1af9ce357521"
+    },
+    {
+      "file": "Gukgam-Live-Introduction-9x16.mp4",
+      "bytes": 49671504,
+      "sha256": "5a33776e122f619cdeac3979afd4cd691a1fd5dc3ed1214aaa167922ee08027b"
+    },
+    {
+      "file": "Gukgam-Live-Introduction-16x9.mp4",
+      "bytes": 50750356,
+      "sha256": "3af28752797d589ba6089322dfda16bf0450fdb7116198d4be0cc057fcb1025b"
+    },
+    {
+      "file": "Gukgam-Live-Introduction-9x16.png",
+      "bytes": 621263,
+      "sha256": "81941546e1327e2cf467fbb3747d8f7641299e72dd1165cbc6c648197f9aa895"
+    },
+    {
+      "file": "Gukgam-Live-Introduction-16x9.png",
+      "bytes": 785058,
+      "sha256": "9f501e6ae483f581c9ed1d8049e2b9093652e15408c8e2af048f9edd13f10f7a"
+    },
+    {
+      "file": "SHA256SUMS.txt",
+      "bytes": 760,
+      "sha256": "0f3dd9e962f7aa48f0a8e6d43cb89a1a07c1aa7b02beab02db21bbdeccc843e8"
     }
   ]
 }

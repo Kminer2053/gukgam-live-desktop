@@ -295,6 +295,8 @@ class CommandRunner:
 
     async def _post_result(self, id: int, result: dict) -> bool:
         """응답 유실 뒤 409는 이미 완료·만료된 명령이므로 재전송을 마친다."""
+        if not self.sync.enabled:
+            return False
         if self.sync._client is None:
             self.sync._client = httpx.AsyncClient(transport=self.sync._transport, timeout=25,
                                                 follow_redirects=False)

@@ -5,7 +5,7 @@ import {dirname,join} from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {StringDecoder} from 'node:string_decoder';
 import type {BackendEvent,EngineState,SetupInput} from '../shared/contracts';
-import {ENGINE_ORIGIN,explicitPython,parseBackendEvent,redactLog,validateSetup} from './security';
+import {ENGINE_ORIGIN,explicitPython,parseBackendEvent,redactLog,validateEngineSetup} from './security';
 type Launch = {executable:string;args:string[];cwd:string;env:NodeJS.ProcessEnv};
 type Options = {userData:string;resourcesPath:string;projectRoot:string;packaged:boolean;env?:NodeJS.ProcessEnv;spawn?:typeof spawn;checkPort?:()=>Promise<void>;readyTimeoutMs?:number;shutdownTimeoutMs?:number;forceKillTimeoutMs?:number;onEvent?:(event:BackendEvent)=>void;onStopped?:()=>void};
 export function buildLaunch(options:Pick<Options,'userData'|'resourcesPath'|'projectRoot'|'packaged'|'env'>,configPath:string):Launch {
@@ -50,9 +50,9 @@ export class EngineController {
   }
   /** 키는 디스크·환경·진단에 넣지 않고 소유한 자식의 익명 파이프로만 보낸다. */
   sendSensitive(value:unknown,secret:string){if(secret)this.sensitiveValues.add(secret);this.send(value);}
-  async start(raw:SetupInput):Promise<EngineState> {
+  async start(raw:SetupInput & {relayPolicyRevision?:string}):Promise<EngineState> {
     if(this.child||this.starting||this.shutdown)throw Error('기록 엔진이 이미 실행 중이거나 종료 중입니다.');
-    const config=validateSetup(raw);
+    const config=validateEngineSetup(raw);
     this.starting=true;const generation=++this.generation;
     const check=()=>{if(generation!==this.generation)throw Error('기록 엔진 시작을 취소했습니다.');};
     this.current={state:'starting',message:'이 앱의 기록 엔진을 준비하고 있습니다.'};

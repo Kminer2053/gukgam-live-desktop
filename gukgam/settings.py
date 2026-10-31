@@ -81,6 +81,8 @@ DEFAULTS: dict[str, Any] = {
         "auto_detect": True,        # 대시보드에서 오늘 우리 기관 감사 일정을 자동 조회·표시(끄면 국회 일정 조회 안 함)
         "auto_stop_minutes": 30,    # 산회 후 자동 종료(분). 0 = 끔
     },
+    # 연결 자격이 있어도 운영기간을 명시하기 전에는 중계를 시작하지 않는다.
+    "relay": {"enabled": False, "start_date": "", "end_date": ""},
 }
 
 SECRET_PATHS = (("llm", "openai_api_key"), ("llm", "anthropic_api_key"))
@@ -169,6 +171,9 @@ def update(repo: Repo, key: str, value: Any) -> Any:
             if field in value and (type(value[field]) is not int or not lo <= value[field] <= hi):
                 raise ValueError(f"{field}는 {lo}~{hi} 범위여야 합니다")
     current = get(repo, key, allow_unreadable_secrets=key == "llm")
+    if key == "relay":
+        from .relay_policy import normalize_policy
+        value = normalize_policy(value, current)
     clear_secrets = set()
     supplied_openai_key = False
     if key == "llm" and isinstance(value, dict):

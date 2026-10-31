@@ -32,6 +32,21 @@ test('8765가 점유되면 기존 서비스에 접속하거나 프로세스를 �
   const engine=new EngineController({userData:'/not-used',resourcesPath:'/resources',projectRoot:'/new/repo',packaged:true,checkPort:async()=>{throw Error('8765 포트 사용 중');},spawn:(()=>{spawnCalls++;throw Error('호출 금지');}) as typeof spawn});
   await assert.rejects(engine.start({organization:'모의'}),/8765/);assert.equal(spawnCalls,0);assert.equal(engine.status().state,'error');
 });
+
+test('main의 중계 저장 판본은 임시 엔진 초기 파일까지 그대로 전달한다',async()=>{
+  const dir=await mkdtemp(join(tmpdir(),'gukgam-engine-relay-intent-')),child=new MockChild();
+  const revision='e14265df-87cf-4b48-9546-364fa670ff10';
+  try {
+    const engine=new EngineController({userData:dir,resourcesPath:'/resources',projectRoot:'/new/repo',packaged:true,checkPort:async()=>{},spawn:((_exe:string,args:string[])=>{
+      const initial=JSON.parse(readFileSync(args.at(-1)!,'utf8'));
+      assert.equal(initial.relayPolicyRevision,revision);assert.equal(initial.relayEnabled,false);
+      assert.equal(initial.applyRelayPolicy,undefined);
+      queueMicrotask(()=>child.stdout.write('{"type":"ready","url":"http://127.0.0.1:8765"}\n'));return child;
+    }) as unknown as typeof spawn});
+    assert.equal((await engine.start({organization:'합성기관',relayEnabled:false,relayStartDate:'',relayEndDate:'',relayPolicyRevision:revision})).state,'ready');
+    await engine.stop();assert.deepEqual(child.kills,[]);
+  }finally {await rm(dir,{recursive:true,force:true});}
+});
 test('시작 준비 중 취소하면 늦은 포트 확인 뒤 프로세스를 만들지 않는다',async()=>{
   let release!:()=>void,spawnCalls=0;
   const engine=new EngineController({userData:'/not-used',resourcesPath:'/resources',projectRoot:'/new/repo',packaged:true,checkPort:()=>new Promise(resolve=>{release=resolve;}),spawn:(()=>{spawnCalls++;throw Error('호출 금지');}) as typeof spawn});

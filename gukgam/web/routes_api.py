@@ -1845,6 +1845,10 @@ def _str_list(v: Any, limit: int = 500) -> list[str]:
 def _normalize_setting(key: str, value: Any) -> Any:
     """설정 값 형태 검증·정리. 기본값에 없는 하위 키는 버린다."""
     default = settings.DEFAULTS[key]
+    if key == "relay":
+        if not isinstance(value, dict):
+            raise HTTPException(422, "중계 서비스 설정은 객체여야 합니다")
+        return {field: value[field] for field in default if field in value}
     if isinstance(default, dict):
         if not isinstance(value, dict):
             raise HTTPException(422, f"'{key}' 설정은 객체(JSON object)여야 합니다")
@@ -1935,6 +1939,11 @@ def _normalize_setting(key: str, value: Any) -> Any:
 @router.get("/settings")
 async def get_settings(request: Request, user: User = Depends(require_operator)):
     return settings.public_view(settings.get_all(_rt(request).repo))
+
+
+@router.get("/settings/relay/status")
+async def relay_status(request: Request, user: User = Depends(require_operator)):
+    return _rt(request).relay_status()
 
 
 async def _role_decision_status(rt) -> dict[str, Any]:
@@ -2150,7 +2159,11 @@ async def put_setting(request: Request, key: str, value: Any = Body(...), user: 
         merged = settings.update(rt.repo, key, value)
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from None
-    rt.reload_settings()
+    if key == "relay":
+        # 중계 켜기·끄기는 진행 중인 본문·요약의 설정 판본을 바꾸지 않는다.
+        await rt.apply_relay_policy()
+    else:
+        rt.reload_settings()
     if key in {"llm", "org", "watch_keywords", "transcript_review", "stt"}:
         # 이미 열어 둔 열람 화면도 이전 설정으로 만든 자동 판본을 즉시 해제한다.
         for session in rt.repo.list_sessions(limit=1000):

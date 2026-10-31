@@ -17,7 +17,7 @@ export function relayUrl(value:string):string {
 export function validateSetup(raw:unknown):SetupInput {
   if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('기관 설정을 확인하세요.');
   const data=raw as Record<string,unknown>;
-  if(Object.keys(data).some(key=>!['organization','model','relayUrl','relayToken'].includes(key)))throw Error('허용되지 않은 설정 항목입니다.');
+  if(Object.keys(data).some(key=>!['organization','model','relayUrl','relayToken','relayEnabled','relayStartDate','relayEndDate','applyRelayPolicy'].includes(key)))throw Error('허용되지 않은 설정 항목입니다.');
   if(typeof data.organization!=='string'||!data.organization.trim()||data.organization.length>100||/[\x00-\x1f]/.test(data.organization))throw Error('기관명은 1~100자로 입력하세요.');
   const result:SetupInput={organization:data.organization.trim()};
   for(const key of ['model','relayUrl','relayToken'] as const) {
@@ -26,7 +26,27 @@ export function validateSetup(raw:unknown):SetupInput {
     result[key]=key==='relayUrl'?relayUrl(value.trim()):value.trim();
   }
   if(result.model&&!/^[a-zA-Z0-9._:-]{1,120}$/.test(result.model))throw Error('모델 이름을 확인하세요.');
+  if('applyRelayPolicy' in data) {
+    if(typeof data.applyRelayPolicy!=='boolean'||(data.applyRelayPolicy&&!['relayEnabled','relayStartDate','relayEndDate'].every(key=>key in data)))throw Error('중계 사용 여부와 기간을 함께 저장하세요.');
+    result.applyRelayPolicy=data.applyRelayPolicy;
+  }
+  if(['relayEnabled','relayStartDate','relayEndDate'].some(key=>key in data)) {
+    const enabled=data.relayEnabled??false,start=data.relayStartDate??'',end=data.relayEndDate??'';
+    const dateValid=(value:unknown):value is string=>typeof value==='string'&&(value===''||(/^\d{4}-\d{2}-\d{2}$/.test(value)&&!value.startsWith('0000')&&Number.isFinite(Date.parse(`${value}T00:00:00Z`))&&new Date(`${value}T00:00:00Z`).toISOString().slice(0,10)===value));
+    if(typeof enabled!=='boolean'||!dateValid(start)||!dateValid(end)||Boolean(start)!==Boolean(end)||(start&&start>end)||(enabled&&!start))throw Error('중계 사용 여부와 시작일·종료일을 확인하세요. 한국시간으로 종료일까지 연결합니다.');
+    result.relayEnabled=enabled;result.relayStartDate=start;result.relayEndDate=end;
+  }
   return result;
+}
+/** main이 만든 내부 판본만 엔진 초기 파일에 전달한다. 화면 입력 검증과 구분한다. */
+export function validateEngineSetup(raw:unknown):SetupInput & {relayPolicyRevision?:string} {
+  if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('기관 설정을 확인하세요.');
+  const {relayPolicyRevision,...fields}=raw as Record<string,unknown>;
+  if('applyRelayPolicy' in fields)throw Error('엔진 초기 설정 항목을 확인하세요.');
+  const setup=validateSetup(fields);
+  if(relayPolicyRevision===undefined)return setup;
+  if(typeof relayPolicyRevision!=='string'||!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(relayPolicyRevision)||!['relayEnabled','relayStartDate','relayEndDate'].every(key=>key in fields))throw Error('중계 설정 판본을 확인하세요.');
+  return {...setup,relayPolicyRevision};
 }
 export function parseBackendEvent(raw:unknown):BackendEvent {
   if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('기록 엔진의 응답 형식이 올바르지 않습니다.');

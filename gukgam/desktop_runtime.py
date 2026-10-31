@@ -11,8 +11,9 @@ from pathlib import Path
 import socket
 import sys
 import threading
-from typing import TextIO
+from typing import Any, TextIO
 from urllib.parse import urlsplit
+from uuid import UUID
 
 import uvicorn
 
@@ -24,7 +25,7 @@ HOST, PORT = "127.0.0.1", 8765
 URL = f"http://{HOST}:{PORT}"
 
 
-def read_initial_config(path: Path) -> dict[str, str]:
+def read_initial_config(path: Path) -> dict[str, Any]:
     """필드·크기만 확인하며 오류에 파일 본문·비밀값을 포함하지 않는다."""
     def object_pairs(pairs):
         result = {}
@@ -38,7 +39,7 @@ def read_initial_config(path: Path) -> dict[str, str]:
         if path.stat().st_size > 65_536:
             raise ValueError
         value = json.loads(path.read_text(encoding="utf-8-sig"), object_pairs_hook=object_pairs)
-        if not isinstance(value, dict) or set(value) - {"organization", "model", "relayUrl", "relayToken"}:
+        if not isinstance(value, dict) or set(value) - {"organization", "model", "relayUrl", "relayToken", "relayEnabled", "relayStartDate", "relayEndDate", "relayPolicyRevision"}:
             raise ValueError
         result = {}
         for key, limit in (("organization", 120), ("model", 200), ("relayUrl", 2048), ("relayToken", 4096)):
@@ -53,12 +54,24 @@ def read_initial_config(path: Path) -> dict[str, str]:
             if url.scheme != "https" or not url.hostname or url.username or url.password or url.query or url.fragment:
                 raise ValueError
             result["relayUrl"] = result["relayUrl"].rstrip("/")
+        if any(key in value for key in ("relayEnabled", "relayStartDate", "relayEndDate")):
+            from .relay_policy import normalize_policy
+            policy = normalize_policy({"enabled": value.get("relayEnabled", False),
+                                       "start_date": value.get("relayStartDate", ""),
+                                       "end_date": value.get("relayEndDate", "")})
+            result.update(relayEnabled=policy["enabled"], relayStartDate=policy["start_date"], relayEndDate=policy["end_date"])
+        if "relayPolicyRevision" in value:
+            revision = value["relayPolicyRevision"]
+            if (not all(key in value for key in ("relayEnabled", "relayStartDate", "relayEndDate"))
+                    or not isinstance(revision, str) or UUID(revision).version != 4 or str(UUID(revision)) != revision):
+                raise ValueError
+            result["relayPolicyRevision"] = revision
         return result
     except (OSError, UnicodeError, ValueError, TypeError):
         raise ValueError("앱 초기 설정 파일의 필드와 형식을 확인하세요") from None
 
 
-def engine_config(initial: dict[str, str], bridge: DesktopBridge) -> Config:
+def engine_config(initial: dict[str, Any], bridge: DesktopBridge) -> Config:
     """운영용 .env를 읽지 않고 Electron이 준 별도 데이터 폴더만 사용한다."""
     data = os.environ.get("GUKGAM_DATA_DIR", "")
     path = Path(data).expanduser()
@@ -68,7 +81,11 @@ def engine_config(initial: dict[str, str], bridge: DesktopBridge) -> Config:
                   operator_passcode="", viewer_passcode="", secret_key="",
                   disable_heavy_engines=False, cloud_url=initial["relayUrl"], agent_token=initial["relayToken"],
                   cloud_mirror_sensitive=False, cloud_read_mode="source", desktop_bridge=bridge,
-                  desktop_organization=initial["organization"], desktop_model=initial["model"])
+                  desktop_organization=initial["organization"], desktop_model=initial["model"],
+                  desktop_relay_policy={"enabled": initial.get("relayEnabled", False),
+                                        "start_date": initial.get("relayStartDate", ""),
+                                        "end_date": initial.get("relayEndDate", "")},
+                  desktop_relay_revision=initial.get("relayPolicyRevision", ""))
 
 
 class DesktopServer(uvicorn.Server):

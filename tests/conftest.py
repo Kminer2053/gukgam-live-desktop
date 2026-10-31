@@ -42,3 +42,9 @@ def client(config):
     with TestClient(create_app(config)) as value:
         value.headers.update({"X-Requested-With": "gukgam"})
         yield value
+
+
+@pytest.fixture
+def rt(client):
+    """이 시험이 만든 임시 앱의 런타임만 사용한다."""
+    return client.app.state.rt

@@ -107,6 +107,19 @@ test('AI 설정을 여는 중 종료하면 늦은 시작 결과로 기록 창을
   }finally{opening.release();await h.cleanup();}
 });
 
+test('중계 설정은 준비된 자기 엔진에서만 열고 외부 송신자는 거부한다',async()=>{
+  const h=await harness();try {
+    await h.invoke('save-setup',{organization:'합성기관'});
+    assert.equal((await h.invoke('open-relay-settings-page')).ok,false);
+    assert.equal(h.stats.starts,0);
+    await h.invoke('open-llm-settings-page');
+    assert.equal((await h.invoke('open-relay-settings-page')).ok,true);
+    assert.equal(h.windows[1].webContents.mainFrame.url,'http://127.0.0.1:8765/admin#sec-relay');
+    assert.equal(h.stats.starts,1);
+    assert.equal((await h.invokeUntrusted('open-relay-settings-page')).ok,false);
+  }finally {await h.cleanup();}
+});
+
 test('동봉 매뉴얼은 엔진과 계정 없이 격리된 읽기 창에서 열고 같은 파일 목차만 허용한다',async()=>{
   const h=await harness();try {
     assert.equal((await h.invoke('open-user-manual')).ok,true);

@@ -6,6 +6,7 @@ let ST = null;
 let auditRows = [];
 let roleStatusTimer = null;
 let sttStatusTimer = null;
+let relayStatusTimer = null;
 const CATS = [['agency', '기관'], ['person', '인물'], ['project', '사업·정책'], ['custom', '기타']];
 
 const splitList = (s) => (s || '').split(/[,\n]/).map((x) => x.trim()).filter(Boolean);
@@ -22,7 +23,7 @@ async function save(key, value, form) {
       const wrapped = !Array.isArray(r) && typeof r === 'object' && 'value' in r && Object.keys(r).every((k) => k === 'value' || k === 'key');
       ST[key] = wrapped ? r.value : r;
     }
-    toast('저장했습니다. 진행 중인 세션에도 적용됩니다.', { type: 'ok', timeout: 2500 });
+    toast(key === 'relay' ? '중계 설정을 적용했습니다. 이 PC의 수집과 기록은 계속됩니다.' : '저장했습니다. 진행 중인 세션에도 적용됩니다.', { type: 'ok', timeout: 2500 });
     return true;
   } catch (e) {
     toast(errMsg(e), { type: 'err', title: '저장 실패' });
@@ -31,6 +32,31 @@ async function save(key, value, form) {
     setBusy(btn, false);
   }
 }
+
+/* ── 선택적 중계 운영기간 ────────────────────────────────── */
+function renderRelay() {
+  if (ctx.cloud || !$('#f-relay')) return;
+  const relay = ST.relay || {};
+  $('#relay-enabled').checked = relay.enabled === true;
+  $('#relay-start-date').value = relay.start_date || '';
+  $('#relay-end-date').value = relay.end_date || '';
+}
+async function loadRelayStatus() {
+  if (ctx.cloud || !$('#relay-period-status')) return;
+  try {
+    const value = await api('settings/relay/status');
+    const labels = { active: '중계 연결 사용 중', scheduled: '시작일을 기다리는 중', expired: '운영기간 종료 · 연결 중단', disabled: '직접 끔 · 연결 중단', unconfigured: '운영기간 미설정 · 연결 안 함', no_connection: '앱 시작 화면에서 중계 주소와 연결 토큰을 먼저 설정하세요', invalid: '운영기간을 다시 확인하세요 · 연결 안 함' };
+    $('#relay-period-status').textContent = labels[value.state] || '연결 상태를 확인하세요';
+  } catch (error) { $('#relay-period-status').textContent = errMsg(error); }
+  finally { clearTimeout(relayStatusTimer); relayStatusTimer = setTimeout(() => { if (document.visibilityState !== 'hidden') loadRelayStatus(); }, 10000); }
+}
+$('#f-relay')?.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  if (await save('relay', { enabled: $('#relay-enabled').checked, start_date: $('#relay-start-date').value, end_date: $('#relay-end-date').value }, event.target)) {
+    renderRelay(); await loadRelayStatus();
+  }
+});
+window.addEventListener('beforeunload', () => clearTimeout(relayStatusTimer));
 
 /* ── 우리 기관 ──────────────────────────────────────────── */
 function renderOrg() {
@@ -510,6 +536,8 @@ $('#f-audio-review')?.addEventListener('submit', async (e) => {
   renderStt();
   renderRetention();
   renderAssembly();
+  renderRelay();
+  loadRelayStatus();
   loadHealth();
   loadAudit();
 })();

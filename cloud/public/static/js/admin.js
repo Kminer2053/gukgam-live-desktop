@@ -6,6 +6,7 @@ let ST = null;
 let auditRows = [];
 let roleStatusTimer = null;
 let sttStatusTimer = null;
+let relayStatusTimer = null;
 const CATS = [['agency', '기관'], ['person', '인물'], ['project', '사업·정책'], ['custom', '기타']];
 
 const splitList = (s) => (s || '').split(/[,\n]/).map((x) => x.trim()).filter(Boolean);
@@ -22,7 +23,7 @@ async function save(key, value, form) {
       const wrapped = !Array.isArray(r) && typeof r === 'object' && 'value' in r && Object.keys(r).every((k) => k === 'value' || k === 'key');
       ST[key] = wrapped ? r.value : r;
     }
-    toast('저장했습니다. 진행 중인 세션에도 적용됩니다.', { type: 'ok', timeout: 2500 });
+    toast(key === 'relay' ? '중계 설정을 적용했습니다. 이 PC의 수집과 기록은 계속됩니다.' : '저장했습니다. 진행 중인 세션에도 적용됩니다.', { type: 'ok', timeout: 2500 });
     return true;
   } catch (e) {
     toast(errMsg(e), { type: 'err', title: '저장 실패' });
@@ -31,6 +32,31 @@ async function save(key, value, form) {
     setBusy(btn, false);
   }
 }
+
+/* ── 선택적 중계 운영기간 ────────────────────────────────── */
+function renderRelay() {
+  if (ctx.cloud || !$('#f-relay')) return;
+  const relay = ST.relay || {};
+  $('#relay-enabled').checked = relay.enabled === true;
+  $('#relay-start-date').value = relay.start_date || '';
+  $('#relay-end-date').value = relay.end_date || '';
+}
+async function loadRelayStatus() {
+  if (ctx.cloud || !$('#relay-period-status')) return;
+  try {
+    const value = await api('settings/relay/status');
+    const labels = { active: '중계 연결 사용 중', scheduled: '시작일을 기다리는 중', expired: '운영기간 종료 · 연결 중단', disabled: '직접 끔 · 연결 중단', unconfigured: '운영기간 미설정 · 연결 안 함', no_connection: '앱 시작 화면에서 중계 주소와 연결 토큰을 먼저 설정하세요', invalid: '운영기간을 다시 확인하세요 · 연결 안 함' };
+    $('#relay-period-status').textContent = labels[value.state] || '연결 상태를 확인하세요';
+  } catch (error) { $('#relay-period-status').textContent = errMsg(error); }
+  finally { clearTimeout(relayStatusTimer); relayStatusTimer = setTimeout(() => { if (document.visibilityState !== 'hidden') loadRelayStatus(); }, 10000); }
+}
+$('#f-relay')?.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  if (await save('relay', { enabled: $('#relay-enabled').checked, start_date: $('#relay-start-date').value, end_date: $('#relay-end-date').value }, event.target)) {
+    renderRelay(); await loadRelayStatus();
+  }
+});
+window.addEventListener('beforeunload', () => clearTimeout(relayStatusTimer));
 
 /* ── 우리 기관 ──────────────────────────────────────────── */
 function renderOrg() {
@@ -98,9 +124,14 @@ $('#f-dept').addEventListener('submit', (e) => {
 
 /* ── AI 엔진 ────────────────────────────────────────────── */
 function llmProvider() { return ($('#f-llm input[name="provider"]:checked') || {}).value || 'rules'; }
+const llmPresets = { ollama: 'http://127.0.0.1:11434/v1', lmstudio: 'http://127.0.0.1:1234/v1', openai: 'https://api.openai.com/v1', custom: '' };
 function applyProvider() {
   const p = llmProvider();
   for (const el of $$('#f-llm [data-p]')) el.hidden = el.dataset.p !== p;
+  if (p === 'openai_compat' && !$('#llm-openai-url').value.trim() && !(ST.llm || {}).openai_api_key) {
+    $('#llm-openai-connection').value = 'ollama';
+    $('#llm-openai-url').value = llmPresets.ollama;
+  }
 }
 function renderLlm() {
   if (ctx.cloud || !$('#f-llm')) return;
@@ -111,11 +142,14 @@ function renderLlm() {
   if (desktopModel) desktopModel.textContent = l.desktop_model || '계정 기본 모델';
   $('#llm-local-model').value = l.local_model || '';
   $('#llm-openai-url').value = l.openai_base_url || '';
+  $('#llm-openai-connection').value = l.openai_connection || 'custom';
   $('#llm-openai-model').value = l.openai_model || '';
   $('#llm-openai-key').value = '';
+  $('#llm-openai-clear').checked = false;
   $('#llm-openai-key').placeholder = l.openai_api_key ? `저장됨(${l.openai_api_key}) — 비워 두면 유지` : '비워 두면 기존 값을 유지합니다';
   $('#llm-anth-model').value = l.anthropic_model || '';
   $('#llm-anth-key').value = '';
+  $('#llm-anth-clear').checked = false;
   $('#llm-anth-key').placeholder = l.anthropic_api_key ? `저장됨(${l.anthropic_api_key}) — 비워 두면 유지` : '비워 두면 기존 값을 유지합니다';
   $('#llm-rolling').value = l.rolling_interval_sec ?? 300;
   $('#llm-max-tokens').value = l.max_tokens ?? 1200;
@@ -127,6 +161,7 @@ function llmValue() {
     provider: llmProvider(),
     local_model: $('#llm-local-model').value.trim(),
     openai_base_url: $('#llm-openai-url').value.trim(),
+    openai_connection: $('#llm-openai-connection').value,
     openai_model: $('#llm-openai-model').value.trim(),
     anthropic_model: $('#llm-anth-model').value.trim(),
     auto_block_summary: $('#llm-auto').checked,
@@ -136,7 +171,20 @@ function llmValue() {
   // 비밀값: 새로 입력했을 때만 보낸다(빈 값·마스킹 값은 서버가 기존 값 유지)
   if ($('#llm-openai-key').value.trim()) v.openai_api_key = $('#llm-openai-key').value.trim();
   if ($('#llm-anth-key').value.trim()) v.anthropic_api_key = $('#llm-anth-key').value.trim();
+  v.clear_openai_api_key = $('#llm-openai-clear').checked;
+  v.clear_anthropic_api_key = $('#llm-anth-clear').checked;
   return v;
+}
+$('#llm-openai-connection')?.addEventListener('change', (e) => {
+  const mode = e.target.value;
+  if (mode !== 'custom') $('#llm-openai-url').value = llmPresets[mode] || '';
+  $('#llm-openai-help').textContent = mode === 'openai'
+    ? '이 API 키에서 사용할 수 있는 모델 이름을 입력하세요.'
+    : '선택한 서버를 실행하고 이미 준비한 모델 이름을 입력하세요. 모델을 자동 설치하지 않습니다.';
+});
+for (const [input, clear] of [['#llm-openai-key', '#llm-openai-clear'], ['#llm-anth-key', '#llm-anth-clear']]) {
+  $(input)?.addEventListener('input', () => { if ($(input).value) $(clear).checked = false; });
+  $(clear)?.addEventListener('change', () => { if ($(clear).checked) $(input).value = ''; });
 }
 (ctx.cloud ? null : $('#f-llm'))?.addEventListener('change', (e) => { if (e.target.name === 'provider') applyProvider(); });
 (ctx.cloud ? null : $('#f-llm'))?.addEventListener('submit', async (e) => {
@@ -154,12 +202,12 @@ function llmValue() {
   setBusy(btn, true);
   out.hidden = false;
   out.className = 'test-result';
-  out.textContent = '연결을 시험하는 중…(로컬 모델은 처음 불러올 때 시간이 걸립니다)';
+  out.textContent = '회의 원문 없이 짧은 예문으로 연결을 확인하고 있습니다…(처음 모델을 불러오는 시간 포함, 최대 90초)';
   try {
     const r = await api('settings/llm/test', { method: 'POST', body: llmValue() });
     out.className = `test-result ${r.ok ? 'ok' : 'err'}`;
     out.textContent = r.ok
-      ? `연결 성공 · ${r.provider || ''} ${r.model || ''} · ${r.latency_ms != null ? `${r.latency_ms}ms` : ''}${r.sample ? ` · 응답: ${String(r.sample).slice(0, 120)}` : ''}`
+      ? `예문 응답 확인 · ${r.provider || ''} ${r.model || ''} · ${r.latency_ms != null ? `${r.latency_ms}ms` : ''} · 저장 버튼으로 적용하세요.`
       : `연결 실패: ${r.error || '알 수 없는 오류'}`;
   } catch (err) {
     out.className = 'test-result err';
@@ -178,7 +226,8 @@ function renderStt() {
   $('#stt-model').value = s.model || '';
   $('#stt-language').value = s.language || 'ko';
   $('#stt-glossary').value = (s.glossary || []).join('\n');
-  $('#stt-cpu-cores').value = String(s.nemotron_cpu_cores || 2);
+  $('#stt-cpu-cores').value = s.nemotron_cpu_auto !== false ? 'auto' : String(s.nemotron_cpu_cores ?? 2);
+  if (!$('#stt-cpu-cores').value) $('#stt-cpu-cores').value = 'auto';
   if ($('#stt-diarize-recordings')) $('#stt-diarize-recordings').checked = s.diarize_recordings !== false;
   applySttProvider();
 }
@@ -203,7 +252,8 @@ async function loadSttModelStatus() {
   clearTimeout(sttStatusTimer);
   try {
     const r = await api('settings/stt/nemotron/status');
-    $('#nemotron-status').textContent = r.message || '파일 준비 상태를 확인하지 못했습니다';
+    const cpu = Number.isInteger(r.cpu_core_limit) ? ` · ${r.cpu_core_policy === 'auto' ? '자동' : '수동'} CPU ${r.cpu_core_limit}개 사용` : '';
+    $('#nemotron-status').textContent = `${r.message || '파일 준비 상태를 확인하지 못했습니다'}${cpu}`;
     const p = $('#nemotron-progress');
     p.hidden = !r.preparing;
     p.value = r.progress || 0;
@@ -234,7 +284,8 @@ window.addEventListener('beforeunload', () => clearTimeout(sttStatusTimer));
   e.preventDefault();
   if (await save('stt', {
     provider: $('#stt-provider').value, model: $('#stt-model').value.trim(), language: $('#stt-language').value.trim() || 'ko',
-    nemotron_cpu_cores: num('#stt-cpu-cores', 2),
+    nemotron_cpu_auto: $('#stt-cpu-cores').value === 'auto',
+    nemotron_cpu_cores: $('#stt-cpu-cores').value === 'auto' ? 2 : num('#stt-cpu-cores', 2),
     diarize_recordings: $('#stt-diarize-recordings')?.checked !== false,
     glossary: splitList($('#stt-glossary').value.replace(/,/g, '\n')),
   }, e.currentTarget)) renderStt();
@@ -485,6 +536,8 @@ $('#f-audio-review')?.addEventListener('submit', async (e) => {
   renderStt();
   renderRetention();
   renderAssembly();
+  renderRelay();
+  loadRelayStatus();
   loadHealth();
   loadAudit();
 })();

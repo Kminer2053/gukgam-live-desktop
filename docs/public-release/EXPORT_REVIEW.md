@@ -1,6 +1,6 @@
 # 공개 소스 범위와 배포 확인
 
-공개 저장소는 [Kminer2053/gukgam-live-desktop](https://github.com/Kminer2053/gukgam-live-desktop)입니다. Windows **0.1.0-preview.25** 설치파일·해시·릴리스 노트는 [GitHub Releases](https://github.com/Kminer2053/gukgam-live-desktop/releases)에서 안내합니다. 공공 GitLab 대상은 [Kminer2053/gukgam-live-desktop](https://gitlab.aigov.go.kr/Kminer2053/gukgam-live-desktop)이며 현재 게시 상태는 배포 확인 메타데이터에 기록합니다.
+공개 저장소는 [Kminer2053/gukgam-live-desktop](https://github.com/Kminer2053/gukgam-live-desktop)입니다. Windows **정식 0.1.0** 설치파일·해시·릴리스 노트는 [GitHub Releases](https://github.com/Kminer2053/gukgam-live-desktop/releases)에서 안내합니다. 공공 GitLab 대상은 [Kminer2053/gukgam-live-desktop](https://gitlab.aigov.go.kr/Kminer2053/gukgam-live-desktop)이며 현재 게시 상태는 배포 확인 메타데이터에 기록합니다.
 
 ## 공개 경계
 

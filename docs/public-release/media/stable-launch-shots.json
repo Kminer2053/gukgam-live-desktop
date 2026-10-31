@@ -1,0 +1,348 @@
+{
+  "variant": "account_first_full_screen_product_film",
+  "fps": 30,
+  "lead_seconds": 0.4,
+  "gap_seconds": 0.22,
+  "tail_seconds": 1.8,
+  "narration_provenance": {
+    "method": "installed Windows SAPI / Microsoft Heami Desktop",
+    "clips": 11,
+    "rate": 0,
+    "additional_paid_credits": 0
+  },
+  "captures": {
+    "account": "13-web-chatgpt-account.jpg",
+    "overview": "02-session-overview.jpg",
+    "caption": "06-caption-setup.jpg",
+    "recording": "07-recording-setup.jpg",
+    "search": "14-search-highlight.jpg",
+    "start": "15-timeline-start.jpg",
+    "end": "16-timeline-end.jpg",
+    "summary": "22-member-summary-clean.jpg",
+    "followups": "05-followups.jpg",
+    "export": "08-export-menu.jpg",
+    "turns": "12-speaker-turns.jpg",
+    "original": "11-original-detail.jpg",
+    "summaryDocument": "04-summary.jpg"
+  },
+  "clips": [
+    {
+      "file": "voice-01.wav",
+      "spoken": "오픈에이아이의, 사인 인 위드 챗지피티.",
+      "caption": [
+        "OpenAI의 Sign in with ChatGPT"
+      ],
+      "headline": [
+        "Sign in with",
+        "ChatGPT"
+      ],
+      "eyebrow": "OpenAI의",
+      "shot": "account",
+      "focus": [
+        233,
+        215,
+        1001,
+        188
+      ],
+      "seconds": 4.253922902494331,
+      "sha256": "e7ae73db4ed1a49c7cc7daf79d90df0ca0cc7948a63050143df9d11a2ff8bfdd"
+    },
+    {
+      "file": "voice-02.wav",
+      "spoken": "내 챗지피티 구독으로, 에이아이 기능을 사용하세요.",
+      "caption": [
+        "내 ChatGPT 구독으로, AI 기능을 사용하세요."
+      ],
+      "headline": [
+        "내 ChatGPT 구독으로",
+        "AI 정리"
+      ],
+      "shot": "account",
+      "focus": [
+        240,
+        250,
+        410,
+        210
+      ],
+      "seconds": 4.848798185941043,
+      "sha256": "e38aa580496720d8828dab2677cc29357039d94f62e17d9ec15765a5c245bf5e"
+    },
+    {
+      "file": "voice-03.wav",
+      "spoken": "복잡한 에이피아이 키나 로컬 모델 설정 없이.",
+      "caption": [
+        "복잡한 API 키나 로컬 모델 설정 없이."
+      ],
+      "headline": [
+        "API 키 없이",
+        "로컬 모델 설정 없이"
+      ],
+      "shot": "overview",
+      "focus": [
+        16,
+        200,
+        866,
+        420
+      ],
+      "seconds": 4.278820861678004,
+      "sha256": "01e6ae52e7fcbfbb56da2a28226e418ae4fe7055fb5cef45580ea2a31690d7ed"
+    },
+    {
+      "file": "voice-04.wav",
+      "spoken": "국감 때 직접 써 본 감사 질의 기록과 중계 시스템을 앱으로 담았습니다.",
+      "caption": [
+        "국감 때 직접 써 본 감사 질의 기록과",
+        "중계 시스템을 앱으로 담았습니다."
+      ],
+      "headline": [
+        "국감에서 써 본 시스템",
+        "하나의 앱으로"
+      ],
+      "shot": "turns",
+      "focus": [
+        16,
+        170,
+        866,
+        485
+      ],
+      "seconds": 6.00843537414966,
+      "sha256": "0e00ff4dae0e8bfcb6bc961201159fe567a3a1ead8c99b17b9b208c499ec15a3"
+    },
+    {
+      "file": "voice-05.wav",
+      "spoken": "바이브코딩을 몰라도 쓸 수 있도록, 국회 업무 담당자를 위해 만들었습니다.",
+      "caption": [
+        "바이브코딩을 몰라도 쓸 수 있도록,",
+        "국회 업무 담당자를 위해 만들었습니다."
+      ],
+      "headline": [
+        "코딩을 몰라도",
+        "국회 업무 담당자를 위해"
+      ],
+      "shot": "caption",
+      "focus": [
+        190,
+        160,
+        850,
+        450
+      ],
+      "seconds": 6.45827664399093,
+      "sha256": "2d12d133b5a806d6554f46aea054d99f282076cf7542ff4f0d151a2e177e31a4"
+    },
+    {
+      "file": "voice-06.wav",
+      "spoken": "발언은 검색으로 바로 찾고,",
+      "caption": [
+        "발언은 검색으로 바로 찾고,"
+      ],
+      "headline": [
+        "원하는 발언을",
+        "검색으로 바로"
+      ],
+      "number": "01",
+      "shot": "search",
+      "focus": [
+        16,
+        130,
+        866,
+        275
+      ],
+      "seconds": 2.7940589569161,
+      "sha256": "81d206f18c09d01aa3364297a9ebbb419446325610151427fd70d0ffb8f0a8ab"
+    },
+    {
+      "file": "voice-07.wav",
+      "spoken": "시간 막대를 움직여 필요한 대목으로 빠르게 이동하세요.",
+      "caption": [
+        "시간 막대를 움직여",
+        "필요한 대목으로 빠르게 이동하세요."
+      ],
+      "headline": [
+        "긴 기록도",
+        "필요한 순간으로"
+      ],
+      "number": "02",
+      "shot": "start",
+      "second_shot": "end",
+      "focus": [
+        8,
+        520,
+        1230,
+        192
+      ],
+      "seconds": 4.5436281179138325,
+      "sha256": "9691e100251a6073f58a51d0d2ec77f55feb7f967d7bb413d82dc3d8c2bf805e"
+    },
+    {
+      "file": "voice-08-office.wav",
+      "spoken": "질의자별로 요약을 모아 보고,",
+      "caption": [
+        "질의자별로 요약을 모아 보고,"
+      ],
+      "headline": [
+        "질의자별 요약",
+        "핵심 내용을 한눈에"
+      ],
+      "number": "03",
+      "shot": "summary",
+      "focus": [
+        18,
+        67,
+        866,
+        487
+      ],
+      "seconds": 2.824036281179138,
+      "sha256": "a92cf0870d26ec36d3fa78333660f0bfb83e6df75c627c8ffae1e36a387d3003"
+    },
+    {
+      "file": "voice-09.wav",
+      "spoken": "자료 요구와 제출 약속도 한곳에서 관리하세요.",
+      "caption": [
+        "자료 요구와 제출 약속도",
+        "한곳에서 관리하세요."
+      ],
+      "headline": [
+        "자료 요구와 약속",
+        "한곳에서 관리"
+      ],
+      "number": "04",
+      "shot": "followups",
+      "focus": [
+        16,
+        299,
+        866,
+        350
+      ],
+      "seconds": 4.408798185941043,
+      "sha256": "c7a48db87a47385c2ae9db1a491b6e23e5b81475ce44448b354fa382e53629f3"
+    },
+    {
+      "file": "voice-10.wav",
+      "spoken": "정리한 기록은 보고서로 내보내세요.",
+      "caption": [
+        "정리한 기록은 보고서로 내보내세요."
+      ],
+      "headline": [
+        "정리한 기록을",
+        "바로 보고서로"
+      ],
+      "number": "05",
+      "shot": "export",
+      "focus": [
+        525,
+        250,
+        540,
+        420
+      ],
+      "seconds": 3.4039455782312924,
+      "sha256": "84bd953d6d5cc855b76c14859e0a154ff6665c28c44f6a290dd93474d6190ea8"
+    },
+    {
+      "file": "voice-11.wav",
+      "spoken": "바이브코딩 몰라도, 내 지피티 계정으로 국정감사 회의록 정리.",
+      "caption": [
+        "바이브코딩 몰라도 내 GPT 계정으로",
+        "국정감사 회의록 정리"
+      ],
+      "headline": [
+        "바이브코딩 몰라도",
+        "내 GPT 계정으로",
+        "국정감사 회의록 정리"
+      ],
+      "shot": "overview",
+      "focus": [
+        16,
+        200,
+        866,
+        420
+      ],
+      "seconds": 5.943582766439909,
+      "sha256": "57695f5d6da9463638c97803f64984ef4dabeca6f36297d1ff9674ef4764bc2d"
+    }
+  ],
+  "summary_scope": "Question-block summaries grouped by questioner; not one inferred summary of every utterance by a person.",
+  "source_image_pixels_modified": false,
+  "account_screen_kind": "actual account usage settings, not a captured native login page",
+  "reference_timeline": {
+    "fps": 30,
+    "seconds": 54.166666666666664,
+    "clips": [
+      {
+        "start": 0.4,
+        "end": 4.653916666666667,
+        "scene_start": 0,
+        "scene_end": 4.763916666666667
+      },
+      {
+        "start": 4.873916666666667,
+        "end": 9.722708333333333,
+        "scene_start": 4.763916666666667,
+        "scene_end": 9.832708333333333
+      },
+      {
+        "start": 9.942708333333334,
+        "end": 14.221520833333333,
+        "scene_start": 9.832708333333333,
+        "scene_end": 14.331520833333332
+      },
+      {
+        "start": 14.441520833333334,
+        "end": 20.4499375,
+        "scene_start": 14.331520833333332,
+        "scene_end": 20.5599375
+      },
+      {
+        "start": 20.6699375,
+        "end": 27.128208333333333,
+        "scene_start": 20.5599375,
+        "scene_end": 27.238208333333333
+      },
+      {
+        "start": 27.348208333333332,
+        "end": 30.142249999999997,
+        "scene_start": 27.238208333333333,
+        "scene_end": 30.252249999999997
+      },
+      {
+        "start": 30.362249999999996,
+        "end": 34.905874999999995,
+        "scene_start": 30.252249999999997,
+        "scene_end": 35.015874999999994
+      },
+      {
+        "start": 35.12587499999999,
+        "end": 37.94989583333333,
+        "scene_start": 35.015874999999994,
+        "scene_end": 38.05989583333333
+      },
+      {
+        "start": 38.16989583333333,
+        "end": 42.578687499999994,
+        "scene_start": 38.05989583333333,
+        "scene_end": 42.68868749999999
+      },
+      {
+        "start": 42.79868749999999,
+        "end": 46.20262499999999,
+        "scene_start": 42.68868749999999,
+        "scene_end": 46.31262499999999
+      },
+      {
+        "start": 46.42262499999999,
+        "end": 52.36618749999999,
+        "scene_start": 46.31262499999999,
+        "scene_end": 54.166666666666664
+      }
+    ]
+  },
+  "scene_provenance": {
+    "8": {
+      "capture_kind": "actual_product_UI",
+      "content_kind": "synthetic_manually_prepared_example",
+      "manual_summary_reviewed": true,
+      "new_model_calls": 0,
+      "ai_quality_evidence": false,
+      "description": "제품 Repo API로 별도 소유 합성 기록을 준비하고 실제 위원별 화면을 촬영함. 자동 AI 품질의 증거가 아니다."
+    }
+  }
+}

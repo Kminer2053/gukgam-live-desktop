@@ -19,7 +19,16 @@ const GUIDES = {
   live: '국회가 보내 준 자막 단위와 화자 표식을 그대로 표시합니다. 수신 중인 자막은 계속 바뀔 수 있습니다.',
   corrected: '질의가 끝나면 보정한 내용으로 정리합니다. AI 보정 배지를 누르면 원문과 수정 내역을 볼 수 있습니다.',
 };
+const FILE_GUIDES = {
+  live: '음성에서 인식한 원전사와 익명 음향 화자 표식을 표시합니다. 인식 오류나 화자 혼동이 있을 수 있으며 실명을 뜻하지 않습니다.',
+  corrected: '저장된 AI 보정 내용과 아직 보정되지 않은 원전사를 표시합니다. AI 보정 배지에서 원전사와 수정 내역을 확인할 수 있습니다.',
+};
+const supportsStages = (session) => ['assembly_caption', 'file'].includes(session?.source_type);
+const recordingSource = (source) => source?.source_kind === 'recording_asr';
 const validId = (value) => Number.isSafeInteger(value) && value > 0;
+const settledSource = (source) => source?.final === true && (recordingSource(source)
+  ? validId(source.origin_utterance_id) && source.origin_utterance_id === source.id && /^[a-f0-9]{64}$/.test(source.source_hash || '')
+  : source.scd === true);
 const array = (value) => Array.isArray(value) ? value : [];
 const sourceOrder = (a, b) => Number(a.first_rx || 0) - Number(b.first_rx || 0) || a.id - b.id;
 const LIVE_ROLES = { ...ROLE_NAMES, unknown: '발언', mixed: '복수 화자' };
@@ -185,8 +194,8 @@ function validDocument(doc, sources) {
     && unconfirmed.every((id) => validId(id) && revisions.has(id) && validId(revisions.get(id)))
     && new Set(unconfirmed).size === unconfirmed.length ? new Set(unconfirmed) : new Set();
   if ([...revisions].some(([id, revision]) => !sources.has(id) || revision !== Number(sources.get(id).revision)
-    || sources.get(id).replayed === true || (sources.get(id).final !== true || sources.get(id).scd !== true)
-      && !fallback.has(id))) return false;
+    || sources.get(id).replayed === true || !settledSource(sources.get(id))
+      && (recordingSource(sources.get(id)) || !fallback.has(id)))) return false;
   return array(doc.sentences).length > 0 || ['held', 'processing'].includes(doc.status);
 }
 
@@ -655,14 +664,19 @@ export class StageStore {
 }
 
 function sourceState(source) {
+  if (recordingSource(source)) return source.final === true
+    ? '전사 확정 · 인식 오류 가능' : '전사 중';
   if (source.replayed === true) return '이전 자막 재전송 · 보정 제외';
   if (source.final === true && source.scd === true) return '최종 분할 수신';
   if (source.final === true) return '화자 분할 대기';
   return '수신 중';
 }
-function sourceLabel(label) {
+function sourceLabel(label, source) {
+  if (recordingSource(source)) return typeof label === 'string' && /^nemo:(?:e[1-9][0-9]{0,5}:)?[0-7]$/.test(label)
+    ? `익명 음향 화자 ${label}${source.acoustic_overlap === true ? ' · 겹침 확인 필요' : ''}` : '음향 화자 미지정';
   return label === null || label === undefined || label === '' || Number(label) < 0 ? '국회 표식 미지정' : `국회 표식 ${String(label)}`;
 }
+function sourceTitle(source) { return `${recordingSource(source) ? '녹음 전사 조각' : '자막'} ${source.segment ?? source.id}`; }
 function partsFor(source) {
   const parts = array(source.parts);
   return parts.length ? parts : [{ label: null, text: source.transcript ?? source.text ?? '' }];
@@ -671,23 +685,23 @@ function timeFor(source) { return Number(source?.first_rx) > 0 ? fmt.hms(Number(
 function pill(text, kind = '') { return h('span', { class: `transcript-stage-pill ${kind}` }, text); }
 
 function sourceDetails(source) {
-  return h('details', { class: 'transcript-source-detail' }, h('summary', null, '수신 원문 보기'),
-    h('p', { class: 'small muted' }, `자막 ${source.segment ?? source.id} · 판본 ${source.revision} · ${sourceState(source)}`),
+  return h('details', { class: 'transcript-source-detail' }, h('summary', null, recordingSource(source) ? '원전사 보기' : '수신 원문 보기'),
+    h('p', { class: 'small muted' }, `${sourceTitle(source)} · 판본 ${source.revision} · ${sourceState(source)}`),
     h('div', { class: 'transcript-source-parts' }, ...partsFor(source).map((part) => h('p', null,
-      h('strong', null, `${sourceLabel(part.label)}: `), String(part.text ?? '')))));
+      h('strong', null, `${sourceLabel(part.label, source)}: `), String(part.text ?? '')))));
 }
 
 export function renderSource(source) {
   const article = h('article', { class: 'transcript-source', id: `caption-source-${source.id}`, tabindex: '-1' });
   article.dataset.sourceId = String(source.id);
   article.append(h('div', { class: 'transcript-source-heading' }, h('time', null, timeFor(source)),
-    h('span', { class: 'small muted' }, `자막 ${source.segment ?? source.id}`),
-    pill(sourceState(source), !source.replayed && source.final === true && source.scd === true ? 'settled' : 'pending')));
+    h('span', { class: 'small muted' }, sourceTitle(source)),
+    pill(sourceState(source), !source.replayed && settledSource(source) ? 'settled' : 'pending')));
   if (source.replayed) article.append(h('p', { class: 'small muted' }, '표시 시각은 재수신 시각입니다. 새 블록의 보정 대상에는 넣지 않습니다.'));
   for (const part of partsFor(source)) {
     article.append(h('div', { class: 'transcript-stage-row' },
       h('span', { class: 'transcript-stage-time', 'aria-hidden': 'true' }, ''),
-      h('div', { class: 'transcript-stage-speaker' }, sourceLabel(part.label)),
+      h('div', { class: 'transcript-stage-speaker' }, sourceLabel(part.label, source)),
       h('div', { class: 'transcript-stage-body transcript-source-body' }, String(part.text ?? ''))));
   }
   return article;
@@ -738,7 +752,7 @@ function sentenceEvidence(sentence, store, onSource, prefix) {
   for (const id of sentenceSourceIds(sentence)) {
     const source = store.sources.get(id);
     if (!source) continue;
-    refs.append(h('button', { type: 'button', class: 'btn btn-xs btn-ghost', onclick: () => onSource(id) }, `자막 ${source.segment ?? id} 보기`));
+    refs.append(h('button', { type: 'button', class: 'btn btn-xs btn-ghost', onclick: () => onSource(id) }, `${sourceTitle(source)} 보기`));
     refs.append(sourceDetails(source));
   }
   details.append(refs);
@@ -1366,7 +1380,7 @@ function renderStoredMember(block, store, onSource) {
 }
 
 /** 위원별 내역은 유효한 최종 문서가 있으면 그 판본의 본문과 요약만 표시한다. */
-export function renderMemberContent(block, store, fallbackRows = [], onSource = () => {}) {
+export function renderMemberContent(block, store, fallbackRows = [], onSource = () => {}, { recording = false } = {}) {
   if (store.canonical) return renderStoredMember(block, store, onSource);
   const section = h('div', { class: 'transcript-member-content' }), saved = humanSummary(block);
   const turns = store.orderedLiveTurns().filter((turn) => turn.block_id === block.id);
@@ -1398,8 +1412,9 @@ export function renderMemberContent(block, store, fallbackRows = [], onSource = 
   section.append(summaryBox);
   const processing = store.orderedDocuments().find((doc) => doc.block_id === block.id && doc.status === 'processing');
   if (processing && !saved) section.append(renderProcessingDocument(processing, store, onSource));
-  const body = h('section', { class: 'transcript-member-live' }, h('h3', null, saved ? '최종보정원문' : '실황 추정 원문'),
+  const body = h('section', { class: 'transcript-member-live' }, h('h3', null, saved ? '최종보정원문' : recording ? '원전사' : '실황 추정 원문'),
     h('p', { class: 'small muted' }, saved ? '사람이 수정·검수한 발언 기록을 우선 표시합니다.'
+      : recording ? processing ? 'AI 보정 중 · 녹음 인식 결과' : '최종 보정 전 · 녹음 인식 결과에는 오류가 있을 수 있습니다.'
       : block.is_open ? '질의 진행 중 · 실시간 화자 추정' : processing ? 'AI 보정 중 · 실시간 기록' : '최종 보정 전 · 실시간 기록'));
   const rows = saved && fallbackRows.length ? fallbackRows : turns.length ? turns : fallbackRows;
   for (const row of rows) {
@@ -1542,10 +1557,12 @@ export class TranscriptStages {
   setSession(session) {
     const previous = this.session;
     this.session = session;
-    const eligible = session.source_type === 'assembly_caption';
+    const eligible = supportsStages(session);
     this.root.hidden = !eligible;
     if (!eligible) { this.cancel(); this.legacyEl.hidden = false; document.body.classList.remove('show-transcript-stages', 'has-transcript-stages'); return; }
     this.stopped = false;
+    this.get('transcript-tab-live').textContent = session.source_type === 'file' ? '원전사' : '원자막';
+    this.renderMode();
     if (!previous || previous.source_type !== session.source_type || !this.loaded || previous.status !== session.status) this.refresh();
   }
   isActive() { return !this.root.hidden && !this.legacy; }
@@ -1750,7 +1767,7 @@ export class TranscriptStages {
   }
   async loadBlocks(ids) {
     // 명시적으로 펼친 과거 기록만 보강한다. 화면 탭과 현재 읽는 위치는 바꾸지 않는다.
-    if (this.stopped || this.root.hidden || this.session?.source_type !== 'assembly_caption') return false;
+    if (this.stopped || this.root.hidden || !supportsStages(this.session)) return false;
     for (const id of new Set(array(ids).filter(validId))) {
       let read = this.blockReads.get(id);
       if (!read) {
@@ -1799,7 +1816,7 @@ export class TranscriptStages {
     return { stamp, summaryDocument };
   }
   memberDetails(block, rows = []) {
-    if (this.session?.source_type !== 'assembly_caption' || !validId(block?.id)) return null;
+    if (!supportsStages(this.session) || !validId(block?.id)) return null;
     let panel = this.memberPanels.get(block.id);
     const { stamp, summaryDocument } = this.memberVersion(block, rows);
     if (!panel) {
@@ -1844,7 +1861,7 @@ export class TranscriptStages {
     if (!panel.loaded) nodes.push(h('p', { class: 'small muted', role: 'status' }, '최신 보정 내역을 불러오는 중입니다.'));
     else nodes.push(renderMemberContent(panel.block, this.store, panel.rows, (id) => {
       window.gukgamTranscriptGoFeed?.(); this.revealSource(id);
-    }));
+    }, { recording: this.session?.source_type === 'file' }));
     setKids(panel.body, ...nodes);
     restoreViewport(panel.body, position);
   }
@@ -1914,11 +1931,14 @@ export class TranscriptStages {
       this.get(`transcript-panel-${stage}`).hidden = !selected;
     }
     const button = this.get('transcript-legacy-toggle');
-    button.textContent = this.legacy ? '새 자막 보기' : '이전 기록';
+    const recording = this.session?.source_type === 'file';
+    button.textContent = this.legacy ? recording ? '보정·원전사 보기' : '새 자막 보기' : '이전 기록';
     button.setAttribute('aria-expanded', String(this.legacy));
     this.get('transcript-stage-guide').textContent = this.legacy
-      ? this.store.canonical ? '실시간 발언과 종료 질의의 AI 보정 결과를 같은 기록 화면에 표시합니다.'
-        : '이전 방식으로 저장된 발언·검수·요약 기록입니다. 새 블록 보정과 구분해 보존합니다.' : GUIDES[this.stage];
+      ? recording ? '저장된 녹음 전사·검수·요약을 표시합니다. 종료 질의의 AI 보정이 있으면 함께 표시하고, 없는 구간은 원전사를 유지합니다.'
+        : this.store.canonical ? '실시간 발언과 종료 질의의 AI 보정 결과를 같은 기록 화면에 표시합니다.'
+          : '이전 방식으로 저장된 발언·검수·요약 기록입니다. 새 블록 보정과 구분해 보존합니다.'
+      : (recording ? FILE_GUIDES : GUIDES)[this.stage];
     this.get('transcript-stage-follow').closest('label').hidden = this.legacy;
     this.get('transcript-stage-older').hidden = this.legacy || this.store.nextBefore === null;
     this.currentEl.hidden = this.legacy || this.stage !== 'corrected';
@@ -2071,12 +2091,15 @@ export class TranscriptStages {
       if (!this.knownSources && !this.chosen) this.legacy = true;
       this.renderMode();
       this.get('transcript-stage-status').textContent = this.store.sources.size
-        ? '' : '새 방식의 자막 기록이 아직 없습니다. 이전 기록을 표시합니다.';
+        ? '' : this.session.source_type === 'file' ? '저장된 보정 출처가 아직 없습니다. 원전사 기록을 표시합니다.'
+          : '새 방식의 자막 기록이 아직 없습니다. 이전 기록을 표시합니다.';
       this.render(false, older);
       this.notifyLegacy();
     } catch (error) {
       if (generation !== this.generation || error?.name === 'AbortError') return;
-      this.get('transcript-stage-status').textContent = '새 자막 조회가 지연되고 있습니다. 표시된 기록을 유지하고 다시 확인합니다.';
+      this.get('transcript-stage-status').textContent = this.session.source_type === 'file'
+        ? '녹음 보정·원전사 조회가 지연되고 있습니다. 표시된 기록을 유지하고 다시 확인합니다.'
+        : '새 자막 조회가 지연되고 있습니다. 표시된 기록을 유지하고 다시 확인합니다.';
       if (!this.loaded) { this.legacy = true; this.renderMode(); }
     } finally {
       if (generation === this.generation) {
@@ -2177,7 +2200,7 @@ export class TranscriptStages {
     const currentDocuments = new Set(timeline.filter((entry) => ['document', 'processing'].includes(entry.kind))
       .map((entry) => `${entry.kind}:${entry.doc.id}`));
     for (const key of this.documentNodes.keys()) if (!currentDocuments.has(key)) this.documentNodes.delete(key);
-    this.get('transcript-stage-count').textContent = `자막 ${sources.length}개 · 종료 블록 ${docs.length}개`;
+    this.get('transcript-stage-count').textContent = `${this.session?.source_type === 'file' ? '전사 조각' : '자막'} ${sources.length}개 · 종료 블록 ${docs.length}개`;
     const signature = JSON.stringify(this.stage === 'live' ? [this.stage, sources.map((s) => [s.id, s.revision])]
       : [this.stage, sources.map((s) => [s.id, s.revision, s.speaker_guess]), docs, turns]);
     if (!force && signature === this.fingerprint) { this.fitViewport(); this.queueViewport(); return; }
@@ -2214,8 +2237,9 @@ export class TranscriptStages {
       return cached.node;
     });
     if (this.stage === 'corrected' && stream.current) nodes.push(this.currentEl);
-    if (!nodes.length) nodes.push(h('p', { class: 'transcript-stage-empty' }, this.stage === 'live'
-      ? '새로 수신되는 국회 자막을 기다리고 있습니다.' : '새 발언을 기다리고 있습니다. 질의가 끝나면 보정한 내용을 표시합니다.'));
+    if (!nodes.length) nodes.push(h('p', { class: 'transcript-stage-empty' }, this.session?.source_type === 'file'
+      ? '저장된 녹음 전사·보정 기록을 기다리고 있습니다.' : this.stage === 'live'
+        ? '새로 수신되는 국회 자막을 기다리고 있습니다.' : '새 발언을 기다리고 있습니다. 질의가 끝나면 보정한 내용을 표시합니다.'));
     reconcileChildren(list, nodes);
     this.fitViewport(false);
     const visible = !this.legacy && !panel.hidden && !this.get('tab-feed')?.hidden && this.mainTab === 'feed';

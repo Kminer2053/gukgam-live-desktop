@@ -1,6 +1,6 @@
 export type AiRequestStatus = {id:string;state:'preparing'|'connecting'|'waiting'|'receiving'|'complete'|'cancelled'|'failed';model?:string;startedAt:number;updatedAt:number;receivedChars:number;message:string};
-export type SetupInput = {organization:string;model?:string;relayUrl?:string;relayToken?:string};
-export type SavedSetup = Omit<SetupInput,'relayToken'> & {hasRelayToken:boolean;secureStorageWarning?:string};
+export type SetupInput = {organization:string;model?:string;relayUrl?:string;relayToken?:string;relayEnabled?:boolean;relayStartDate?:string;relayEndDate?:string;applyRelayPolicy?:boolean};
+export type SavedSetup = Omit<SetupInput,'relayToken'|'applyRelayPolicy'> & {hasRelayToken:boolean;secureStorageWarning?:string};
 export type ChatGPTStatus = {connected:boolean;verified:boolean;message:string;models:string[];account?:string};
 export type ChatGPTConnectionHealth = {state:'verified'|'refreshable'|'unverified'|'expired'|'disconnected'|'checking'|'error'|'unavailable'};
 export type EngineState = {state:'stopped'|'starting'|'ready'|'stopping'|'error';message:string};
@@ -17,6 +17,7 @@ export type DesktopApi = import('../relay/contracts').RelayDesktopApi & import('
   stopEngine():Promise<EngineState>;
   openWorkspace():Promise<void>;
   openLlmSettingsPage():Promise<void>;
+  openRelaySettingsPage():Promise<void>;
   openUserManual():Promise<void>;
   openHelp():Promise<void>;
   checkRelay(value:string):Promise<RelayHealth>;

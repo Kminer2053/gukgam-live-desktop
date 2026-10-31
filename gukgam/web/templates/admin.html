@@ -19,12 +19,26 @@
     <a href="#sec-llm">AI 요약 엔진</a>
     <a href="#sec-stt">음성인식</a>
     <a href="#sec-retention">보존 기간</a>
+    {% if not cloud %}<a href="#sec-relay">중계 서비스</a>{% endif %}
     <a href="#sec-assembly">국회 연동</a>
     <a href="#sec-health">시스템 상태</a>
     <a href="#sec-audit">감사 기록</a>
   </nav>
 
   <div>
+    {% if not cloud %}
+    <section id="sec-relay" class="card admin-sec" aria-labelledby="h-relay">
+      <div class="card-head"><h3 id="h-relay">중계 서비스</h3></div>
+      <p>동료가 웹에서 이 PC의 기록을 볼 기간을 정합니다. 사용 여부를 바꾸거나 기간이 끝나도 이 PC의 수집·기록·AI 처리는 계속됩니다.</p>
+      <form id="f-relay" class="form-grid">
+        <div class="field span-2"><label><input id="relay-enabled" type="checkbox"> 중계 서비스 사용</label><span class="hint">처음에는 꺼져 있습니다. 중계 사이트 연결은 앱 시작 화면의 ‘릴레이 열람 준비’에서 진행하세요.</span></div>
+        <div class="field"><label for="relay-start-date">시작일 (한국시간)</label><input id="relay-start-date" type="date"></div>
+        <div class="field"><label for="relay-end-date">종료일 (이 날짜까지)</label><input id="relay-end-date" type="date"><span class="hint">종료일의 밤 12시에 자동으로 연결을 끊습니다.</span></div>
+        <div class="field span-2"><p id="relay-period-status" role="status">연결 상태를 확인하는 중…</p><p class="small muted">사용하지 않을 때는 체크를 끄고 저장하세요. 이 PC의 수집·기록·AI 정리는 계속됩니다. 동료 화면에 꺼짐이 반영되기까지 잠시 걸릴 수 있습니다.</p><details class="small muted"><summary>중계 비용과 보관 자료 안내</summary><p>중계 사이트와 저장소의 이용 요금은 별도로 남을 수 있습니다. 전에 공유한 자료를 자동으로 삭제하는 설정은 아닙니다.</p></details></div>
+        <div class="span-2 form-actions"><button class="btn btn-primary" type="submit">중계 설정 저장</button></div>
+      </form>
+    </section>
+    {% endif %}
     <!-- 우리 기관 -->
     <section id="sec-org" class="card admin-sec" aria-labelledby="h-org">
       <div class="card-head"><h3 id="h-org">{{ icon('building', 'ic-sm') }}우리 기관</h3></div>

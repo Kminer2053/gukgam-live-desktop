@@ -122,6 +122,67 @@
       "mime_type": "image/jpeg",
       "width": 1265,
       "height": 712
+    },
+    {
+      "file": "18-relay-off.png",
+      "sha256": "16ffe414323876257950c46594da5a41134f6802fe8e6ee719faece65b4ea5f3",
+      "bytes": 64843,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712,
+      "capture_version": "0.1.0",
+      "source": "actual local product UI; owned synthetic example only",
+      "model_inference_calls": 0,
+      "live_collection_performed": false
+    },
+    {
+      "file": "19-relay-scheduled.png",
+      "sha256": "20f9c698f634a4568885dd576090ac19beee6f1fe0d9abc3a2f32c1e07670f27",
+      "bytes": 65167,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712,
+      "capture_version": "0.1.0",
+      "source": "actual local product UI; owned synthetic example only",
+      "model_inference_calls": 0,
+      "live_collection_performed": false
+    },
+    {
+      "file": "20-organization-settings.png",
+      "sha256": "e9036f045fca1c481efa09b8f01d34f663fb1643e5b3909906e38d5f58570247",
+      "bytes": 54245,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712,
+      "capture_version": "0.1.0",
+      "source": "actual local product UI; owned synthetic example only",
+      "model_inference_calls": 0,
+      "live_collection_performed": false
+    },
+    {
+      "file": "21-chatgpt-selection.png",
+      "sha256": "234dda05daf10e337fe7367c1f69ea7dc8a7c2ef841425249838f6ccca1b79d8",
+      "bytes": 76171,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712,
+      "capture_version": "0.1.0",
+      "source": "actual local product UI; owned synthetic example only",
+      "model_inference_calls": 0,
+      "live_collection_performed": false
+    },
+    {
+      "file": "22-member-summary-clean.jpg",
+      "sha256": "8f7299f948cdc00927223b707bb765dd01f34caff04a90392ce573d8e6508635",
+      "bytes": 90565,
+      "mime_type": "image/jpeg",
+      "width": 1265,
+      "height": 712,
+      "capture_version": "0.1.0",
+      "source": "actual local product UI; owned synthetic example only",
+      "model_inference_calls": 0,
+      "live_collection_performed": false,
+      "summary_provenance": "rules foundation, manually prepared and reviewed; not an AI quality measurement"
     }
   ]
 }
