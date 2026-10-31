@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "status": "source_publication_and_installer_upload_preparation",
+  "status": "public_source_and_installer_prepared",
   "product_name": "국감 라이브 데스크톱",
   "target": "windows-x64",
   "release_version": "0.1.0-preview.24",
-  "source_commit": null,
+  "source_commit": "c06189e3a2934d76c5a63257aa4db5ed8cd74a2d",
   "license_spdx": "MIT",
   "public_github_url": "https://github.com/Kminer2053/gukgam-live-desktop",
   "public_gitlab_url": null,
@@ -41,7 +41,9 @@
     "third_party_assets_and_licenses_verified": true,
     "synthetic_public_examples_and_video_reviewed": true,
     "final_publication_ready": false,
-    "packaged_manual_included_and_render_reviewed": true
+    "packaged_manual_included_and_render_reviewed": true,
+    "github_destination_confirmed": true,
+    "github_release_assets_prepared": true
   },
   "automatic_publication": false,
   "contains_account_or_deployment_credentials": false,
@@ -74,8 +76,9 @@
     "real_meeting_content_in_public_source": false
   },
   "publication": {
-    "github_source": "ready_for_push",
-    "github_release_assets": "waiting_for_browser_two_factor",
-    "gitlab": "waiting_for_exact_user_host_and_project"
-  }
+    "github_source": "published",
+    "github_release_assets": "upload_pending",
+    "gitlab": "destination_pending"
+  },
+  "source_commit_kind": "public_source_base"
 }
