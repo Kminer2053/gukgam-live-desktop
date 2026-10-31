@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "preview25_artifacts_verified",
+  "status": "github_release_published_gitlab_source_pending_server_502",
   "product_name": "국감 라이브 데스크톱",
   "target": "windows-x64",
   "release_version": "0.1.0-preview.25",
@@ -45,10 +45,13 @@
     "clean_snapshot_privacy_reviewed": true,
     "third_party_assets_and_licenses_verified": true,
     "synthetic_public_examples_and_video_reviewed": true,
-    "final_publication_ready": true,
+    "final_publication_ready": false,
     "packaged_manual_included_and_render_reviewed": true,
     "github_destination_confirmed": true,
-    "github_release_assets_prepared": true
+    "github_release_assets_prepared": true,
+    "github_published": true,
+    "github_server_asset_digests_verified": true,
+    "gitlab_source_published": false
   },
   "automatic_publication": false,
   "contains_account_or_deployment_credentials": false,
@@ -75,9 +78,14 @@
     "actual_ui_captures_with_synthetic_data": true
   },
   "publication": {
-    "github_source": "preview25_update_prepared",
-    "github_release_assets": "verified_upload_pending",
-    "gitlab": "public_empty_project; previous_large_push_received_http_502; small_source_snapshot_pending"
+    "github_source": "published",
+    "github_release_assets": "published_verified",
+    "github_release_url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/tag/v0.1.0-preview.25",
+    "github_release_id": 429781241,
+    "github_assets_verified_count": 7,
+    "gitlab": "public_empty_project_source_upload_pending_server_http_502",
+    "gitlab_last_push_pack_mib": 3.7,
+    "gitlab_remote_refs_after_failure": []
   },
   "source_commit_kind": "unchanged_runtime_base_public_tag",
   "source_release_ref": "v0.1.0-preview.25",
@@ -95,5 +103,7 @@
     "additional_paid_credits": 0,
     "social_published": false
   },
-  "publication_snapshot_kind": "artifact_preparation_before_external_publication"
+  "publication_snapshot_kind": "verified_external_publication_status",
+  "source_release_commit": "499da029c74a93ecfeadc220a0332342d4cd1876",
+  "publication_observed_at_utc": "2026-10-31T08:30:37.124862+00:00"
 }
