@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {join} from 'node:path';
 import {buildLaunch} from '../src/main/engine';
-import {isEngineUrl,isEngineDownloadUrl,parseBackendEvent,redactLog,relayUrl,validateSetup} from '../src/main/security';
+import {isEngineUrl,isEngineDownloadUrl,parseBackendEvent,parseRelayConnectionResult,redactLog,relayUrl,validateSetup} from '../src/main/security';
 test('기관 설정은 정해진 네 필드와 공개 HTTPS 주소만 받는다',()=>{
   assert.deepEqual(validateSetup({organization:' 한국도로공사 ',relayUrl:'https://audit.example.com/'}),{organization:'한국도로공사',relayUrl:'https://audit.example.com'});
   for(const raw of [{organization:'가',dataDir:'/다른기록'},{organization:''},{organization:'가',relayUrl:'http://audit.example.com'},{organization:'가',relayUrl:'https://127.0.0.1'},{organization:'가',relayUrl:'https://audit.example.com?token=secret'},{organization:'가',model:'bad\nmodel'}])assert.throws(()=>validateSetup(raw));
@@ -28,6 +28,15 @@ test('진단에서 계정 토큰과 주소를 가리고 출력 길이를 제한�
   const result=redactLog('Bearer secret-access relayToken=secret-relay access_token="secret-json" https://example.com/?token=secret-url');
   for(const secret of ['secret-access','secret-relay','secret-json','secret-url'])assert.equal(result.includes(secret),false);
   assert.equal(redactLog('x'.repeat(5000)).length,2000);
+});
+
+test('소유 파이프의 중계 신원 응답은 정확한 요청 ID와 32hex 또는 null만 받는다',()=>{
+  const valid={type:'relay.connection.result',id:'a'.repeat(32),connection_id:'b'.repeat(32)};
+  assert.deepEqual(parseRelayConnectionResult(valid),valid);
+  assert.deepEqual(parseRelayConnectionResult({...valid,connection_id:null}),{...valid,connection_id:null});
+  for(const changed of [null,[],{...valid,id:'bad/id'},{...valid,id:'a'.repeat(31)},
+    {...valid,connection_id:'B'.repeat(32)},{...valid,connection_id:4},{...valid,extra:'discard'},
+    {type:valid.type,id:valid.id}])assert.equal(parseRelayConnectionResult(changed),undefined);
 });
 test('개발 엔진은 명시 Python과 새 저장경로를 사용하고 이전 앱 환경을 제거한다',()=>{
   const options={userData:'/own/profile',resourcesPath:'/bundle',projectRoot:'/new/repo',packaged:false,env:{PATH:'/bin',GUKGAM_DESKTOP_PYTHON:'/python/explicit',GUKGAM_DATA_DIR:'/old/records',GUKGAM_API_KEY:'other-secret',PYTHONPATH:'/old/repo'}};

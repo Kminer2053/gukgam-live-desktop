@@ -105,3 +105,78 @@ test('Jev 키는 설정 파일·환경 없이 소유 파이프로 보내며 예�
     assert.equal((engine as any).sensitiveValues.size,0);
   }finally{await rm(dir,{recursive:true,force:true});}
 });
+
+async function connectionFixture(children=[new MockChild()],timeout=30) {
+  const dir=await mkdtemp(join(tmpdir(),'gukgam-owned-relay-'));
+  const requests=new Map<MockChild,any[]>();let index=0;
+  for(const child of children) {
+    requests.set(child,[]);
+    child.stdin.on('data',chunk=>{for(const line of String(chunk).trim().split('\n')){
+      const value=JSON.parse(line);if(value.type==='relay.connection.request')requests.get(child)!.push(value);
+    }});
+  }
+  const engine=new EngineController({userData:dir,resourcesPath:'/resources',projectRoot:'/new/repo',packaged:true,
+    checkPort:async()=>{},connectionTimeoutMs:timeout,shutdownTimeoutMs:1,forceKillTimeoutMs:1,
+    spawn:(()=>{const child=children[index++]!;queueMicrotask(()=>child.stdout.write('{"type":"ready","url":"http://127.0.0.1:8765"}\n'));return child;}) as unknown as typeof spawn});
+  return {engine,requests,close:async()=>{await engine.stop();await rm(dir,{recursive:true,force:true});}};
+}
+function reply(child:MockChild,id:string,connection_id:unknown) {
+  child.stdout.write(JSON.stringify({type:'relay.connection.result',id,connection_id})+'\n');
+}
+
+test('중계 식별자는 ready 캐시 없이 같은 소유 자식에 매번 새 요청으로 읽는다',async()=>{
+  const child=new MockChild(),f=await connectionFixture([child]);
+  try{
+    assert.equal(await f.engine.readRelayConnectionId(),undefined);assert.equal(f.requests.get(child)!.length,0);
+    await f.engine.start({organization:'합성기관'});
+    for(const value of ['a'.repeat(32),'b'.repeat(32)]) {
+      const pending=f.engine.readRelayConnectionId();const request=f.requests.get(child)!.at(-1);
+      assert.match(request.id,/^[a-f0-9]{32}$/);reply(child,request.id,value);
+      assert.equal(await pending,value);
+    }
+    assert.equal(new Set(f.requests.get(child)!.map(value=>value.id)).size,2);
+    assert.equal(f.engine.status().state,'ready');assert.deepEqual(child.kills,[]);
+  }finally{await f.close();}
+});
+
+test('잘못된 신원 응답과 다른 요청 ID는 엔진을 멈추거나 신원 조회를 완료하지 않는다',async()=>{
+  const child=new MockChild(),f=await connectionFixture([child],1000);
+  try{
+    await f.engine.start({organization:'합성기관'});
+    const pending=f.engine.readRelayConnectionId();let settled=false;void pending.then(()=>{settled=true;});
+    const request=f.requests.get(child)!.at(-1);
+    reply(child,'f'.repeat(32),'a'.repeat(32));reply(child,request.id,'not-an-id');
+    child.stdout.write(JSON.stringify({type:'relay.connection.result',id:request.id,connection_id:'a'.repeat(32),extra:'ignored'})+'\n');
+    await new Promise(resolve=>setImmediate(resolve));assert.equal(settled,false);
+    assert.equal(f.engine.status().state,'ready');assert.deepEqual(child.kills,[]);
+    reply(child,request.id,null);assert.equal(await pending,undefined);
+  }finally{await f.close();}
+});
+
+test('신원 조회 시간 초과와 늦은 응답은 수집 엔진 상태와 다음 요청을 바꾸지 않는다',async()=>{
+  const child=new MockChild(),f=await connectionFixture([child]);
+  try{
+    await f.engine.start({organization:'합성기관'});
+    const expired=f.engine.readRelayConnectionId(),old=f.requests.get(child)!.at(-1);
+    assert.equal(await expired,undefined);assert.equal(f.engine.status().state,'ready');assert.deepEqual(child.kills,[]);
+    const pending=f.engine.readRelayConnectionId(),current=f.requests.get(child)!.at(-1);
+    reply(child,old.id,'a'.repeat(32));reply(child,current.id,'b'.repeat(32));
+    assert.equal(await pending,'b'.repeat(32));
+  }finally{await f.close();}
+});
+
+test('종료·재시작은 대기 신원을 즉시 해제하고 이전 자식의 현재 ID 위조 응답도 거부한다',async()=>{
+  const old=new MockChild(),current=new MockChild();
+  old.stdin.removeAllListeners('data');old.kill=signal=>{old.kills.push(signal??'SIGTERM');return true;};
+  const f=await connectionFixture([old,current],5000);
+  try{
+    await f.engine.start({organization:'이전 합성기관'});
+    const previous=f.engine.readRelayConnectionId();await f.engine.stop();
+    assert.deepEqual(await Promise.race([previous.then(value=>({value})),new Promise(resolve=>setImmediate(()=>resolve('unsettled')))]),{value:undefined});
+    await f.engine.start({organization:'새 합성기관'});
+    const pending=f.engine.readRelayConnectionId(),request=f.requests.get(current)!.at(-1);
+    old.emit('exit',0,null);reply(old,request.id,'a'.repeat(32));
+    reply(current,request.id,'b'.repeat(32));assert.equal(await pending,'b'.repeat(32));
+    assert.equal(f.engine.status().state,'ready');assert.deepEqual(current.kills,[]);
+  }finally{await f.close();}
+});

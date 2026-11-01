@@ -8,6 +8,7 @@ import json
 import logging
 import os
 from pathlib import Path
+import re
 import socket
 import sys
 import threading
@@ -149,6 +150,29 @@ def start_input_reader(stream: TextIO, loop: asyncio.AbstractEventLoop, dispatch
     return thread
 
 
+def _current_relay_connection_id(app) -> str | None:
+    """ready의 과거 값 대신 매 요청마다 현재 중계 객체의 식별자만 읽는다."""
+    try:
+        cloud = getattr(getattr(app.state, "rt", None), "cloud", None)
+        value = getattr(cloud, "boot_id", None)
+        if getattr(cloud, "enabled", False) is True and isinstance(value, str) and re.fullmatch(r"[a-f0-9]{32}", value):
+            return value
+    except Exception:
+        pass
+    return None
+
+
+async def _reply_relay_connection(app, bridge: DesktopBridge, output: JsonlOutput, rid: str) -> None:
+    """소유 파이프의 단일 읽기 응답이며 오류가 수집 수명주기를 바꾸지 않는다."""
+    if bridge.closed or not isinstance(rid, str) or re.fullmatch(r"[a-f0-9]{32}", rid) is None:
+        return
+    try:
+        await output.emit({"type": "relay.connection.result", "id": rid,
+                           "connection_id": _current_relay_connection_id(app)})
+    except LLMError:
+        pass
+
+
 async def run_engine(initial: dict[str, str], *, input_stream: TextIO, output: JsonlOutput) -> int:
     from .web.app import create_app
 
@@ -158,6 +182,7 @@ async def run_engine(initial: dict[str, str], *, input_stream: TextIO, output: J
     # 앱·DB 수명주기를 시작하기 전에 포트를 독점 확보한다. 다른 포트로 우회하지 않는다.
     sock = bind_socket()
     server = None
+    connection_tasks: set[asyncio.Task] = set()
     try:
         app = create_app(config)
         server = DesktopServer(uvicorn.Config(app, host=HOST, port=PORT, log_config=None,
@@ -169,6 +194,12 @@ async def run_engine(initial: dict[str, str], *, input_stream: TextIO, output: J
             if isinstance(message, dict) and message.get("type") == "shutdown":
                 bridge.close()
                 server.should_exit = True
+            elif isinstance(message, dict) and message.get("type") == "relay.connection.request":
+                rid = message.get("id")
+                if set(message) == {"type", "id"} and isinstance(rid, str) and re.fullmatch(r"[a-f0-9]{32}", rid):
+                    task = asyncio.create_task(_reply_relay_connection(app, bridge, output, rid))
+                    connection_tasks.add(task)
+                    task.add_done_callback(connection_tasks.discard)
             else:
                 bridge.receive(message)
 
@@ -178,6 +209,10 @@ async def run_engine(initial: dict[str, str], *, input_stream: TextIO, output: J
     finally:
         clear_jev(bridge)
         bridge.close()
+        pending_connections = tuple(connection_tasks)
+        for task in pending_connections:
+            task.cancel()
+        await asyncio.gather(*pending_connections, return_exceptions=True)
         sock.close()
 
 

@@ -144,7 +144,7 @@ else {
     const vault=new SecureVault(join(userData,'vault'),safeStorage);
     settings=new SetupStore(userData,vault);
     const projectRoot=resolve(__dirname,'../../..');
-    const managedRelayReady=Promise.resolve().then(()=>createManagedRelay({userData,templateDir:app.isPackaged?join(process.resourcesPath,'relay-template'):join(projectRoot,'cloud'),resourcesPath:process.resourcesPath,projectRoot,packaged:app.isPackaged,engineIsReady:()=>engine.status().state==='ready',version:app.getVersion(),onSiteUpdate:value=>diagnostics?.log('relay.site-update',{siteUpdate:value}),settings,vault,openExternal:async value=>{
+    const managedRelayReady=Promise.resolve().then(()=>createManagedRelay({userData,templateDir:app.isPackaged?join(process.resourcesPath,'relay-template'):join(projectRoot,'cloud'),resourcesPath:process.resourcesPath,projectRoot,packaged:app.isPackaged,engineIsReady:()=>engine.status().state==='ready',readRelayConnectionId:()=>engine.readRelayConnectionId(),version:app.getVersion(),onSiteUpdate:value=>diagnostics?.log('relay.site-update',{siteUpdate:value}),settings,vault,openExternal:async value=>{
       const url=new URL(value);
       if(url.protocol!=='https:'||url.username||url.password||url.port||!['vercel.com','neon.tech'].some(host=>url.hostname===host||url.hostname.endsWith(`.${host}`)))throw Error('공식 사이트 준비 주소가 아닙니다. 기관 담당자에게 확인하세요.');
       await shell.openExternal(value);

@@ -80,22 +80,42 @@
     "last_observed_remote_refs": 1,
     "previous_push_error": "HTTP 502",
     "web_sign_in_pending": false,
-    "last_push_exit_code": 0,
-    "last_push_error": null,
+    "last_push_exit_code": 1,
+    "last_push_error": "server pre-receive security scan rejected",
     "readme_published": true,
     "readme_initialization_commit": "6f30ff9fa344c779c910d2acd6a169168c30a15f",
     "source_file_count_published": 87,
-    "source_file_count_expected": 425,
+    "source_file_count_expected": 427,
     "main_commit_observed": "bb24b9e39e53a73b1263de84977413ecec0860d9",
     "last_scanner_results": {
       "Gitleaks": "PASS",
-      "Semgrep": "PASS",
-      "OSV-Scanner": "PASS",
+      "Semgrep": "FAIL",
+      "OSV-Scanner": "FAIL",
       "Trivy": "PASS",
       "Syft": "PASS"
     },
     "release_tag_created": false,
-    "last_reported_dependency_findings": {
+    "last_rejected_candidate": "d9233305b2fc622079454d385ed04e804187f01b",
+    "detailed_scan_report_required": true,
+    "scan_diagnosis": {
+      "official_extractor_rejects_multiple_constraints": true,
+      "reference": "https://github.com/google/osv-scalibr/blob/main/extractor/filesystem/language/python/requirements/requirements.go",
+      "server_extractor_version_known": false,
+      "resolution_confirmed": true
+    },
+    "last_accepted_batch": {
+      "commit": "bb24b9e39e53a73b1263de84977413ecec0860d9",
+      "public_files": 87,
+      "scanners": {
+        "Gitleaks": "PASS",
+        "Semgrep": "PASS",
+        "OSV-Scanner": "PASS",
+        "Trivy": "PASS",
+        "Syft": "PASS"
+      },
+      "verified": true
+    },
+    "historical_dependency_findings": {
       "package": "minimatch",
       "versions": [
         "10.2.6",
@@ -106,17 +126,38 @@
       "advisory": "GHSA-g3hv-75wg-m249",
       "additional_findings_not_detailed": 0
     },
-    "last_rejected_candidate": "cce4b282e05bcd2a96f5182136a20c6bb9efa379",
-    "detailed_scan_report_required": true,
-    "declared_minimums_in_last_rejected_candidate": {
+    "historical_declared_minimums": {
       "anyio": ">=4.15.1,<5",
       "idna": ">=3.20,<4"
     },
-    "scan_diagnosis": {
-      "official_extractor_rejects_multiple_constraints": true,
-      "reference": "https://github.com/google/osv-scalibr/blob/main/extractor/filesystem/language/python/requirements/requirements.go",
-      "server_extractor_version_known": false,
-      "resolution_confirmed": true
+    "latest_attempt_source_commit": "5fca6170fc3024628a33e6683f34f0ee2923e7ec",
+    "latest_attempt_published": false,
+    "pending_findings": {
+      "semgrep": {
+        "reported": 2,
+        "source_remediations_prepared": true,
+        "new_server_result_confirmed": false,
+        "changes": [
+          "fixed independent compressed HTML fixture",
+          "owned child JSONL relay identity RPC"
+        ]
+      },
+      "osv": {
+        "package": "sandbox",
+        "version": "4.0.0",
+        "advisories": [
+          "GHSA-fm4j-4xhm-xpwx",
+          "GHSA-gc25-3vc5-2jf9"
+        ],
+        "package_repository": "https://github.com/vercel/sandbox",
+        "historical_advisory_repository": "https://github.com/gf3/sandbox",
+        "official_ui_affected_range": ">=0.0.0,<1.0.0",
+        "official_machine_range_has_end_event": false,
+        "potential_package_identity_or_range_collision": true,
+        "server_database_revision_known": false,
+        "false_positive_confirmed_by_operator": false,
+        "scanner_suppression_added": false
+      }
     }
   },
   "release_assets": [
@@ -177,7 +218,7 @@
   ],
   "source_release_commit": "16a259ede8b005cc6155c672cd49f9a5cd315098",
   "source_followup": {
-    "kind": "same-origin-navigation-and-safe-module-importmap",
+    "kind": "source-security-and-build-compatibility-followups",
     "applies_to": "public main source",
     "installer_rebuilt": false,
     "published_installer_source_commit": "16a259ede8b005cc6155c672cd49f9a5cd315098",
@@ -251,6 +292,23 @@
       "real_account_or_cloud_deployment_tested": false,
       "published_installer_rebuilt": false
     },
-    "core_requirements_match_tested_development_versions": true
+    "core_requirements_match_tested_development_versions": true,
+    "relay_connection_identity": {
+      "transport": "owned child stdin/stdout JSONL",
+      "reads_current_relay_instance_per_request": true,
+      "loopback_http_probe_removed": true,
+      "stale_child_responses_ignored": true,
+      "new_node_contract_cases_passed": 6,
+      "python_protocol_cases_passed": 29,
+      "typescript_typecheck_passed": true,
+      "targeted_node_suite": {
+        "passed": 40,
+        "failed": 25,
+        "failures": "existing main-window esbuild setup access denied before assertions",
+        "all_tests_declared_passed": false
+      },
+      "actual_application_or_record_processing_repeated": false,
+      "published_installer_rebuilt": false
+    }
   }
 }

@@ -8,7 +8,7 @@ import {VercelCliRunner} from './vercel-cli';
 import {RelayProvisioner} from './provisioner';
 import type {SiteUpdateStatus} from './contracts';
 
-type Options={userData:string;templateDir:string;settings:SetupStore;vault:ChatGPTVault;openExternal:(url:string)=>Promise<unknown>;resourcesPath:string;projectRoot:string;packaged:boolean;engineIsReady?:()=>boolean;version?:string;onSiteUpdate?:(value:SiteUpdateStatus)=>void};
+type Options={userData:string;templateDir:string;settings:SetupStore;vault:ChatGPTVault;openExternal:(url:string)=>Promise<unknown>;resourcesPath:string;projectRoot:string;packaged:boolean;engineIsReady?:()=>boolean;readRelayConnectionId?:()=>Promise<string|undefined>;version?:string;onSiteUpdate?:(value:SiteUpdateStatus)=>void};
 let unconfirmedInitializer=false;
 /** DB 준비는 포트를 열지 않으며 연결 정보는 표준입력으로만 전달한다. */
 export function initializeRelayDatabase(options:Pick<Options,'userData'|'resourcesPath'|'projectRoot'|'packaged'>,dsn:string,signal?:AbortSignal):Promise<void> {
@@ -37,8 +37,6 @@ export function createManagedRelay(options:Options) {
  const cli=new VercelCliRunner({cliPath,tempRoot:join(options.userData,'relay','private-cli'),vault:options.vault});
  return new RelayProvisioner({...options,cli,expectedConnection:async()=>{
   if(!options.engineIsReady?.())return undefined;
-  try{const response=await fetch('http://127.0.0.1:8765/api/health',{redirect:'error',signal:AbortSignal.timeout(5000)});
-   if(!response.ok)return undefined;const value=await response.json() as any;return typeof value.cloud?.connection_id==='string'&&/^[a-f0-9]{32}$/.test(value.cloud.connection_id)?value.cloud.connection_id:undefined;
-  }catch{return undefined;}
+  try{const value=await options.readRelayConnectionId?.();return typeof value==='string'&&/^[a-f0-9]{32}$/.test(value)?value:undefined;}catch{return undefined;}
  },initializeDatabase:(dsn,signal)=>initializeRelayDatabase(options,dsn,signal)});
 }

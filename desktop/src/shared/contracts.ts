@@ -24,5 +24,6 @@ export type DesktopApi = import('../relay/contracts').RelayDesktopApi & import('
 };
 export type LlmRequest = {type:'llm.request';id:string;system:string;user:string;max_tokens:number};
 export type LlmResult = {type:'llm.result';id:string;text:string}|{type:'llm.error';id:string;message:string};
-export type BackendEvent = {type:'ready';url:string}|LlmRequest|{type:'llm.cancel';id:string}|{type:'account.status.request';id:string}|{type:'error';message:string};
+export type RelayConnectionResult = {type:'relay.connection.result';id:string;connection_id:string|null};
+export type BackendEvent = {type:'ready';url:string}|LlmRequest|{type:'llm.cancel';id:string}|{type:'account.status.request';id:string}|RelayConnectionResult|{type:'error';message:string};
 declare global {interface Window {gukgam:DesktopApi}}

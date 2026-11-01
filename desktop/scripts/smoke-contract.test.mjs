@@ -1,6 +1,5 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {gzipSync} from 'node:zlib';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {archivePayload,argumentsMap,assertInside,assertJuliaPrepareIntent,assertUnavailableJulia,assertWindowsCi,ORIGIN,parseMissingJuliaWorker} from './smoke-contract.mjs';
@@ -21,8 +20,7 @@ test('중복·홀수 명령 인자는 거절한다',()=>{
 });
 test('실제 HTML 압축 자료에서 원문과 사람 수정을 대조한다',()=>{
   const data={originals:[{id:1,original_text:'원문',text:'사람 수정',speaker_source:'manual'}]};
-  const packed=gzipSync(JSON.stringify(data)).toString('base64');
-  assert.deepEqual(archivePayload(`<script id="offline-data" type="application/octet-stream" data-compression="gzip">${packed}</script>`),data);
+  assert.deepEqual(archivePayload('<script id="offline-data" type="application/octet-stream" data-compression="gzip">H4sIAAAAAAACCqtWyi/KTM/MS8wpVrKKrlbKTFGyMtSBC8aXpFaUKFkpvZk94fWaHUo6SjB+05rX83oU3nTMeLNgKlC4uCA1MTu1KL44v7QoORWoIDcxrzQxR6k2thYAE1aT0mIAAAA=</script>'),data);
   assert.throws(()=>archivePayload('<html></html>'));
 });
 test('모델 없는 설치판을 실제 CPU 준비 성공으로 보고하지 않는다',()=>{

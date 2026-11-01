@@ -5,9 +5,9 @@ import {dirname,join} from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {StringDecoder} from 'node:string_decoder';
 import type {BackendEvent,EngineState,SetupInput} from '../shared/contracts';
-import {ENGINE_ORIGIN,explicitPython,parseBackendEvent,redactLog,validateEngineSetup} from './security';
+import {ENGINE_ORIGIN,explicitPython,parseBackendEvent,parseRelayConnectionResult,redactLog,validateEngineSetup} from './security';
 type Launch = {executable:string;args:string[];cwd:string;env:NodeJS.ProcessEnv};
-type Options = {userData:string;resourcesPath:string;projectRoot:string;packaged:boolean;env?:NodeJS.ProcessEnv;spawn?:typeof spawn;checkPort?:()=>Promise<void>;readyTimeoutMs?:number;shutdownTimeoutMs?:number;forceKillTimeoutMs?:number;onEvent?:(event:BackendEvent)=>void;onStopped?:()=>void};
+type Options = {userData:string;resourcesPath:string;projectRoot:string;packaged:boolean;env?:NodeJS.ProcessEnv;spawn?:typeof spawn;checkPort?:()=>Promise<void>;readyTimeoutMs?:number;shutdownTimeoutMs?:number;forceKillTimeoutMs?:number;connectionTimeoutMs?:number;onEvent?:(event:BackendEvent)=>void;onStopped?:()=>void};
 export function buildLaunch(options:Pick<Options,'userData'|'resourcesPath'|'projectRoot'|'packaged'|'env'>,configPath:string):Launch {
   const original=options.env??process.env,env:NodeJS.ProcessEnv={};
   for(const [key,value] of Object.entries(original))if(!key.startsWith('GUKGAM_')&&!['PYTHONPATH','PYTHONHOME'].includes(key))env[key]=value;
@@ -40,8 +40,29 @@ export class EngineController {
   private sensitiveValues=new Set<string>();
   private starting=false;
   private generation=0;
+  private connectionReads=new Map<string,{child:ChildProcessWithoutNullStreams;finish:(value?:string)=>void}>();
   constructor(private options:Options) {}
   status():EngineState {return {...this.current};}
+  /** 로컬 포트 대신 이 앱이 생성한 자식의 익명 파이프로 현재 중계 세대를 읽는다. */
+  readRelayConnectionId():Promise<string|undefined> {
+    const child=this.child;
+    if(!child||this.current.state!=='ready'||child.exitCode!==null||child.signalCode!==null||child.stdin.destroyed||!child.stdin.writable)return Promise.resolve(undefined);
+    const id=randomUUID().replace(/-/g,'');
+    return new Promise(resolve=>{
+      const finish=(value?:string)=>{
+        if(this.connectionReads.get(id)?.child!==child)return;
+        clearTimeout(timer);this.connectionReads.delete(id);
+        resolve(this.child===child&&this.current.state==='ready'&&child.exitCode===null&&child.signalCode===null?value:undefined);
+      };
+      const timer=setTimeout(()=>finish(),this.options.connectionTimeoutMs??2000);
+      this.connectionReads.set(id,{child,finish});
+      try {child.stdin.write(JSON.stringify({type:'relay.connection.request',id})+'\n',error=>{if(error)finish();});}
+      catch {finish();}
+    });
+  }
+  private clearConnectionReads(child?:ChildProcessWithoutNullStreams) {
+    for(const pending of this.connectionReads.values())if(!child||pending.child===child)pending.finish();
+  }
   send(value:unknown) {
     const child=this.child;
     if(!child||child.stdin.destroyed||!child.stdin.writable)return;
@@ -76,8 +97,9 @@ export class EngineController {
         let settled=false;
         const timer=setTimeout(()=>fail(Error('기록 엔진 준비 시간이 지났습니다. 앱을 종료한 뒤 다시 시도하세요.')),this.options.readyTimeoutMs??30_000);
         const fail=(error:Error)=>{if(settled)return;settled=true;clearTimeout(timer);reject(error);};
-        child.once('error',()=>fail(Error('기록 엔진 파일을 실행하지 못했습니다. 설치 파일을 다시 확인하세요.')));
+        child.once('error',()=>{this.clearConnectionReads(child);fail(Error('기록 엔진 파일을 실행하지 못했습니다. 설치 파일을 다시 확인하세요.'));});
         child.once('exit',()=>{
+          this.clearConnectionReads(child);
           const owned=this.child===child;
           if(owned)this.child=undefined;
           void cleanConfig();
@@ -95,7 +117,16 @@ export class EngineController {
           while((newline=buffer.indexOf('\n'))>=0) {
             const line=buffer.slice(0,newline);buffer=buffer.slice(newline+1);if(!line.trim())continue;
             let event:BackendEvent;
-            try {event=parseBackendEvent(JSON.parse(line));} catch {fail(Error('기록 엔진의 응답 형식이 올바르지 않습니다.'));void this.stop();return;}
+            try {
+              const raw=JSON.parse(line);
+              if(raw&&typeof raw==='object'&&!Array.isArray(raw)&&raw.type==='relay.connection.result') {
+                const result=parseRelayConnectionResult(raw);
+                const pending=result?this.connectionReads.get(result.id):undefined;
+                if(result&&pending?.child===child)pending.finish(result.connection_id??undefined);
+                continue;
+              }
+              event=parseBackendEvent(raw);
+            } catch {fail(Error('기록 엔진의 응답 형식이 올바르지 않습니다.'));void this.stop();return;}
             if(event.type==='error'){fail(Error(event.message));void this.stop();return;}
             if(event.type==='ready') {
               if(settled||this.current.state!=='starting')continue;
@@ -126,6 +157,7 @@ export class EngineController {
   async stop():Promise<EngineState> {
     if(this.shutdown)return this.shutdown;
     ++this.generation;
+    this.clearConnectionReads();
     this.shutdown=(async()=>{
       const child=this.child;this.current={state:'stopping',message:'이 앱의 기록 엔진을 종료하고 있습니다.'};
       if(child&&child.exitCode===null&&child.signalCode===null) {

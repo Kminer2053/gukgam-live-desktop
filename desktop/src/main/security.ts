@@ -1,5 +1,5 @@
 import {isAbsolute} from 'node:path';
-import type {BackendEvent, SetupInput} from '../shared/contracts';
+import type {BackendEvent, RelayConnectionResult, SetupInput} from '../shared/contracts';
 export const ENGINE_ORIGIN = 'http://127.0.0.1:8765';
 const requestId = /^[a-zA-Z0-9_-]{1,80}$/;
 export function isEngineUrl(value:string):boolean {
@@ -48,9 +48,18 @@ export function validateEngineSetup(raw:unknown):SetupInput & {relayPolicyRevisi
   if(typeof relayPolicyRevision!=='string'||!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(relayPolicyRevision)||!['relayEnabled','relayStartDate','relayEndDate'].every(key=>key in fields))throw Error('중계 설정 판본을 확인하세요.');
   return {...setup,relayPolicyRevision};
 }
+/** 신원 조회 실패는 유효한 ID로 취급하지 않으며 기존 수집 프로토콜을 중단하지 않는다. */
+export function parseRelayConnectionResult(raw:unknown):RelayConnectionResult|undefined {
+  if(!raw||typeof raw!=='object'||Array.isArray(raw))return undefined;
+  const item=raw as Record<string,unknown>;
+  if(item.type!=='relay.connection.result'||Object.keys(item).some(key=>!['type','id','connection_id'].includes(key))||typeof item.id!=='string'||!/^[a-f0-9]{32}$/.test(item.id))return undefined;
+  if(item.connection_id!==null&&(typeof item.connection_id!=='string'||!/^[a-f0-9]{32}$/.test(item.connection_id)))return undefined;
+  return {type:'relay.connection.result',id:item.id,connection_id:item.connection_id as string|null};
+}
 export function parseBackendEvent(raw:unknown):BackendEvent {
   if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('기록 엔진의 응답 형식이 올바르지 않습니다.');
   const item=raw as Record<string,unknown>;
+  const relay=parseRelayConnectionResult(raw);if(relay)return relay;
   if(item.type==='ready'&&item.url===ENGINE_ORIGIN)return {type:'ready',url:ENGINE_ORIGIN};
   if(item.type==='llm.cancel'&&typeof item.id==='string'&&requestId.test(item.id))return {type:'llm.cancel',id:item.id};
   if(item.type==='account.status.request'&&typeof item.id==='string'&&requestId.test(item.id))return {type:'account.status.request',id:item.id};
