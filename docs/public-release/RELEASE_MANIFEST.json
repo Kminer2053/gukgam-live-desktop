@@ -81,7 +81,7 @@
     "previous_push_error": "HTTP 502",
     "web_sign_in_pending": false,
     "last_push_exit_code": 1,
-    "last_push_error": "OSV-Scanner rejected dependency findings; full source publication remains incomplete.",
+    "last_push_error": "OSV-Scanner rejected additional dependency findings after first minimum correction; full source publication remains incomplete.",
     "readme_published": true,
     "readme_initialization_commit": "6f30ff9fa344c779c910d2acd6a169168c30a15f",
     "source_file_count_published": 47,
@@ -94,7 +94,15 @@
       "Trivy": "PASS",
       "Syft": "PASS"
     },
-    "release_tag_created": false
+    "release_tag_created": false,
+    "last_reported_dependency_findings": {
+      "first_shown_packages": [
+        "anyio 4.9.0",
+        "idna 3.9.0"
+      ],
+      "additional_findings_not_detailed": 5,
+      "versions_are_not_claimed_as_installer_versions": true
+    }
   },
   "release_assets": [
     {
@@ -164,16 +172,23 @@
     "dependency_minimums": {
       "python-multipart": ">=0.0.32",
       "jinja2": ">=3.1.6",
-      "pymongo": ">=4.18.3,<5"
+      "pymongo": ">=4.18.3,<5",
+      "fastapi": ">=0.162.0",
+      "starlette": ">=1.10.0,<2",
+      "anyio": ">=4.15.1,<5",
+      "idna": ">=3.20,<4"
     },
     "selected_dependency_contract_tests_passed": 6,
     "bundled_versions_statically_verified": {
       "python-multipart": "0.0.32",
       "fastapi": "0.162.0",
       "jinja2": "3.1.6",
-      "starlette": "1.10.0"
+      "starlette": "1.10.0",
+      "pymongo": "4.19.0"
     },
     "full_dependency_audit_clean": false,
-    "published_installer_rebuilt": false
+    "published_installer_rebuilt": false,
+    "bundle_anyio_idna_versions_verified": false,
+    "selected_runtime_floor_contract_tests_passed": 6
   }
 }

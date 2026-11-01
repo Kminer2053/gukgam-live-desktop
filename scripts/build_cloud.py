@@ -34,7 +34,8 @@ GENERATED_NAMES = {
     "gukgam", "public", "docs", "__pycache__",
 }
 REQUIREMENTS = (
-    "fastapi>=0.115\njinja2>=3.1.6\npymongo>=4.18.3,<5\npsycopg[binary]>=3.2,<4\n"
+    "fastapi>=0.162.0\nstarlette>=1.10.0,<2\nanyio>=4.15.1,<5\nidna>=3.20,<4\n"
+    "jinja2>=3.1.6\npymongo>=4.18.3,<5\npsycopg[binary]>=3.2,<4\n"
     "python-multipart>=0.0.32\ntzdata\n"
 )
 
