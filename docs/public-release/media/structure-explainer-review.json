@@ -1,0 +1,167 @@
+{
+  "scope": "local_artifact_review_only",
+  "review_scope": "structure-and-boundaries",
+  "complete": true,
+  "outputs": [
+    {
+      "file": "gukgam-live-introduction-9x16.mp4",
+      "bytes": 16367333,
+      "sha256": "e7ea18f6bfc9a8065bcabf05db477cce1b7d3982f65eadccda56f37fdebfc2f3",
+      "format": "9x16",
+      "width": 1080,
+      "height": 1920,
+      "seconds": 65.066667,
+      "structure": {
+        "movie_seconds": 65.067,
+        "fast_start": true,
+        "tracks": [
+          {
+            "kind": "vide",
+            "timescale": 90000,
+            "duration_ticks": 5856000,
+            "sample_count": 1952,
+            "deltas": [
+              {
+                "count": 1952,
+                "delta": 3000
+              }
+            ],
+            "edit": null,
+            "width": 1080,
+            "height": 1920,
+            "encoded_bytes": 14782347,
+            "encoded_sha256": "57868e5b3201dd7de34cc9c082ea574b723645e488dd95c440f19618006e3324"
+          },
+          {
+            "kind": "soun",
+            "timescale": 48000,
+            "duration_ticks": 3123200,
+            "sample_count": 3050,
+            "deltas": [
+              {
+                "count": 3050,
+                "delta": 1024
+              }
+            ],
+            "edit": {
+              "movie_duration_ticks": 65067,
+              "media_start_ticks": 0
+            },
+            "width": 0,
+            "height": 0,
+            "encoded_bytes": 1563700,
+            "encoded_sha256": "9adbb03a18160c8744304e62cfabc7b209643f8a9f8294e590cf1fba6642f95b"
+          }
+        ]
+      },
+      "frame_seconds": [
+        0.05,
+        27.338208333333334,
+        28.588208333333334,
+        30.497291666666666,
+        31.347291666666667,
+        34.01614583333333,
+        35.06614583333334,
+        38.23504166666667,
+        65.016667
+      ],
+      "frame_count": 1952,
+      "fps": 30,
+      "unchanged_scenes": null,
+      "consecutive_source_frame_fingerprint_duplicates": 0,
+      "contact_sheet": "structure-explainer-review-9x16.png"
+    },
+    {
+      "file": "gukgam-live-introduction-16x9.mp4",
+      "bytes": 16192907,
+      "sha256": "7ed1da91c67af55880218646d78356fccf6d10e247644086dbb7c45634e93fec",
+      "format": "16x9",
+      "width": 1920,
+      "height": 1080,
+      "seconds": 65.066667,
+      "structure": {
+        "movie_seconds": 65.067,
+        "fast_start": true,
+        "tracks": [
+          {
+            "kind": "vide",
+            "timescale": 90000,
+            "duration_ticks": 5856000,
+            "sample_count": 1952,
+            "deltas": [
+              {
+                "count": 1952,
+                "delta": 3000
+              }
+            ],
+            "edit": null,
+            "width": 1920,
+            "height": 1080,
+            "encoded_bytes": 14607925,
+            "encoded_sha256": "10f3069adc1fafc1ae6ee863d834408c8c62b09a7540dd3216b8cbcf73b2eff8"
+          },
+          {
+            "kind": "soun",
+            "timescale": 48000,
+            "duration_ticks": 3123200,
+            "sample_count": 3050,
+            "deltas": [
+              {
+                "count": 3050,
+                "delta": 1024
+              }
+            ],
+            "edit": {
+              "movie_duration_ticks": 65067,
+              "media_start_ticks": 0
+            },
+            "width": 0,
+            "height": 0,
+            "encoded_bytes": 1563700,
+            "encoded_sha256": "9adbb03a18160c8744304e62cfabc7b209643f8a9f8294e590cf1fba6642f95b"
+          }
+        ]
+      },
+      "frame_seconds": [
+        0.05,
+        27.338208333333334,
+        28.588208333333334,
+        30.497291666666666,
+        31.347291666666667,
+        34.01614583333333,
+        35.06614583333334,
+        38.23504166666667,
+        65.016667
+      ],
+      "frame_count": 1952,
+      "fps": 30,
+      "unchanged_scenes": null,
+      "consecutive_source_frame_fingerprint_duplicates": 0,
+      "contact_sheet": "structure-explainer-review-16x9.png"
+    }
+  ],
+  "pcm": {
+    "seconds": 65.06666666666666,
+    "sample_rate": 48000,
+    "channels": 2,
+    "sample_peak_dbfs": -5.417919169833746,
+    "rms_dbfs": -22.272486973131333,
+    "samples_at_or_above_full_scale": 0,
+    "first_voice_alignment": {
+      "expected_first_voice_start_seconds": 0.4,
+      "lag_samples": 0,
+      "lag_seconds": 0,
+      "normalized_correlation": 0.9876682574909572,
+      "search_range_seconds": 0.08
+    },
+    "measurement": "Decoded MP4 PCM sample peak/RMS; not true peak or LUFS.",
+    "speaker_playback": false
+  },
+  "aspect_ratios_share_identical_encoded_audio": true,
+  "encoded_audio_sha256": "9adbb03a18160c8744304e62cfabc7b209643f8a9f8294e590cf1fba6642f95b",
+  "source_image_pixels_modified": false,
+  "actual_app_control": false,
+  "new_model_calls": 0,
+  "paid_credits": 0,
+  "network_connections": false
+}

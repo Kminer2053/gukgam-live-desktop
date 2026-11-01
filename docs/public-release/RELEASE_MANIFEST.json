@@ -72,9 +72,9 @@
     "published": true,
     "prerelease": false,
     "published_at": "2026-10-31T19:29:05Z",
-    "asset_count": 14,
+    "asset_count": 19,
     "asset_digests_verified": true,
-    "assets_verified_at": "2026-11-01T10:44:48.409Z"
+    "assets_verified_at": "2026-11-01T11:20:50.223Z"
   },
   "gitlab": {
     "source_published": false,
@@ -86,7 +86,7 @@
     "readme_published": true,
     "readme_initialization_commit": "6f30ff9fa344c779c910d2acd6a169168c30a15f",
     "source_file_count_published": 87,
-    "source_file_count_expected": 445,
+    "source_file_count_expected": 460,
     "main_commit_observed": "bb24b9e39e53a73b1263de84977413ecec0860d9",
     "last_scanner_results": {
       "Gitleaks": "PASS",
@@ -257,6 +257,36 @@
       "bytes": 432,
       "sha256": "706c52f92cfd9a23e9a22a0f02f2ca3f48e47748daac33ba5063413c1930cb73",
       "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Promo-Tracked-SHA256SUMS.txt"
+    },
+    {
+      "name": "Gukgam-Live-Introduction-9x16-Structure.mp4",
+      "bytes": 16367333,
+      "sha256": "e7ea18f6bfc9a8065bcabf05db477cce1b7d3982f65eadccda56f37fdebfc2f3",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-9x16-Structure.mp4"
+    },
+    {
+      "name": "Gukgam-Live-Introduction-9x16-Structure.png",
+      "bytes": 508008,
+      "sha256": "6d3aeff9f54da4536cb86678974919b306da1b86fa5ca9b1704a12d15e0e9e34",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-9x16-Structure.png"
+    },
+    {
+      "name": "Gukgam-Live-Introduction-16x9-Structure.mp4",
+      "bytes": 16192907,
+      "sha256": "7ed1da91c67af55880218646d78356fccf6d10e247644086dbb7c45634e93fec",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-16x9-Structure.mp4"
+    },
+    {
+      "name": "Gukgam-Live-Introduction-16x9-Structure.png",
+      "bytes": 573781,
+      "sha256": "c67f479dd02f0d00e8aa4d2e10f8d40d316f920e0e76d913c377f531e1327450",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-16x9-Structure.png"
+    },
+    {
+      "name": "Gukgam-Live-Promo-Structure-SHA256SUMS.txt",
+      "bytes": 440,
+      "sha256": "5be187167afa0f9e0b35d0557fefa922307f50610aff1727a81c99af4502f144",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Promo-Structure-SHA256SUMS.txt"
     }
   ],
   "source_release_commit": "16a259ede8b005cc6155c672cd49f9a5cd315098",
@@ -392,6 +422,34 @@
       "review_manifest": "docs/public-release/media/feature-tracking-review.json",
       "deliverables_manifest": "docs/public-release/media/feature-tracking-deliverables.json",
       "existing_assets_preserved": 9,
+      "installer_rebuilt": false,
+      "new_model_calls": 0,
+      "paid_credits": 0
+    },
+    "structure_explainer_video": {
+      "published": true,
+      "seconds": 65.06666666666666,
+      "fps": 30,
+      "formats": [
+        "9x16",
+        "16x9"
+      ],
+      "scene_count": 14,
+      "story": [
+        "내 ChatGPT로 쉽게 시작",
+        "PC 보관·ChatGPT 정리·선택적 동료 열람",
+        "실제 주요 기능"
+      ],
+      "manual_diagram_reused": true,
+      "manual_original_changed": false,
+      "existing_ui_capture_pixels_changed": false,
+      "function_camera_tracking_preserved": true,
+      "new_local_sapi_clips": 3,
+      "reused_voice_clips": 11,
+      "input_manifest": "docs/public-release/media/structure-explainer-inputs.manifest.json",
+      "review_manifest": "docs/public-release/media/structure-explainer-review.json",
+      "deliverables_manifest": "docs/public-release/media/structure-explainer-deliverables.json",
+      "existing_release_assets_preserved": 14,
       "installer_rebuilt": false,
       "new_model_calls": 0,
       "paid_credits": 0

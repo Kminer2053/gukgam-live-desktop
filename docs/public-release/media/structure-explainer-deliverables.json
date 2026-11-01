@@ -1,0 +1,66 @@
+{
+  "published": true,
+  "assets": [
+    {
+      "name": "Gukgam-Live-Introduction-9x16-Structure.mp4",
+      "bytes": 16367333,
+      "sha256": "e7ea18f6bfc9a8065bcabf05db477cce1b7d3982f65eadccda56f37fdebfc2f3",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-9x16-Structure.mp4"
+    },
+    {
+      "name": "Gukgam-Live-Introduction-9x16-Structure.png",
+      "bytes": 508008,
+      "sha256": "6d3aeff9f54da4536cb86678974919b306da1b86fa5ca9b1704a12d15e0e9e34",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-9x16-Structure.png"
+    },
+    {
+      "name": "Gukgam-Live-Introduction-16x9-Structure.mp4",
+      "bytes": 16192907,
+      "sha256": "7ed1da91c67af55880218646d78356fccf6d10e247644086dbb7c45634e93fec",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-16x9-Structure.mp4"
+    },
+    {
+      "name": "Gukgam-Live-Introduction-16x9-Structure.png",
+      "bytes": 573781,
+      "sha256": "c67f479dd02f0d00e8aa4d2e10f8d40d316f920e0e76d913c377f531e1327450",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-16x9-Structure.png"
+    },
+    {
+      "name": "Gukgam-Live-Promo-Structure-SHA256SUMS.txt",
+      "bytes": 440,
+      "sha256": "5be187167afa0f9e0b35d0557fefa922307f50610aff1727a81c99af4502f144",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Promo-Structure-SHA256SUMS.txt"
+    }
+  ],
+  "source_derivations": [
+    {
+      "file": "render-structure-explainer.mjs",
+      "source_sha256": "0c1417469dfc91c1f7ee1f408f3c2bcb6e9e0e6dbce8fe1d8e31bd56a276cf50",
+      "public_sha256": "d04289b507366d11d8779dcfc89f44eb93f06de0723edd3c6c62c5f4b6cd8970",
+      "changes": "공개 폴더 기준 저장소·사진·출력 기본 경로만 변경"
+    },
+    {
+      "file": "review-structure-explainer.mjs",
+      "source_sha256": "c5c6b6a48860a773f6074064639c814d769d40801af281e5a8c84407f3b03a14",
+      "public_sha256": "ec07065b4f493bcc545ced14e8a1d55c224fabff65c7ad568a48fab31a28101d",
+      "changes": "공개 기본 경로 변경과 선택적 baseline 검수의 요약 장면 번호를 실제 11번에 일치"
+    },
+    {
+      "file": "structure-explainer-shots.json",
+      "source_sha256": "e877be153865a36f9df851a830964f5de0208d0b27141c1f9e65f2a7d940089f",
+      "public_sha256": "bd80f78a4f41300e90791baaf2966dda0eeefbbc19546f20530024b0cf29d822",
+      "changes": "공개 사진·도식 경로와 완성 영상 AAC·14장면 일정만 고정"
+    }
+  ],
+  "story": [
+    "내 ChatGPT로 쉽게 시작",
+    "PC 보관·ChatGPT 정리·선택적 동료 열람",
+    "실제 주요 기능"
+  ],
+  "new_local_sapi_clips": 3,
+  "reused_voice_clips": 11,
+  "new_model_calls": 0,
+  "paid_credits": 0,
+  "release_url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/tag/v0.1.0",
+  "assets_verified_at": "2026-11-01T11:20:50.223Z"
+}
