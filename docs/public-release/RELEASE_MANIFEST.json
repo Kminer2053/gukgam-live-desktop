@@ -80,17 +80,17 @@
     "last_observed_remote_refs": 1,
     "previous_push_error": "HTTP 502",
     "web_sign_in_pending": false,
-    "last_push_exit_code": 1,
-    "last_push_error": "Python findings resolved; OSV rejected four minimatch versions in the previous desktop build lock. Tested updated build dependencies are pending server rescan.",
+    "last_push_exit_code": 0,
+    "last_push_error": null,
     "readme_published": true,
     "readme_initialization_commit": "6f30ff9fa344c779c910d2acd6a169168c30a15f",
-    "source_file_count_published": 47,
-    "source_file_count_expected": 422,
-    "main_commit_observed": "3ecc1aee8dfaf015f2647af78d3f00f9a43fb917",
+    "source_file_count_published": 87,
+    "source_file_count_expected": 425,
+    "main_commit_observed": "bb24b9e39e53a73b1263de84977413ecec0860d9",
     "last_scanner_results": {
       "Gitleaks": "PASS",
       "Semgrep": "PASS",
-      "OSV-Scanner": "FAIL",
+      "OSV-Scanner": "PASS",
       "Trivy": "PASS",
       "Syft": "PASS"
     },
@@ -116,7 +116,7 @@
       "official_extractor_rejects_multiple_constraints": true,
       "reference": "https://github.com/google/osv-scalibr/blob/main/extractor/filesystem/language/python/requirements/requirements.go",
       "server_extractor_version_known": false,
-      "resolution_confirmed": false
+      "resolution_confirmed": true
     }
   },
   "release_assets": [
@@ -238,6 +238,19 @@
       "original_harness_results_preserved": true,
       "application_runtime_sources_changed": false,
       "published_installer_rebuilt": false
-    }
+    },
+    "relay_cli_dependencies": {
+      "provider_version": "59.4.0",
+      "native_zod": "4.6.6",
+      "npm_audit_vulnerable_packages": 0,
+      "api_contract_groups": 7,
+      "actual_commonjs_schema_safeParse_calls": 32,
+      "unbundled_esm_runtime_verified": false,
+      "native_array_bound_element_getter_reads": 0,
+      "cli_version_and_root_help_offline_passed": true,
+      "real_account_or_cloud_deployment_tested": false,
+      "published_installer_rebuilt": false
+    },
+    "core_requirements_match_tested_development_versions": true
   }
 }

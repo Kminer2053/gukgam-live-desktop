@@ -39,3 +39,7 @@ Nemotron-3-Diarization CPU 화자 분리 모델을 설치파일의 별도 자산
 ## 공개 main의 Windows 빌드 도구 호환 보완
 
 정식 0.1.0 이후 공개 소스는 Node.js 24에서 minimatch 11·glob 14·ASAR 4·rimraf 6·FileList 2를 사용하도록 빌드 의존성을 고정했습니다. `dir-compare 4.2.0`의 named minimatch 호출과 `temp 0.9.4`의 callback/sync 정리 호출만 명시적으로 보완하며, 원 저작권·라이선스와 패키지 버전 표기를 유지합니다. 적용 도우미는 알려진 원본 SHA가 다르면 중단하고 복원 자료를 남깁니다. [보완 내역](../../desktop/scripts/README-build-compat.md)을 참고하세요. 이 소스 변경으로 기존 공개 설치파일이 교체된 것은 아닙니다.
+
+## 공개 main의 릴레이 CLI 호환 보완
+
+Vercel CLI 59.4.0을 유지하면서 보안 수정된 실제 의존성을 잠금 파일로 고정했습니다. ts-morph의 minimatch 호출 한 줄과 Python-analysis의 ESM·CJS record 스키마 34곳만 명시적으로 보완하며, 상위 패키지의 이름·버전·라이선스는 변경하지 않습니다. Zod는 네이티브 v4를 사용하고 취약한 v3 호환 진입점으로 우회하지 않습니다. [원본 해시·복원·검증 범위](../../desktop/relay-cli/README-compat.md)는 소스에 함께 보존합니다. 이 후속 소스 보완으로 기존 정식 설치파일이 교체된 것은 아닙니다.

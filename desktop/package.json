@@ -13,7 +13,7 @@
     "dev": "npm run build && electron .",
     "dist": "electron-builder --win nsis",
     "prebuild": "node scripts/apply-build-compat-patches.cjs",
-    "predist": "node scripts/apply-build-compat-patches.cjs"
+    "predist": "node scripts/prepare-distribution-dependencies.cjs"
   },
   "dependencies": {
     "jose": "6.1.0"
