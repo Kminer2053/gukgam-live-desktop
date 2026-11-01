@@ -89,13 +89,13 @@
     "main_commit_observed": "bb24b9e39e53a73b1263de84977413ecec0860d9",
     "last_scanner_results": {
       "Gitleaks": "PASS",
-      "Semgrep": "FAIL",
+      "Semgrep": "PASS",
       "OSV-Scanner": "FAIL",
       "Trivy": "PASS",
       "Syft": "PASS"
     },
     "release_tag_created": false,
-    "last_rejected_candidate": "d9233305b2fc622079454d385ed04e804187f01b",
+    "last_rejected_candidate": "73485a71cd46bb3ddbb2809968d5985f83413e54",
     "detailed_scan_report_required": true,
     "scan_diagnosis": {
       "official_extractor_rejects_multiple_constraints": true,
@@ -130,17 +130,18 @@
       "anyio": ">=4.15.1,<5",
       "idna": ">=3.20,<4"
     },
-    "latest_attempt_source_commit": "5fca6170fc3024628a33e6683f34f0ee2923e7ec",
+    "latest_attempt_source_commit": "c9d156afba7faaf023a6d719a6f8d35f4ef808dc",
     "latest_attempt_published": false,
     "pending_findings": {
       "semgrep": {
         "reported": 2,
         "source_remediations_prepared": true,
-        "new_server_result_confirmed": false,
+        "new_server_result_confirmed": true,
         "changes": [
           "fixed independent compressed HTML fixture",
           "owned child JSONL relay identity RPC"
-        ]
+        ],
+        "remaining_reported": 0
       },
       "osv": {
         "package": "sandbox",
@@ -158,7 +159,10 @@
         "false_positive_confirmed_by_operator": false,
         "scanner_suppression_added": false
       }
-    }
+    },
+    "latest_attempt_utc": "2026-11-01T08:24:42.796691+00:00",
+    "remaining_batches_not_server_verified": true,
+    "operator_data_verification_pending": true
   },
   "release_assets": [
     {
