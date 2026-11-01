@@ -81,7 +81,7 @@
     "previous_push_error": "HTTP 502",
     "web_sign_in_pending": false,
     "last_push_exit_code": 1,
-    "last_push_error": "OSV-Scanner rejected additional dependency findings after first minimum correction; full source publication remains incomplete.",
+    "last_push_error": "OSV-Scanner still reports AnyIO 4.9.0 and IDNA 3.9.0 after explicit corrected minimums; detailed manifest/dependency paths are unavailable. Full GitLab source publication is incomplete.",
     "readme_published": true,
     "readme_initialization_commit": "6f30ff9fa344c779c910d2acd6a169168c30a15f",
     "source_file_count_published": 47,
@@ -102,6 +102,12 @@
       ],
       "additional_findings_not_detailed": 5,
       "versions_are_not_claimed_as_installer_versions": true
+    },
+    "last_rejected_candidate": "cce4b282e05bcd2a96f5182136a20c6bb9efa379",
+    "detailed_scan_report_required": true,
+    "declared_minimums_in_last_rejected_candidate": {
+      "anyio": ">=4.15.1,<5",
+      "idna": ">=3.20,<4"
     }
   },
   "release_assets": [
@@ -189,6 +195,7 @@
     "full_dependency_audit_clean": false,
     "published_installer_rebuilt": false,
     "bundle_anyio_idna_versions_verified": false,
-    "selected_runtime_floor_contract_tests_passed": 6
+    "selected_runtime_floor_contract_tests_passed": 6,
+    "runtime_floor_source_commit": "f8599b78e296e83d3d64d576882e951a5ce22284"
   }
 }
