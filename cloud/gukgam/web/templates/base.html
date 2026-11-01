@@ -18,12 +18,7 @@
   <link rel="stylesheet" href="/static/css/app.css?v={{ ver }}">
   {#- 모듈 사이 import('./common.js')도 버전 쿼리를 붙여 배포 후 옛 캐시를 쓰지 않게 한다 #}
   {% if not cloud %}
-  <script type="importmap">{"imports": {
-    "/static/js/common.js": "/static/js/common.js?v={{ ver }}",
-    "/static/js/closed-block-view.js": "/static/js/closed-block-view.js?v={{ ver }}",
-    "/static/js/report-view.js": "/static/js/report-view.js?v={{ ver }}",
-    "/static/js/audio-capture.js": "/static/js/audio-capture.js?v={{ ver }}"
-  }}</script>
+  <script src="/static/js/module-importmap.js?v={{ ver|urlencode }}" data-version="{{ ver }}"></script>
   {% endif %}
   {% block head %}{% endblock %}
 </head>

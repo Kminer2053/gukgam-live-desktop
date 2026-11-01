@@ -24,7 +24,7 @@ TEMPLATES = (
 )
 ASSETS = (
     "css/app.css", "css/transcript-stages.css", "css/report.css", "img/favicon.svg", "img/icons.svg", "img/logo.svg",
-    "js/admin.js", "js/audio-capture.js", "js/common.js", "js/dashboard.js", "js/items.js",
+    "js/admin.js", "js/audio-capture.js", "js/common.js", "js/module-importmap.js", "js/dashboard.js", "js/items.js",
     "js/pcm-worklet.js", "js/report.js", "js/report-view.js", "js/search.js", "js/session-new.js",
     "js/session.js", "js/question-audio.js", "js/transcript-stages.js", "js/closed-block-view.js", "js/utterance.js",
     "vendor/README.txt", "vendor/hls.min.js",

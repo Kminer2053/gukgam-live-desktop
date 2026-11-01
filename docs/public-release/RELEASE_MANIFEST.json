@@ -141,5 +141,14 @@
       "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/SHA256SUMS.txt"
     }
   ],
-  "source_release_commit": "16a259ede8b005cc6155c672cd49f9a5cd315098"
+  "source_release_commit": "16a259ede8b005cc6155c672cd49f9a5cd315098",
+  "source_followup": {
+    "kind": "same-origin-navigation-and-safe-module-importmap",
+    "applies_to": "public main source",
+    "installer_rebuilt": false,
+    "published_installer_source_commit": "16a259ede8b005cc6155c672cd49f9a5cd315098",
+    "selected_template_and_offline_tests_passed": 88,
+    "new_model_requests": 0,
+    "scanner_suppressions_added": false
+  }
 }

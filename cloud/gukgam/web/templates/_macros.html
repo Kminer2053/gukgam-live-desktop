@@ -13,6 +13,9 @@
 {%- endmacro %}
 
 {% macro nav_link(href, label, ic, path) -%}
-{%- set active = (path == href) or (href != '/' and path.startswith(href)) -%}
-<a href="{{ href }}"{% if active %} aria-current="page"{% endif %}>{{ icon(ic) }}<span>{{ label }}</span></a>
+{%- set allowed_destinations = ['/', '/sessions/new', '/items', '/search', '/admin'] -%}
+{%- set validated_path = href if href in allowed_destinations else '/' -%}
+{%- set validated_relative_path = validated_path[1:] -%}
+{%- set active = (path == validated_path) or (validated_path != '/' and path.startswith(validated_path)) -%}
+<a href="/{{ validated_relative_path }}"{% if active %} aria-current="page"{% endif %}>{{ icon(ic) }}<span>{{ label }}</span></a>
 {%- endmacro %}
