@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "status": "stable_github_published_gitlab_pending",
+  "status": "stable_github_published_gitlab_partial_security_review",
   "product_name": "국감 라이브 데스크톱",
   "release_version": "0.1.0",
   "source_release_ref": "v0.1.0",
@@ -81,9 +81,20 @@
     "previous_push_error": "HTTP 502",
     "web_sign_in_pending": false,
     "last_push_exit_code": 1,
-    "last_push_error": "error: RPC failed; HTTP 502 curl 22 The requested URL returned error: 502\nfatal: the remote end hung up unexpectedly",
+    "last_push_error": "OSV-Scanner rejected dependency findings; full source publication remains incomplete.",
     "readme_published": true,
-    "readme_initialization_commit": "6f30ff9fa344c779c910d2acd6a169168c30a15f"
+    "readme_initialization_commit": "6f30ff9fa344c779c910d2acd6a169168c30a15f",
+    "source_file_count_published": 47,
+    "source_file_count_expected": 420,
+    "main_commit_observed": "3ecc1aee8dfaf015f2647af78d3f00f9a43fb917",
+    "last_scanner_results": {
+      "Gitleaks": "PASS",
+      "Semgrep": "PASS",
+      "OSV-Scanner": "FAIL",
+      "Trivy": "PASS",
+      "Syft": "PASS"
+    },
+    "release_tag_created": false
   },
   "release_assets": [
     {
@@ -149,6 +160,20 @@
     "published_installer_source_commit": "16a259ede8b005cc6155c672cd49f9a5cd315098",
     "selected_template_and_offline_tests_passed": 88,
     "new_model_requests": 0,
-    "scanner_suppressions_added": false
+    "scanner_suppressions_added": false,
+    "dependency_minimums": {
+      "python-multipart": ">=0.0.32",
+      "jinja2": ">=3.1.6",
+      "pymongo": ">=4.18.3,<5"
+    },
+    "selected_dependency_contract_tests_passed": 6,
+    "bundled_versions_statically_verified": {
+      "python-multipart": "0.0.32",
+      "fastapi": "0.162.0",
+      "jinja2": "3.1.6",
+      "starlette": "1.10.0"
+    },
+    "full_dependency_audit_clean": false,
+    "published_installer_rebuilt": false
   }
 }
