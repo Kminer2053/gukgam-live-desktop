@@ -85,7 +85,7 @@
     "readme_published": true,
     "readme_initialization_commit": "6f30ff9fa344c779c910d2acd6a169168c30a15f",
     "source_file_count_published": 87,
-    "source_file_count_expected": 427,
+    "source_file_count_expected": 428,
     "main_commit_observed": "bb24b9e39e53a73b1263de84977413ecec0860d9",
     "last_scanner_results": {
       "Gitleaks": "PASS",
@@ -313,6 +313,25 @@
       },
       "actual_application_or_record_processing_repeated": false,
       "published_installer_rebuilt": false
+    },
+    "desktop_brand_icon": {
+      "design": "hearing dome and caption bubble",
+      "source": "desktop/assets/brand/gukgam-live.svg",
+      "ico_sha256": "9aa932abb5906a7c57e3a4be92f6a3a20a3c0d44829d97a4f6c624bb69372cfa",
+      "png_sha256": "0517b2ca23538909cc1cc821dc3de13c8fcc71b6dfe9620085352450b3b8496f",
+      "ico_sizes": [
+        16,
+        24,
+        32,
+        48,
+        64,
+        128,
+        256
+      ],
+      "application_window_and_installer_source_references_verified": true,
+      "web_icon_sources_synchronized": true,
+      "published_installer_rebuilt": false,
+      "existing_release_icon_asset_replaced": false
     }
   }
 }

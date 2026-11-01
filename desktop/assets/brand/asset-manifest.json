@@ -1,4 +1,5 @@
 {
+  "design": "hearing-dome-and-captions",
   "ico_entries": [
     {
       "width": 16,
@@ -38,48 +39,48 @@
   ],
   "files": {
     "gukgam-live-1024.png": {
-      "bytes": 71428,
-      "sha256": "90db0cd61e946bf7c4c1adbc069a38dc6d33819cdf2e03bda27ac2172b70e964"
+      "bytes": 90747,
+      "sha256": "0517b2ca23538909cc1cc821dc3de13c8fcc71b6dfe9620085352450b3b8496f"
     },
     "gukgam-live-128.png": {
-      "bytes": 4494,
-      "sha256": "b048d13cd428d4cf6716d0df44c5824c68d72a7da8d34d233326850abcff3ca1"
+      "bytes": 7102,
+      "sha256": "008375df9a6a8b7d6a9915cc94586af19f0194473a361bc7390ed4b82a77292d"
     },
     "gukgam-live-16.png": {
-      "bytes": 677,
-      "sha256": "8c4161d9adc4d20afcd53f42e965574de4895a35e07527f14c586a947f1ed4e8"
+      "bytes": 809,
+      "sha256": "22b57fbf420b44978734bf8262cae9e9153f9c27d3faf8c8b0f6dd90c0cd457e"
     },
     "gukgam-live-24.png": {
-      "bytes": 1031,
-      "sha256": "df90a062719661b97dd99d641d250e428266f1180cc93d4cd8c501aed4839358"
+      "bytes": 1336,
+      "sha256": "cb0c1fce3e57a42007d7b93c3d64b780be0973f5c026d0af35f95c485d500f19"
     },
     "gukgam-live-256.png": {
-      "bytes": 9345,
-      "sha256": "94e6b8317b3790da354917c827b7c7adbf1e9612dadccec31579d4bfea3e5e24"
+      "bytes": 14962,
+      "sha256": "da78ef40ba88abe8360b659956db26b9ec8ebf43da1be279b5220cbdfa0c3768"
     },
     "gukgam-live-32.png": {
-      "bytes": 1290,
-      "sha256": "004d8c4c3139f15faff08c2fbe5b8d5cbefafedaac99bbadd8006ebafdbc094b"
+      "bytes": 1870,
+      "sha256": "fd7b338764520429945e836e1691e00c353608cdd459a3c6aa9edeb6c534577b"
     },
     "gukgam-live-48.png": {
-      "bytes": 1965,
-      "sha256": "01bc34d80649d385eb4157ceba61dfa0af74fae84f06d13dabfd6270995e9571"
+      "bytes": 2705,
+      "sha256": "f9bfde9116e9eef6065f7960c3c213d1c8b21f436aa903fc5ae396071f0bd08a"
     },
     "gukgam-live-64.png": {
-      "bytes": 2394,
-      "sha256": "f64eb42f36cc115e7bb81d56637324d71aeb523b8a907ce313c91962417c8f9f"
+      "bytes": 3630,
+      "sha256": "fda195f58c1e485e48eea723e69adf78e7970cb888879bab9998ad07b55b6192"
     },
     "gukgam-live.ico": {
-      "bytes": 21314,
-      "sha256": "55c4b3b1a0a110a1236b969869fb002d63f0f1978901e871d2c7eb18be272480"
+      "bytes": 32532,
+      "sha256": "9aa932abb5906a7c57e3a4be92f6a3a20a3c0d44829d97a4f6c624bb69372cfa"
     },
     "gukgam-live.svg": {
-      "bytes": 1090,
-      "sha256": "fb693c74caf2bec60ddb9b818489ad9a5ee4b8d76954ca7b386e89d395b08766"
+      "bytes": 1946,
+      "sha256": "cfe39a2f5c6e1618639dc6eb3bfadac7578d9ba2b501629f7204b404bf0c3da9"
     },
     "icon-size-review.png": {
-      "bytes": 42202,
-      "sha256": "f25af42430a779e1ee1a403f478a015fe1932732cbd85b0e9c4ae290328e93a6"
+      "bytes": 108900,
+      "sha256": "0bbb862485be951c846e76ae85dde6570feff373d2a4253a16ae8075ba809a74"
     }
   }
 }
