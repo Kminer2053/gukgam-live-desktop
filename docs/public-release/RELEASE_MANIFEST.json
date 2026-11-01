@@ -47,8 +47,16 @@
     },
     "installed_version_observed": "0.1.0",
     "installed_binary_hashes_verified": true,
-    "record_page_preservation_check": "pending local user opening records",
-    "desktop_tests_passed": 193
+    "record_page_preservation_check": "verified session identifiers and installed record page",
+    "desktop_tests_passed": 193,
+    "record_count_after_update": 21,
+    "record_id_set_preserved": true,
+    "update_validation_model_requests": 0,
+    "local_relay_observed": {
+      "enabled": false,
+      "active": false,
+      "cloud_enabled": false
+    }
   },
   "public_source_policy": {
     "private_history_included": false,
@@ -69,11 +77,13 @@
   },
   "gitlab": {
     "source_published": false,
-    "last_observed_remote_refs": 0,
+    "last_observed_remote_refs": 1,
     "previous_push_error": "HTTP 502",
-    "web_sign_in_pending": true,
+    "web_sign_in_pending": false,
     "last_push_exit_code": 1,
-    "last_push_error": "error: RPC failed; curl 28 Operation too slow. Less than 1024 bytes/sec transferred the last 30 seconds\nsend-pack: unexpected disconnect while reading sideband packet\nfatal: the remote end hung up unexpectedly\nEverything up-to-date"
+    "last_push_error": "error: RPC failed; HTTP 502 curl 22 The requested URL returned error: 502\nfatal: the remote end hung up unexpectedly",
+    "readme_published": true,
+    "readme_initialization_commit": "6f30ff9fa344c779c910d2acd6a169168c30a15f"
   },
   "release_assets": [
     {
