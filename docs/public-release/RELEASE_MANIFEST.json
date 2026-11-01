@@ -72,8 +72,9 @@
     "published": true,
     "prerelease": false,
     "published_at": "2026-10-31T19:29:05Z",
-    "asset_count": 9,
-    "asset_digests_verified": true
+    "asset_count": 14,
+    "asset_digests_verified": true,
+    "assets_verified_at": "2026-11-01T10:44:48.409Z"
   },
   "gitlab": {
     "source_published": false,
@@ -85,7 +86,7 @@
     "readme_published": true,
     "readme_initialization_commit": "6f30ff9fa344c779c910d2acd6a169168c30a15f",
     "source_file_count_published": 87,
-    "source_file_count_expected": 428,
+    "source_file_count_expected": 445,
     "main_commit_observed": "bb24b9e39e53a73b1263de84977413ecec0860d9",
     "last_scanner_results": {
       "Gitleaks": "PASS",
@@ -162,7 +163,15 @@
     },
     "latest_attempt_utc": "2026-11-01T08:24:42.796691+00:00",
     "remaining_batches_not_server_verified": true,
-    "operator_data_verification_pending": true
+    "operator_data_verification_pending": true,
+    "next_action": "운영자의 GitHub 연동 설정 후 정상 가져오기 절차 확인",
+    "github_import": {
+      "completed": false,
+      "user_selected": "운영자의 GitHub 연동 설정 후 진행",
+      "waiting_for_operator_integration": true,
+      "broad_personal_token_used": false,
+      "equivalent_server_security_scan_coverage_confirmed": false
+    }
   },
   "release_assets": [
     {
@@ -218,6 +227,36 @@
       "bytes": 760,
       "sha256": "0f3dd9e962f7aa48f0a8e6d43cb89a1a07c1aa7b02beab02db21bbdeccc843e8",
       "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/SHA256SUMS.txt"
+    },
+    {
+      "name": "Gukgam-Live-Introduction-9x16-Tracked.mp4",
+      "bytes": 13956486,
+      "sha256": "cb6d9b7272ddb1bce3788a4c9d463e5931cc44d7fff86aee58733ea518510f79",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-9x16-Tracked.mp4"
+    },
+    {
+      "name": "Gukgam-Live-Introduction-9x16-Tracked.png",
+      "bytes": 508010,
+      "sha256": "f2df55d8dbd26eb6dfc127bdc641ff8e8d3c57cbaf8a0a54b4345838eab10017",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-9x16-Tracked.png"
+    },
+    {
+      "name": "Gukgam-Live-Introduction-16x9-Tracked.mp4",
+      "bytes": 13874850,
+      "sha256": "c0c686f0e4dcb4f743cc5dccd87c8053ac3d471b1d295e1fa70c2437280ae7d7",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-16x9-Tracked.mp4"
+    },
+    {
+      "name": "Gukgam-Live-Introduction-16x9-Tracked.png",
+      "bytes": 573781,
+      "sha256": "81689ef8931ceb1b578767cfc910e70971c1e16afab93c4ff13ac961f4272800",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-16x9-Tracked.png"
+    },
+    {
+      "name": "Gukgam-Live-Promo-Tracked-SHA256SUMS.txt",
+      "bytes": 432,
+      "sha256": "706c52f92cfd9a23e9a22a0f02f2ca3f48e47748daac33ba5063413c1930cb73",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Promo-Tracked-SHA256SUMS.txt"
     }
   ],
   "source_release_commit": "16a259ede8b005cc6155c672cd49f9a5cd315098",
@@ -332,6 +371,30 @@
       "web_icon_sources_synchronized": true,
       "published_installer_rebuilt": false,
       "existing_release_icon_asset_replaced": false
+    },
+    "feature_tracking_video": {
+      "published": true,
+      "seconds": 54.166666666666664,
+      "fps": 30,
+      "formats": [
+        "9x16",
+        "16x9"
+      ],
+      "camera_follows": [
+        "검색 입력과 강조 발언",
+        "시간 막대와 선택 시각 발언",
+        "위원별 탭과 요약",
+        "후속조치 내용과 처리 상태",
+        "내보내기 버튼과 형식 메뉴"
+      ],
+      "readable_areas_hold_still": true,
+      "input_manifest": "docs/public-release/media/feature-tracking-inputs.manifest.json",
+      "review_manifest": "docs/public-release/media/feature-tracking-review.json",
+      "deliverables_manifest": "docs/public-release/media/feature-tracking-deliverables.json",
+      "existing_assets_preserved": 9,
+      "installer_rebuilt": false,
+      "new_model_calls": 0,
+      "paid_credits": 0
     }
   }
 }

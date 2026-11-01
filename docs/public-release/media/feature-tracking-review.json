@@ -1,0 +1,233 @@
+{
+  "scope": "local_artifact_review_only",
+  "review_scope": "full",
+  "complete": true,
+  "outputs": [
+    {
+      "file": "gukgam-live-introduction-9x16.mp4",
+      "bytes": 13956486,
+      "sha256": "cb6d9b7272ddb1bce3788a4c9d463e5931cc44d7fff86aee58733ea518510f79",
+      "format": "9x16",
+      "width": 1080,
+      "height": 1920,
+      "seconds": 54.167,
+      "structure": {
+        "movie_seconds": 54.167,
+        "fast_start": true,
+        "tracks": [
+          {
+            "kind": "vide",
+            "timescale": 90000,
+            "duration_ticks": 4875000,
+            "sample_count": 1625,
+            "deltas": [
+              {
+                "count": 1625,
+                "delta": 3000
+              }
+            ],
+            "edit": null,
+            "width": 1080,
+            "height": 1920,
+            "encoded_bytes": 12634751,
+            "encoded_sha256": "f867acac90f77de3cbf916d710479a692ebff9072211ce707e92ff8ddc9eea9a"
+          },
+          {
+            "kind": "soun",
+            "timescale": 48000,
+            "duration_ticks": 2600960,
+            "sample_count": 2540,
+            "deltas": [
+              {
+                "count": 2540,
+                "delta": 1024
+              }
+            ],
+            "edit": {
+              "movie_duration_ticks": 54167,
+              "media_start_ticks": 0
+            },
+            "width": 0,
+            "height": 0,
+            "encoded_bytes": 1303817,
+            "encoded_sha256": "111508f0f662212f12348e9dfc7371926116e3fe96b1d1f1142c523aa063c363"
+          }
+        ]
+      },
+      "frame_seconds": [
+        0.05,
+        0.6,
+        1.5,
+        2.7499999999999996,
+        5.363916666666666,
+        6.963916666666667,
+        10.432708333333332,
+        11.282708333333332,
+        14.931520833333332,
+        15.731520833333333,
+        18.331520833333332,
+        21.1599375,
+        21.9599375,
+        24.6299375,
+        25.2599375,
+        27.628208333333333,
+        28.358208333333334,
+        29.13820833333333,
+        30.822249999999997,
+        31.452249999999996,
+        33.00225,
+        33.78225,
+        35.405874999999995,
+        36.035875,
+        36.765874999999994,
+        38.65989583333333,
+        39.30989583333333,
+        40.20989583333333,
+        41.75989583333333,
+        43.208687499999996,
+        43.93868749999999,
+        44.788687499999995,
+        46.91262499999999,
+        47.91262499999999,
+        53.16262499999999,
+        54.117000000000004
+      ],
+      "frame_count": 1625,
+      "fps": 30,
+      "unchanged_scenes": null,
+      "consecutive_source_frame_fingerprint_duplicates": 0,
+      "contact_sheet": "feature-tracking-review-9x16.png"
+    },
+    {
+      "file": "gukgam-live-introduction-16x9.mp4",
+      "bytes": 13874850,
+      "sha256": "c0c686f0e4dcb4f743cc5dccd87c8053ac3d471b1d295e1fa70c2437280ae7d7",
+      "format": "16x9",
+      "width": 1920,
+      "height": 1080,
+      "seconds": 54.167,
+      "structure": {
+        "movie_seconds": 54.167,
+        "fast_start": true,
+        "tracks": [
+          {
+            "kind": "vide",
+            "timescale": 90000,
+            "duration_ticks": 4875000,
+            "sample_count": 1625,
+            "deltas": [
+              {
+                "count": 1625,
+                "delta": 3000
+              }
+            ],
+            "edit": null,
+            "width": 1920,
+            "height": 1080,
+            "encoded_bytes": 12553119,
+            "encoded_sha256": "7d2ad5343eab6f658d4c432cb05e01fdf25ffd41298dcab5be5cd745d8c0afa8"
+          },
+          {
+            "kind": "soun",
+            "timescale": 48000,
+            "duration_ticks": 2600960,
+            "sample_count": 2540,
+            "deltas": [
+              {
+                "count": 2540,
+                "delta": 1024
+              }
+            ],
+            "edit": {
+              "movie_duration_ticks": 54167,
+              "media_start_ticks": 0
+            },
+            "width": 0,
+            "height": 0,
+            "encoded_bytes": 1303817,
+            "encoded_sha256": "111508f0f662212f12348e9dfc7371926116e3fe96b1d1f1142c523aa063c363"
+          }
+        ]
+      },
+      "frame_seconds": [
+        0.05,
+        0.6,
+        1.5,
+        2.7499999999999996,
+        5.363916666666666,
+        6.963916666666667,
+        10.432708333333332,
+        11.282708333333332,
+        14.931520833333332,
+        15.731520833333333,
+        18.331520833333332,
+        21.1599375,
+        21.9599375,
+        24.6299375,
+        25.2599375,
+        27.628208333333333,
+        28.358208333333334,
+        29.13820833333333,
+        30.822249999999997,
+        31.452249999999996,
+        33.00225,
+        33.78225,
+        35.405874999999995,
+        36.035875,
+        36.765874999999994,
+        38.65989583333333,
+        39.30989583333333,
+        40.20989583333333,
+        41.75989583333333,
+        43.208687499999996,
+        43.93868749999999,
+        44.788687499999995,
+        46.91262499999999,
+        47.91262499999999,
+        53.16262499999999,
+        54.117000000000004
+      ],
+      "frame_count": 1625,
+      "fps": 30,
+      "unchanged_scenes": null,
+      "consecutive_source_frame_fingerprint_duplicates": 0,
+      "contact_sheet": "feature-tracking-review-16x9.png"
+    }
+  ],
+  "pcm": {
+    "seconds": 54.167,
+    "sample_rate": 48000,
+    "channels": 2,
+    "sample_peak_dbfs": -5.526031986454274,
+    "rms_dbfs": -22.280276412801125,
+    "samples_at_or_above_full_scale": 0,
+    "first_voice_alignment": {
+      "expected_first_voice_start_seconds": 0.4,
+      "lag_samples": 0,
+      "lag_seconds": 0,
+      "normalized_correlation": 0.9876682574909572,
+      "search_range_seconds": 0.08
+    },
+    "measurement": "Decoded MP4 PCM sample peak/RMS; not true peak or LUFS.",
+    "speaker_playback": false,
+    "previous_pcm_review_reused": true,
+    "new_pcm_decode_performed": false
+  },
+  "aspect_ratios_share_identical_encoded_audio": true,
+  "encoded_audio_sha256": "111508f0f662212f12348e9dfc7371926116e3fe96b1d1f1142c523aa063c363",
+  "source_image_pixels_modified": false,
+  "actual_app_control": false,
+  "new_model_calls": 0,
+  "paid_credits": 0,
+  "network_connections": false,
+  "visual_review": {
+    "decoded_contact_sheets_both_ratios": true,
+    "key_action_and_result_frames_reviewed": true,
+    "sampled_moving_camera_frames": 12,
+    "sampled_target_outline_and_pointer_tip_alignment": true,
+    "continuous_playback_subjective_review": false,
+    "minor_limitations": [
+      "시간 막대 이동 중 포인터 몸통의 아래 일부가 카드 경계에 걸리지만 가리키는 끝점과 강조선은 보존됨"
+    ]
+  }
+}

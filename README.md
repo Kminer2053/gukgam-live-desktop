@@ -4,11 +4,11 @@
 
 # 국감 라이브 데스크톱
 
-[![내 ChatGPT로 시작하는 국감 라이브 — 소개영상 재생](docs/public-release/media/poster-introduction-16x9.png)](https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-16x9.mp4)
+[![내 ChatGPT로 시작하는 국감 라이브 — 소개영상 재생](docs/public-release/media/poster-feature-tracking-16x9.png)](https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-16x9-Tracked.mp4)
 
 **바이브코딩 몰라도 내 GPT 계정으로 국정감사 회의록 정리**
 
-[Windows 설치파일](https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Setup-0.1.0.exe) · [그림으로 보는 사용설명서](https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Manual-ko.html) · [Threads 세로형 영상](https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-9x16.mp4)
+[Windows 설치파일](https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Setup-0.1.0.exe) · [그림으로 보는 사용설명서](https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Manual-ko.html) · [Threads 세로형 영상](https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-9x16-Tracked.mp4)
 
 </div>
 

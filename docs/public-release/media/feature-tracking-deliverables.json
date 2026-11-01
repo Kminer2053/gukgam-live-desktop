@@ -1,0 +1,68 @@
+{
+  "published": true,
+  "assets": [
+    {
+      "name": "Gukgam-Live-Introduction-9x16-Tracked.mp4",
+      "bytes": 13956486,
+      "sha256": "cb6d9b7272ddb1bce3788a4c9d463e5931cc44d7fff86aee58733ea518510f79",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-9x16-Tracked.mp4"
+    },
+    {
+      "name": "Gukgam-Live-Introduction-9x16-Tracked.png",
+      "bytes": 508010,
+      "sha256": "f2df55d8dbd26eb6dfc127bdc641ff8e8d3c57cbaf8a0a54b4345838eab10017",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-9x16-Tracked.png"
+    },
+    {
+      "name": "Gukgam-Live-Introduction-16x9-Tracked.mp4",
+      "bytes": 13874850,
+      "sha256": "c0c686f0e4dcb4f743cc5dccd87c8053ac3d471b1d295e1fa70c2437280ae7d7",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-16x9-Tracked.mp4"
+    },
+    {
+      "name": "Gukgam-Live-Introduction-16x9-Tracked.png",
+      "bytes": 573781,
+      "sha256": "81689ef8931ceb1b578767cfc910e70971c1e16afab93c4ff13ac961f4272800",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-16x9-Tracked.png"
+    },
+    {
+      "name": "Gukgam-Live-Promo-Tracked-SHA256SUMS.txt",
+      "bytes": 432,
+      "sha256": "706c52f92cfd9a23e9a22a0f02f2ca3f48e47748daac33ba5063413c1930cb73",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Promo-Tracked-SHA256SUMS.txt"
+    }
+  ],
+  "source_derivations": [
+    {
+      "file": "render-feature-tracking.mjs",
+      "private_sha256": "4555b0135eb2a3d973f6964167f7851a32977bb4d6aadd8fa3d4c29919b32015",
+      "public_sha256": "621c4517434c7a6b4319809f93a28376c648f167c516751c08c0b1fbbbda2c5b",
+      "changes": "공개 media 폴더 기준 저장소·캡처·출력 기본 경로만 수정"
+    },
+    {
+      "file": "review-feature-tracking.mjs",
+      "private_sha256": "3afe3e3c29eb24e8f14698c9255b4b086086bace3d8e4e8a932a38b8970e408d",
+      "public_sha256": "0dc76a11af8033570f086ed64ea4d5af36d5e806c6c3b32901db67d876b00268",
+      "changes": "공개 media 폴더 기준 저장소·캡처·출력 기본 경로만 수정"
+    },
+    {
+      "file": "feature-tracking-shots.json",
+      "private_sha256": "c43280640062363aa48550f62bbfc0df9e2e72e033cafe48a6a7686f561b9915",
+      "public_sha256": "85fc89fce06acc6a40ba1ede20871287167922463e7017f8161467b34b72efcf",
+      "changes": "사진 픽셀은 그대로 보존하고 신규 JPEG 6개의 공개 파일명과 확장자만 정리",
+      "capture_filename_mapping": {
+        "02-overview-workspace.png": "23-search-before.jpg",
+        "05-search-final.png": "24-search-results.jpg",
+        "06-timeline-start.png": "25-timeline-start.jpg",
+        "07-timeline-end.png": "26-timeline-end.jpg",
+        "08-export-before.png": "27-export-before.jpg",
+        "09-export-open.png": "28-export-menu.jpg"
+      }
+    }
+  ],
+  "source_images_repainted": false,
+  "new_model_calls": 0,
+  "paid_credits": 0,
+  "release_url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/tag/v0.1.0",
+  "assets_verified_at": "2026-11-01T10:44:48.409Z"
+}
