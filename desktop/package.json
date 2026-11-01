@@ -11,7 +11,9 @@
     "typecheck": "tsc --noEmit",
     "test": "node --import tsx --test tests/*.test.ts",
     "dev": "npm run build && electron .",
-    "dist": "electron-builder --win nsis"
+    "dist": "electron-builder --win nsis",
+    "prebuild": "node scripts/apply-build-compat-patches.cjs",
+    "predist": "node scripts/apply-build-compat-patches.cjs"
   },
   "dependencies": {
     "jose": "6.1.0"
@@ -121,6 +123,14 @@
     "npmRebuild": false
   },
   "overrides": {
-    "tar": "7.5.22"
+    "tar": "7.5.22",
+    "minimatch": "11.0.2",
+    "glob": "14.0.3",
+    "@electron/asar": "4.3.1",
+    "filelist": "2.0.2",
+    "rimraf": "6.1.3"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }
