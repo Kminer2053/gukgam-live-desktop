@@ -1,3 +1,54 @@
-# 로컬 AI(Apple Silicon 전용) — 음성인식·요약을 외부 전송 없이 처리
-mlx-whisper>=0.4.3
-mlx-lm>=0.24
+# 선택적 로컬 AI: Apple Silicon / macOS 14 이상 / Python 3.12 전용
+# Windows 기본 엔진에는 영향을 주지 않도록 모든 항목에 플랫폼 마커를 둔다.
+# uv 0.13.6, aarch64-apple-darwin, MACOSX_DEPLOYMENT_TARGET=14.0
+# 2026-11-02 공식 PyPI 전체 전이 고정. 모델 가중치는 포함하지 않는다.
+# macOS 13 대상은 구형 MLX·Torch를 선택하므로 안전한 대체 환경으로 인정하지 않는다.
+annotated-doc==0.0.5 ; sys_platform == "darwin" and platform_machine == "arm64"
+anyio==4.15.1 ; (sys_platform != "emscripten") and (sys_platform == "darwin" and platform_machine == "arm64")
+certifi==2026.10.23 ; sys_platform == "darwin" and platform_machine == "arm64"
+charset-normalizer==3.5.2 ; sys_platform == "darwin" and platform_machine == "arm64"
+click==8.5.0 ; sys_platform == "darwin" and platform_machine == "arm64"
+filelock==4.2.6 ; sys_platform == "darwin" and platform_machine == "arm64"
+fsspec==2026.9.0 ; sys_platform == "darwin" and platform_machine == "arm64"
+h11==0.16.0 ; (sys_platform != "emscripten") and (sys_platform == "darwin" and platform_machine == "arm64")
+hf-xet==1.8.0 ; (platform_machine == "AMD64" or platform_machine == "ARM64" or platform_machine == "aarch64" or platform_machine == "amd64" or platform_machine == "arm64" or platform_machine == "x86_64") and (sys_platform == "darwin" and platform_machine == "arm64")
+httpcore2==2.16.0 ; (sys_platform != "emscripten") and (sys_platform == "darwin" and platform_machine == "arm64")
+httpx2==2.16.0 ; sys_platform == "darwin" and platform_machine == "arm64"
+huggingface-hub==2.4.0 ; sys_platform == "darwin" and platform_machine == "arm64"
+idna==3.20 ; sys_platform == "darwin" and platform_machine == "arm64"
+jinja2==3.1.6 ; sys_platform == "darwin" and platform_machine == "arm64"
+llvmlite==0.50.0 ; sys_platform == "darwin" and platform_machine == "arm64"
+markdown-it-py==4.2.0 ; sys_platform == "darwin" and platform_machine == "arm64"
+markupsafe==3.0.4 ; sys_platform == "darwin" and platform_machine == "arm64"
+mdurl==0.1.2 ; sys_platform == "darwin" and platform_machine == "arm64"
+mlx==0.32.4 ; sys_platform == "darwin" and platform_machine == "arm64"
+mlx-lm==0.32.2 ; sys_platform == "darwin" and platform_machine == "arm64"
+mlx-metal==0.32.4 ; (sys_platform == "darwin") and (sys_platform == "darwin" and platform_machine == "arm64")
+mlx-whisper==0.4.3 ; sys_platform == "darwin" and platform_machine == "arm64"
+more-itertools==11.2.1 ; sys_platform == "darwin" and platform_machine == "arm64"
+mpmath==1.3.0 ; sys_platform == "darwin" and platform_machine == "arm64"
+networkx==3.7 ; sys_platform == "darwin" and platform_machine == "arm64"
+numba==0.68.1 ; sys_platform == "darwin" and platform_machine == "arm64"
+numpy==2.5.4 ; sys_platform == "darwin" and platform_machine == "arm64"
+packaging==26.3 ; sys_platform == "darwin" and platform_machine == "arm64"
+protobuf==7.36.2 ; sys_platform == "darwin" and platform_machine == "arm64"
+pygments==2.21.0 ; sys_platform == "darwin" and platform_machine == "arm64"
+pyyaml==6.0.3 ; sys_platform == "darwin" and platform_machine == "arm64"
+regex==2026.9.29 ; sys_platform == "darwin" and platform_machine == "arm64"
+requests==2.34.2 ; sys_platform == "darwin" and platform_machine == "arm64"
+rich==15.0.0 ; sys_platform == "darwin" and platform_machine == "arm64"
+safetensors==0.8.0 ; sys_platform == "darwin" and platform_machine == "arm64"
+scipy==1.18.1 ; sys_platform == "darwin" and platform_machine == "arm64"
+sentencepiece==0.2.2 ; sys_platform == "darwin" and platform_machine == "arm64"
+setuptools==84.2.1 ; sys_platform == "darwin" and platform_machine == "arm64"
+shellingham==1.5.4 ; sys_platform == "darwin" and platform_machine == "arm64"
+sympy==1.14.0 ; sys_platform == "darwin" and platform_machine == "arm64"
+tiktoken==0.14.0 ; sys_platform == "darwin" and platform_machine == "arm64"
+tokenizers==0.23.3 ; sys_platform == "darwin" and platform_machine == "arm64"
+torch==2.15.0 ; sys_platform == "darwin" and platform_machine == "arm64"
+tqdm==4.70.1 ; sys_platform == "darwin" and platform_machine == "arm64"
+transformers==5.22.1 ; sys_platform == "darwin" and platform_machine == "arm64"
+truststore==0.10.5 ; (sys_platform != "emscripten") and (sys_platform == "darwin" and platform_machine == "arm64")
+typer==0.27.3 ; sys_platform == "darwin" and platform_machine == "arm64"
+typing-extensions==4.16.0 ; sys_platform == "darwin" and platform_machine == "arm64"
+urllib3==2.8.0 ; sys_platform == "darwin" and platform_machine == "arm64"

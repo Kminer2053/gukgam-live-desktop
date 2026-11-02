@@ -1,11 +1,17 @@
-# Windows 설치판의 엔진 빌드 의존성. 직원 PC에는 Python 설치가 필요 없다.
+# Windows x64 / Python 3.12 설치판 엔진. 직원 PC에는 Python 설치가 필요 없다.
+# 공통·Julia의 전체 전이 고정 목록을 그대로 포함한다.
 -r requirements.txt
 -r requirements-julia-cpu.txt
 
-# CPU 실행기는 동봉하되 모델 파일은 사용자 선택 때 별도로 준비한다.
-pyinstaller==6.22.3
-# Windows의 Asia/Seoul 등 IANA 시간대 자료를 동봉한다.
-tzdata==2026.5
-
-# 앱이 승인된 새 릴레이 DB의 스키마를 준비할 때만 불러온다.
+# uv 0.13.6 / 2026-11-02 공식 PyPI 해석 중 추가 빌드·릴레이 의존성
+# 모델 실행기만 동봉하며 모델 가중치는 이 설치 목록에 없다.
+altgraph==0.17.5
+macholib==1.16.4 ; sys_platform == 'darwin'
+pefile==2024.8.26 ; sys_platform == 'win32'
 psycopg[binary]==3.3.6
+psycopg-binary==3.3.6 ; implementation_name != 'pypy'
+pyinstaller==6.22.3
+pyinstaller-hooks-contrib==2026.9
+pywin32-ctypes==0.2.3 ; sys_platform == 'win32'
+setuptools==84.2.1
+tzdata==2026.5

@@ -6,6 +6,7 @@
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import sqlite3
@@ -16,7 +17,20 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator
 
-SCHEMA_VERSION = 5
+SCHEMA_VERSION = 6
+
+
+def item_fingerprint_basis(*parts: str) -> str:
+    """항목의 생성 입력. 구분자가 본문에 있어도 서로 다른 입력이 합쳐지지 않는다."""
+    return json.dumps([re.sub(r"\s+", "", p or "") for p in parts], ensure_ascii=False, separators=(",", ":"))
+
+
+def _item_fingerprint_digest(basis: str) -> str:
+    return hashlib.sha256(basis.encode("utf-8")).hexdigest()
+
+
+def item_fingerprint(*parts: str) -> str:
+    return _item_fingerprint_digest(item_fingerprint_basis(*parts))
 
 SCHEMA = r"""
 CREATE TABLE IF NOT EXISTS sessions (
@@ -148,6 +162,8 @@ CREATE TABLE IF NOT EXISTS items (
   origin        TEXT NOT NULL DEFAULT 'rule',   -- rule|llm|manual
   confidence    REAL NOT NULL DEFAULT 0.5,
   fingerprint   TEXT NOT NULL DEFAULT '',
+  fingerprint_basis TEXT NOT NULL DEFAULT '', -- 생성 입력: 사람이 요지를 고쳐도 바꾸지 않는다
+  fingerprint_state TEXT NOT NULL DEFAULT '', -- ready|legacy_edited|collision
   note          TEXT NOT NULL DEFAULT '',
   edited        INTEGER NOT NULL DEFAULT 0,     -- 사람이 손댄 항목(자동 재추출·요구 위원 갱신이 덮어쓰지 않음)
   created_at    INTEGER NOT NULL,
@@ -339,7 +355,29 @@ COLUMN_MIGRATIONS: list[tuple[str, str, str, str | None]] = [
     # 이전 판에서 사람이 고친 것으로 볼 수 있는 항목(수동 생성·메모·수정 이력)은 '사람이 손댄 항목'으로 보존한다
     ("items", "edited", "INTEGER NOT NULL DEFAULT 0",
      "UPDATE items SET edited=1 WHERE origin='manual' OR note<>'' OR updated_at<>created_at"),
+    ("items", "fingerprint_basis", "TEXT NOT NULL DEFAULT ''", None),
+    ("items", "fingerprint_state", "TEXT NOT NULL DEFAULT ''", None),
 ]
+
+
+def _migrate_item_fingerprints(connection: sqlite3.Connection) -> None:
+    """기존 지문만 교체한다. 충돌·복구 불가 수동 입력은 행을 보존하고 자동 대체를 보류한다."""
+    groups = {}
+    for row in connection.execute("SELECT * FROM items WHERE fingerprint<>'' ORDER BY id").fetchall():
+        basis = item_fingerprint_basis(row["kind"], str(row["utterance_id"] or ""), row["quote"] or row["text"])
+        digest = _item_fingerprint_digest(basis)
+        plan = {"id": row["id"], "basis": basis, "digest": digest,
+                "legacy_edited": bool(row["edited"] or row["note"] or row["origin"] == "manual")}
+        groups.setdefault((row["session_id"], digest), []).append(plan)
+    # UNIQUE 인덱스의 이전 값과 새 값이 교차하더라도 전체 교체는 한 트랜잭션 안에서만 보인다.
+    connection.execute("UPDATE items SET fingerprint='' WHERE fingerprint<>''")
+    for group in groups.values():
+        collision = len(group) > 1
+        for plan in group:
+            state = "legacy_edited" if plan["legacy_edited"] else "collision" if collision else "ready"
+            value = plan["digest"] + (":" + str(plan["id"]) if collision else "")
+            connection.execute("UPDATE items SET fingerprint=?,fingerprint_basis=?,fingerprint_state=? WHERE id=?",
+                               (value, plan["basis"], state, plan["id"]))
 
 
 def _display_trigger_schema() -> str:
@@ -454,7 +492,11 @@ class Database:
         self._conn.execute("PRAGMA foreign_keys=ON")
         self._conn.execute("PRAGMA synchronous=NORMAL")
         self._conn.execute("PRAGMA busy_timeout=5000")
-        self.migrate()
+        try:
+            self.migrate()
+        except BaseException:
+            self._conn.close()
+            raise
 
     def migrate(self) -> None:
         with self._lock:
@@ -467,10 +509,22 @@ class Database:
                 if backfill:
                     self._conn.execute(backfill)
             self._conn.executescript(_display_trigger_schema())
-            self._conn.execute(
-                "INSERT INTO settings(key, value) VALUES('schema_version', ?) "
-                "ON CONFLICT(key) DO UPDATE SET value=excluded.value", (json.dumps(SCHEMA_VERSION),)
-            )
+            self._conn.execute("BEGIN IMMEDIATE")
+            try:
+                row = self._conn.execute("SELECT value FROM settings WHERE key='schema_version'").fetchone()
+                version = int(json.loads(row["value"])) if row else 0
+                if version < 6:
+                    _migrate_item_fingerprints(self._conn)
+                self._conn.execute(
+                    "CREATE INDEX IF NOT EXISTS ix_items_basis ON items(session_id,fingerprint_basis) "
+                    "WHERE fingerprint<>''")
+                self._conn.execute(
+                    "INSERT INTO settings(key, value) VALUES('schema_version', ?) "
+                    "ON CONFLICT(key) DO UPDATE SET value=excluded.value", (json.dumps(max(version, SCHEMA_VERSION)),))
+                self._conn.execute("COMMIT")
+            except BaseException:
+                self._conn.execute("ROLLBACK")
+                raise
 
     def close(self) -> None:
         with self._lock:
@@ -524,14 +578,20 @@ class Database:
     def transaction(self) -> Iterator[sqlite3.Connection]:
         with self._lock:
             before = self._conn.total_changes
-            self._conn.execute("BEGIN IMMEDIATE")
+            nested = self._conn.in_transaction
+            point = "gukgam_" + uuid.uuid4().hex
+            self._conn.execute("SAVEPOINT " + point if nested else "BEGIN IMMEDIATE")
             try:
                 yield self._conn
             except BaseException:
-                self._conn.execute("ROLLBACK")
+                if nested:
+                    self._conn.execute("ROLLBACK TO " + point)
+                    self._conn.execute("RELEASE " + point)
+                else:
+                    self._conn.execute("ROLLBACK")
                 raise
             else:
-                self._conn.execute("COMMIT")
+                self._conn.execute("RELEASE " + point if nested else "COMMIT")
             finally:
                 if self._conn.total_changes != before:
                     self._change_epoch += 1

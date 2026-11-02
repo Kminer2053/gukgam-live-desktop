@@ -1,4 +1,24 @@
 # 선택한 Julia-1 CPU 판정용. 모델 가중치는 설치물에 넣지 않는다.
-onnxruntime==1.31.0
-tokenizers==0.23.3
+# uv 0.13.6 / Python 3.12 / 2026-11-02 공식 PyPI 전체 전이 고정
+anyio==4.15.1 ; sys_platform != 'emscripten'
+click==8.5.0
+colorama==0.4.6 ; sys_platform == 'win32'
+filelock==4.2.6
+flatbuffers==25.12.19
+fsspec==2026.9.0
+h11==0.16.0 ; sys_platform != 'emscripten'
+hf-xet==1.8.0 ; platform_machine == 'AMD64' or platform_machine == 'ARM64' or platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'arm64' or platform_machine == 'x86_64'
+httpcore2==2.16.0 ; sys_platform != 'emscripten'
+httpx2==2.16.0
+httpx2-jsfetch==1.0 ; sys_platform == 'emscripten'
+huggingface-hub==2.4.0
+idna==3.20
 numpy==2.5.4
+onnxruntime==1.31.0
+packaging==26.3
+protobuf==7.36.2
+pyyaml==6.0.3
+tokenizers==0.23.3
+tqdm==4.70.1
+truststore==0.10.5 ; sys_platform != 'emscripten'
+typing-extensions==4.16.0

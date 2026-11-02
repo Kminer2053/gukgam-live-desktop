@@ -22,7 +22,8 @@ from .models import SegmentEvent, Turn
 from .nlp import rules
 from .nlp.handover_parts import direct_handover_parts
 from .nlp.speaker import BlockTracker, apply_manual_questioner, needs_answer_question_review, parse_hint, split_handover
-from .repo import Repo, fingerprint
+from .db import item_fingerprint_basis
+from .repo import Repo
 
 log = logging.getLogger(__name__)
 
@@ -434,12 +435,13 @@ class SessionPipeline:
         """
         uid = u["id"]
         olds = self.repo.items_for_utterance(uid, origin="rule")
-        replaceable = [i for i in olds if i["status"] == "open" and not i.get("edited") and not i.get("note")]
+        replaceable = [i for i in olds if i["status"] == "open" and not i.get("edited") and not i.get("note")
+                       and self.repo.item_auto_replaceable(i)]
         rep_ids = {i["id"] for i in replaceable}
         keep_kinds = {i["kind"] for i in olds if i["id"] not in rep_ids}
         extracted = self._rule_items(u)
-        fps = {fingerprint(it.kind, str(uid), it.quote or it.text) for it in extracted}
-        stale = [i["id"] for i in replaceable if i["fingerprint"] not in fps]
+        bases = {item_fingerprint_basis(it.kind, str(uid or ""), it.quote or it.text) for it in extracted}
+        stale = [i["id"] for i in replaceable if self.repo.item_basis(i) not in bases]
         self.repo.supersede_items(stale)
         created = self._extract(u, [it for it in extracted if it.kind not in keep_kinds])
         if stale:

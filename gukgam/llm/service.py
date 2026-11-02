@@ -25,7 +25,7 @@ from ..log_privacy import exception_label, failure_reason, public_error
 from ..models import STATUS_LABELS
 from ..nlp import rules
 from ..nlp.text import split_sentences
-from ..repo import fingerprint
+from ..db import item_fingerprint_basis
 from . import prompts
 from .providers import (SIM_ANY_UTTERANCE, SIM_SAME_UTTERANCE, LLMParseError, LLMProvider, LocalMLXProvider,
                         RulesProvider, block_ref_utterance, ground_org_relevance, ground_ref_uids, make_provider,
@@ -767,8 +767,8 @@ class AnalysisService:
         sid, bid = block["session_id"], block["id"]
         existing = repo.list_items(sid, block_id=bid, include_dismissed=True)
         replaceable = [i for i in existing if i["origin"] == "llm" and i["status"] == "open"
-                       and not i.get("edited") and not (i.get("note") or "")]
-        by_fp = {i["fingerprint"]: i for i in replaceable if i.get("fingerprint")}
+                       and not i.get("edited") and not (i.get("note") or "") and repo.item_auto_replaceable(i)]
+        by_basis = {repo.item_basis(i): i for i in replaceable if i.get("fingerprint")}
         repl_ids = {i["id"] for i in replaceable}
         pool = [i for i in existing if i["id"] not in repl_ids]
         by_id = {u["id"]: repo.get_utterance(u["id"]) or u for u in utts}
@@ -800,7 +800,7 @@ class AnalysisService:
                 dept = (rules.assign_department(text, departments) or rules.assign_department(src, departments)
                         or (rules.assign_department(u["text"], departments) if u else ""))
                 strength = r.get("strength") or ""
-                prev = by_fp.get(fingerprint(kind, str(uid or ""), text))
+                prev = by_basis.get(item_fingerprint_basis(kind, str(uid or ""), text))
                 if prev is not None and prev["id"] not in kept:
                     # 같은 항목이 다시 나옴: 그대로 두고(id 유지) 자동으로 정해지는 값만 맞춘다
                     kept.add(prev["id"])

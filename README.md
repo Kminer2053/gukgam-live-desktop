@@ -72,6 +72,8 @@ ChatGPT 구독 사용과 API 이용 요금은 별개입니다. 외부 AI를 고�
 - [공개 파일 범위](docs/public-release/EXPORT_REVIEW.md)
 - [배포 확인 정보](docs/public-release/RELEASE_MANIFEST.json)
 - [제삼자 코드·모델 고지](docs/public-release/THIRD_PARTY_NOTICES.md)
+- [개발용 Python 의존성 고정](docs/PYTHON_DEPENDENCY_LOCKS.md)
+- [기존 기록의 중복 판정 키 이전](docs/ITEM_FINGERPRINT_MIGRATION.md)
 
 프로젝트 소스는 [MIT 라이선스](LICENSE)로 공개합니다. 모델과 외부 라이브러리에는 개별 라이선스가 적용됩니다. 실제 회의 기록·녹음·사용자 계정·개인 설정은 공개 소스에 포함하지 않습니다.
 

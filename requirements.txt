@@ -1,15 +1,39 @@
-# 핵심(서버·수집·보고)
-fastapi==0.162.0
-starlette==1.10.0
+# 핵심(서버·수집·보고)과 시험: 직접·전이 의존성 전체 고정
+# uv 0.13.6 / Python 3.12 / 2026-11-02 공식 PyPI 해석
+# Windows x64와 Ubuntu 회귀를 함께 유지하도록 플랫폼 마커를 보존한다.
+annotated-doc==0.0.5
+annotated-types==0.8.0
 anyio==4.15.1
-idna==3.20
-uvicorn[standard]==0.54.0
-jinja2==3.1.6
+certifi==2026.10.23
+click==8.5.0
+colorama==0.4.6 ; sys_platform == 'win32'
+fastapi==0.162.0
+h11==0.16.0
+httpcore==1.0.9
+httptools==0.9.0
 httpx==0.28.1
-websockets==17.3
-python-multipart==0.0.32
-python-docx==1.2.0
+idna==3.20
+iniconfig==2.3.1
+jinja2==3.1.6
+lxml==6.1.3
+markupsafe==3.0.4
 numpy==2.5.4
-# 테스트
+opentelemetry-api==1.45.2
+packaging==26.3
+pluggy==1.7.0
+pydantic==2.14.2
+pydantic-core==2.50.2
+pygments==2.21.0
 pytest==9.1.1
 pytest-asyncio==1.4.0
+python-docx==1.2.0
+python-dotenv==1.2.4
+python-multipart==0.0.32
+pyyaml==6.0.3
+starlette==1.10.0
+typing-extensions==4.16.0
+typing-inspection==0.4.4
+uvicorn[standard]==0.54.0
+uvloop==0.23.0 ; platform_python_implementation != 'PyPy' and sys_platform != 'cygwin' and sys_platform != 'win32'
+watchfiles==1.3.0
+websockets==17.3

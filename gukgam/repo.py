@@ -1,13 +1,12 @@
 """데이터 접근 계층. 모든 모듈은 SQL 대신 이 Repo 를 쓴다."""
 from __future__ import annotations
 
-import hashlib
 import json
 import re
 import secrets
 from typing import Any, Iterable
 
-from .db import Database, now_ms
+from .db import Database, item_fingerprint as fingerprint, item_fingerprint_basis, now_ms
 from .repo_stages import StageRepoMixin
 from .repo_display import DisplayRepoMixin
 
@@ -54,11 +53,6 @@ def new_session_id() -> str:
     from .config import KST
 
     return datetime.now(KST).strftime("%Y%m%d") + "-" + secrets.token_hex(3)
-
-
-def fingerprint(*parts: str) -> str:
-    norm = "|".join(re.sub(r"\s+", "", p or "") for p in parts)
-    return hashlib.sha1(norm.encode("utf-8")).hexdigest()[:16]
 
 
 def _like(term: str) -> str:
@@ -750,25 +744,59 @@ class Repo(StageRepoMixin, DisplayRepoMixin):
     _ITEM_SELECT = ("SELECT i.*, s.title AS session_title, s.meeting_date, u.ts_start AS utt_ts FROM items i "
                     "JOIN sessions s ON s.id=i.session_id LEFT JOIN utterances u ON u.id=i.utterance_id")
 
+    @staticmethod
+    def item_basis(item: dict) -> str:
+        return item.get("fingerprint_basis") or item_fingerprint_basis(
+            item["kind"], str(item.get("utterance_id") or ""), item.get("quote") or item["text"])
+
+    @staticmethod
+    def item_auto_replaceable(item: dict) -> bool:
+        return item.get("fingerprint_state", "") in {"", "ready"}
+
     def add_item(self, sid: str, *, kind: str, text: str, quote: str = "", speaker: str = "", requester: str = "",
                  block_id: int | None = None, utterance_id: int | None = None, origin: str = "rule",
                  confidence: float = 0.6, assignee_dept: str = "", strength: str = "", due_date: str = "",
                  dedupe: bool = True) -> tuple[dict, bool]:
         """(행, 새로 생성 여부). 수동 생성(origin='manual')은 처음부터 '사람이 손댄 항목'(edited=1)이다."""
+        basis = item_fingerprint_basis(kind, str(utterance_id or ""), quote or text) if dedupe else ""
         fp = fingerprint(kind, str(utterance_id or ""), quote or text) if dedupe else ""
-        if fp:
-            ex = self.db.query_one("SELECT * FROM items WHERE session_id=? AND fingerprint=?", (sid, fp))
-            if ex:
-                return ex, False
-        t = now_ms()
-        iid = self.db.insert(
-            "INSERT INTO items(session_id,block_id,utterance_id,kind,strength,text,quote,speaker,requester,assignee_dept,"
-            "due_date,status,origin,confidence,fingerprint,edited,created_at,updated_at) "
-            "VALUES(?,?,?,?,?,?,?,?,?,?,?,'open',?,?,?,?,?,?)",
-            (sid, block_id, utterance_id, kind, strength, text, quote, speaker, requester, assignee_dept, due_date,
-             origin, confidence, fp, int(origin == "manual"), t, t),
-        )
-        return self.get_item(iid), True  # type: ignore[return-value]
+        with self.db.transaction() as connection:
+            if fp:
+                # 해시 자체를 동일성으로 삼지 않는다. 강제 충돌도 서로 다른 입력을 합치지 않는다.
+                ex = connection.execute("SELECT * FROM items WHERE session_id=? AND fingerprint_basis=? "
+                                        "AND fingerprint<>'' ORDER BY id LIMIT 1", (sid, basis)).fetchone()
+                if ex:
+                    return ex, False
+                if origin != "manual":
+                    protected = "SELECT * FROM items WHERE session_id=? AND kind=? AND status<>'superseded' " \
+                                "AND fingerprint_state='legacy_edited' "
+                    if utterance_id:
+                        held = connection.execute(protected + "AND utterance_id=? ORDER BY id LIMIT 1",
+                                                  (sid, kind, utterance_id)).fetchone()
+                    elif block_id is not None:
+                        held = connection.execute(protected + "AND COALESCE(utterance_id,0)=0 AND block_id=? ORDER BY id LIMIT 1",
+                                                  (sid, kind, block_id)).fetchone()
+                    else:
+                        held = connection.execute(protected + "AND COALESCE(utterance_id,0)=0 AND block_id IS NULL LIMIT 1",
+                                                  (sid, kind)).fetchone()
+                        if held:
+                            raise ValueError("자동 항목과 이전 수동 항목의 연결 근거를 확인해야 합니다")
+                    if held:
+                        # 생성 입력을 복구할 수 없는 이전 수동 항목은 같은 근거·종류의 자동 재생성으로 우회하지 않는다.
+                        return held, False
+                base, suffix = fp, 0
+                while connection.execute("SELECT 1 FROM items WHERE session_id=? AND fingerprint=?", (sid, fp)).fetchone():
+                    suffix += 1
+                    fp = base + ":" + str(suffix)
+            t = now_ms()
+            cursor = connection.execute(
+                "INSERT INTO items(session_id,block_id,utterance_id,kind,strength,text,quote,speaker,requester,assignee_dept,"
+                "due_date,status,origin,confidence,fingerprint,fingerprint_basis,fingerprint_state,edited,created_at,updated_at) "
+                "VALUES(?,?,?,?,?,?,?,?,?,?,?,'open',?,?,?,?,?,?,?,?)",
+                (sid, block_id, utterance_id, kind, strength, text, quote, speaker, requester, assignee_dept, due_date,
+                 origin, confidence, fp, basis, "ready" if dedupe else "", int(origin == "manual"), t, t))
+            row = connection.execute("SELECT * FROM items WHERE id=?", (cursor.lastrowid,)).fetchone()
+        return row, True
 
     def get_item(self, iid: int) -> dict | None:
         return self.db.query_one("SELECT * FROM items WHERE id=?", (iid,))
@@ -805,7 +833,8 @@ class Repo(StageRepoMixin, DisplayRepoMixin):
         if not ids:
             return
         marks = ",".join("?" for _ in ids)
-        self.db.execute(f"UPDATE items SET status='superseded', fingerprint='', updated_at=? WHERE id IN ({marks})",
+        self.db.execute(f"UPDATE items SET status='superseded', fingerprint='', updated_at=? WHERE id IN ({marks}) "
+                        "AND fingerprint_state IN ('','ready')",
                         tuple([now_ms()] + ids))
 
     def items_for_utterance(self, uid: int, origin: str | None = None) -> list[dict]:
@@ -850,7 +879,7 @@ class Repo(StageRepoMixin, DisplayRepoMixin):
         이름은 예전 그대로지만 하드 삭제하지 않는다(supersede_items). 대체한 id 목록을 돌려준다.
         """
         rows = self.db.query("SELECT id FROM items WHERE block_id=? AND origin=? AND status='open' AND edited=0 "
-                             "AND note=''", (block_id, origin))
+                             "AND note='' AND fingerprint_state IN ('','ready')", (block_id, origin))
         ids = [r["id"] for r in rows]
         self.supersede_items(ids)
         return ids
