@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "status": "stable_0_1_1_candidate_verified_not_yet_published",
+  "status": "stable_0_1_1_github_published_gitlab_partial_security_review",
   "product_name": "국감 라이브 데스크톱",
   "release_version": "0.1.1",
   "source_release_ref": "v0.1.1",
@@ -72,13 +72,14 @@
     "existing_speaker_example_anonymization_preserved": true
   },
   "github_release": {
-    "id": null,
+    "id": 430986775,
     "tag": "v0.1.1",
     "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/tag/v0.1.1",
-    "published": false,
+    "published": true,
     "prerelease": false,
     "asset_count": 6,
-    "asset_digests_verified": false
+    "asset_digests_verified": true,
+    "published_at": "2026-11-02T01:47:13Z"
   },
   "gitlab": {
     "source_published": false,
@@ -214,12 +215,12 @@
       "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.1/SHA256SUMS.txt"
     }
   ],
-  "source_release_commit": null,
+  "source_release_commit": "8f82628aac381ea6fd9c95c8bf0ff06a94f0dfa4",
   "source_followup": {
     "kind": "source-security-and-build-compatibility-followups",
     "applies_to": "public main source",
-    "installer_rebuilt": false,
-    "published_installer_source_commit": "16a259ede8b005cc6155c672cd49f9a5cd315098",
+    "installer_rebuilt": true,
+    "published_installer_source_commit": "8f82628aac381ea6fd9c95c8bf0ff06a94f0dfa4",
     "selected_template_and_offline_tests_passed": 88,
     "new_model_requests": 0,
     "scanner_suppressions_added": false,
@@ -241,7 +242,7 @@
       "pymongo": "4.19.0"
     },
     "full_dependency_audit_clean": false,
-    "published_installer_rebuilt": false,
+    "published_installer_rebuilt": true,
     "bundle_anyio_idna_versions_verified": false,
     "selected_runtime_floor_contract_tests_passed": 6,
     "runtime_floor_source_commit": "f8599b78e296e83d3d64d576882e951a5ce22284",
@@ -276,7 +277,8 @@
       "filelist_corrected_windows_cases": 6,
       "original_harness_results_preserved": true,
       "application_runtime_sources_changed": false,
-      "published_installer_rebuilt": false
+      "published_installer_rebuilt": true,
+      "published_in_release": "v0.1.1"
     },
     "relay_cli_dependencies": {
       "provider_version": "59.4.0",
@@ -288,7 +290,8 @@
       "native_array_bound_element_getter_reads": 0,
       "cli_version_and_root_help_offline_passed": true,
       "real_account_or_cloud_deployment_tested": false,
-      "published_installer_rebuilt": false
+      "published_installer_rebuilt": true,
+      "published_in_release": "v0.1.1"
     },
     "core_requirements_match_tested_development_versions": true,
     "relay_connection_identity": {
@@ -306,7 +309,8 @@
         "all_tests_declared_passed": false
       },
       "actual_application_or_record_processing_repeated": false,
-      "published_installer_rebuilt": false
+      "published_installer_rebuilt": true,
+      "published_in_release": "v0.1.1"
     },
     "desktop_brand_icon": {
       "design": "hearing dome and caption bubble",
@@ -324,8 +328,10 @@
       ],
       "application_window_and_installer_source_references_verified": true,
       "web_icon_sources_synchronized": true,
-      "published_installer_rebuilt": false,
-      "existing_release_icon_asset_replaced": false
+      "published_installer_rebuilt": true,
+      "existing_release_icon_asset_replaced": false,
+      "published_in_release": "v0.1.1",
+      "updated_icon_published_in_release": "v0.1.1"
     },
     "feature_tracking_video": {
       "published": true,
@@ -378,7 +384,8 @@
       "installer_rebuilt": false,
       "new_model_calls": 0,
       "paid_credits": 0
-    }
+    },
+    "published_in_release": "v0.1.1"
   },
   "previous_releases": [
     {
