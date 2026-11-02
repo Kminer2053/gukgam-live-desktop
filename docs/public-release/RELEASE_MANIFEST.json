@@ -1,18 +1,18 @@
 {
-  "schema_version": 2,
-  "status": "stable_github_published_gitlab_partial_security_review",
+  "schema_version": 3,
+  "status": "stable_0_1_1_candidate_verified_not_yet_published",
   "product_name": "국감 라이브 데스크톱",
-  "release_version": "0.1.0",
-  "source_release_ref": "v0.1.0",
+  "release_version": "0.1.1",
+  "source_release_ref": "v0.1.1",
   "target": "windows-x64",
   "license_spdx": "MIT",
   "public_github_url": "https://github.com/Kminer2053/gukgam-live-desktop",
   "public_gitlab_url": "https://gitlab.aigov.go.kr/Kminer2053/gukgam-live-desktop",
   "installer": {
-    "name": "Gukgam-Live-Setup-0.1.0.exe",
-    "bytes": 326369746,
-    "sha256": "7fc58e72bb0938f2018aaddfb80816ed32223816adc0b31d4bd3cc36065c606d",
-    "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Setup-0.1.0.exe"
+    "name": "Gukgam-Live-Setup-0.1.1.exe",
+    "bytes": 325881809,
+    "sha256": "8ce526ff2f859aa817128eac42d1b1e9dbfd3e6724c5b1a5c0d87d7eb9a2edb5",
+    "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.1/Gukgam-Live-Setup-0.1.1.exe"
   },
   "manual": {
     "source": "docs/public-release/manual.html",
@@ -22,7 +22,7 @@
     "visual_service_diagram": true,
     "actual_settings_screenshots": true,
     "bytes": 2259106,
-    "sha256": "e9dcbe2f95ece9ab8c2e2411d28a35bb32b3a3308e63707bdc6942778d63e7e8"
+    "sha256": "6014c85ec1a34f6dc3e248f4e3d384852fefbbcab63fbec7376ed6a7ce9abbaf"
   },
   "relay_management": {
     "default_enabled": false,
@@ -34,29 +34,35 @@
     "actual_cloud_cost_saving_measured": false
   },
   "validation": {
+    "complete": true,
+    "scope": "0.1.1 release package and targeted source verification",
+    "source_base_commit": "ca9b8ec85270da946737410a23ff526a0edbc6c6",
     "package_verified": true,
+    "windows_installer_build_exit_code": 0,
+    "version": "0.1.1",
+    "installer_sha256": "8ce526ff2f859aa817128eac42d1b1e9dbfd3e6724c5b1a5c0d87d7eb9a2edb5",
     "python_modules_bytecode_verified": 146,
-    "public_synthetic_tests_passed": 180,
-    "full_private_run": {
-      "passed": 8616,
-      "failed": 40,
-      "skipped": 11,
-      "windows_symlink_fixture_unavailable": 29,
-      "non_permission_failures_rechecked_passed": 11,
-      "all_tests_declared_passed": false
-    },
-    "installed_version_observed": "0.1.0",
-    "installed_binary_hashes_verified": true,
-    "record_page_preservation_check": "verified session identifiers and installed record page",
-    "desktop_tests_passed": 193,
-    "record_count_after_update": 21,
-    "record_id_set_preserved": true,
-    "update_validation_model_requests": 0,
-    "local_relay_observed": {
-      "enabled": false,
-      "active": false,
-      "cloud_enabled": false
-    }
+    "engine_files_verified": 905,
+    "desktop_ui_files_verified": 6,
+    "web_assets_verified": 37,
+    "cpu_asset_hashes_verified": true,
+    "tls_resource_906_bytes_verified": true,
+    "manual_sha256": "6014c85ec1a34f6dc3e248f4e3d384852fefbbcab63fbec7376ed6a7ce9abbaf",
+    "application_pe_icon_images_verified": 7,
+    "setup_pe_icon_images_verified": 7,
+    "uninstaller_pe_icon_verified": false,
+    "uninstaller_icon_source_configured": true,
+    "typescript_typecheck_passed": true,
+    "targeted_python_tests_passed": 59,
+    "targeted_node_tests_passed": 48,
+    "all_product_flows_retested": false,
+    "installation_performed_for_this_release": false,
+    "last_observed_installed_version": "0.1.0",
+    "actual_app_or_collection_restarted": false,
+    "new_model_requests": 0,
+    "operating_records_read_or_changed": false,
+    "credentials_or_user_settings_included": false,
+    "bundle_anyio_idna_version_metadata_verified": false
   },
   "public_source_policy": {
     "private_history_included": false,
@@ -66,15 +72,13 @@
     "existing_speaker_example_anonymization_preserved": true
   },
   "github_release": {
-    "id": 430110807,
-    "tag": "v0.1.0",
-    "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/tag/v0.1.0",
-    "published": true,
+    "id": null,
+    "tag": "v0.1.1",
+    "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/tag/v0.1.1",
+    "published": false,
     "prerelease": false,
-    "published_at": "2026-10-31T19:29:05Z",
-    "asset_count": 19,
-    "asset_digests_verified": true,
-    "assets_verified_at": "2026-11-01T11:20:50.223Z"
+    "asset_count": 6,
+    "asset_digests_verified": false
   },
   "gitlab": {
     "source_published": false,
@@ -164,132 +168,53 @@
     "latest_attempt_utc": "2026-11-01T08:24:42.796691+00:00",
     "remaining_batches_not_server_verified": true,
     "operator_data_verification_pending": true,
-    "next_action": "운영자의 GitHub 연동 설정 후 정상 가져오기 절차 확인",
+    "next_action": "운영자에게 sandbox 패키지 식별·OSV 범위 매칭 확인 필요",
     "github_import": {
       "completed": false,
-      "user_selected": "운영자의 GitHub 연동 설정 후 진행",
-      "waiting_for_operator_integration": true,
-      "broad_personal_token_used": false,
+      "repository_list_loaded": false,
+      "last_visible_error": "github 리포지토리 요청 실패",
       "equivalent_server_security_scan_coverage_confirmed": false
     }
   },
   "release_assets": [
     {
-      "name": "Gukgam-Live-Setup-0.1.0.exe",
-      "bytes": 326369746,
-      "sha256": "7fc58e72bb0938f2018aaddfb80816ed32223816adc0b31d4bd3cc36065c606d",
-      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Setup-0.1.0.exe"
+      "name": "Gukgam-Live-Setup-0.1.1.exe",
+      "bytes": 325881809,
+      "sha256": "8ce526ff2f859aa817128eac42d1b1e9dbfd3e6724c5b1a5c0d87d7eb9a2edb5",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.1/Gukgam-Live-Setup-0.1.1.exe"
     },
     {
       "name": "Gukgam-Live-Manual-ko.html",
       "bytes": 2259106,
-      "sha256": "e9dcbe2f95ece9ab8c2e2411d28a35bb32b3a3308e63707bdc6942778d63e7e8",
-      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Manual-ko.html"
+      "sha256": "6014c85ec1a34f6dc3e248f4e3d384852fefbbcab63fbec7376ed6a7ce9abbaf",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.1/Gukgam-Live-Manual-ko.html"
     },
     {
       "name": "Gukgam-Live-Icon.ico",
-      "bytes": 21314,
-      "sha256": "55c4b3b1a0a110a1236b969869fb002d63f0f1978901e871d2c7eb18be272480",
-      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Icon.ico"
+      "bytes": 32532,
+      "sha256": "9aa932abb5906a7c57e3a4be92f6a3a20a3c0d44829d97a4f6c624bb69372cfa",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.1/Gukgam-Live-Icon.ico"
+    },
+    {
+      "name": "Gukgam-Live-Icon.png",
+      "bytes": 14962,
+      "sha256": "da78ef40ba88abe8360b659956db26b9ec8ebf43da1be279b5220cbdfa0c3768",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.1/Gukgam-Live-Icon.png"
     },
     {
       "name": "LICENSE.txt",
       "bytes": 1089,
       "sha256": "2f325006e1161f3413aa99680346bbbe7567309d7f8280e133cd1af9ce357521",
-      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/LICENSE.txt"
-    },
-    {
-      "name": "Gukgam-Live-Introduction-9x16.mp4",
-      "bytes": 49671504,
-      "sha256": "5a33776e122f619cdeac3979afd4cd691a1fd5dc3ed1214aaa167922ee08027b",
-      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-9x16.mp4"
-    },
-    {
-      "name": "Gukgam-Live-Introduction-16x9.mp4",
-      "bytes": 50750356,
-      "sha256": "3af28752797d589ba6089322dfda16bf0450fdb7116198d4be0cc057fcb1025b",
-      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-16x9.mp4"
-    },
-    {
-      "name": "Gukgam-Live-Introduction-9x16.png",
-      "bytes": 621263,
-      "sha256": "81941546e1327e2cf467fbb3747d8f7641299e72dd1165cbc6c648197f9aa895",
-      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-9x16.png"
-    },
-    {
-      "name": "Gukgam-Live-Introduction-16x9.png",
-      "bytes": 785058,
-      "sha256": "9f501e6ae483f581c9ed1d8049e2b9093652e15408c8e2af048f9edd13f10f7a",
-      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-16x9.png"
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.1/LICENSE.txt"
     },
     {
       "name": "SHA256SUMS.txt",
-      "bytes": 760,
-      "sha256": "0f3dd9e962f7aa48f0a8e6d43cb89a1a07c1aa7b02beab02db21bbdeccc843e8",
-      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/SHA256SUMS.txt"
-    },
-    {
-      "name": "Gukgam-Live-Introduction-9x16-Tracked.mp4",
-      "bytes": 13956486,
-      "sha256": "cb6d9b7272ddb1bce3788a4c9d463e5931cc44d7fff86aee58733ea518510f79",
-      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-9x16-Tracked.mp4"
-    },
-    {
-      "name": "Gukgam-Live-Introduction-9x16-Tracked.png",
-      "bytes": 508010,
-      "sha256": "f2df55d8dbd26eb6dfc127bdc641ff8e8d3c57cbaf8a0a54b4345838eab10017",
-      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-9x16-Tracked.png"
-    },
-    {
-      "name": "Gukgam-Live-Introduction-16x9-Tracked.mp4",
-      "bytes": 13874850,
-      "sha256": "c0c686f0e4dcb4f743cc5dccd87c8053ac3d471b1d295e1fa70c2437280ae7d7",
-      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-16x9-Tracked.mp4"
-    },
-    {
-      "name": "Gukgam-Live-Introduction-16x9-Tracked.png",
-      "bytes": 573781,
-      "sha256": "81689ef8931ceb1b578767cfc910e70971c1e16afab93c4ff13ac961f4272800",
-      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-16x9-Tracked.png"
-    },
-    {
-      "name": "Gukgam-Live-Promo-Tracked-SHA256SUMS.txt",
-      "bytes": 432,
-      "sha256": "706c52f92cfd9a23e9a22a0f02f2ca3f48e47748daac33ba5063413c1930cb73",
-      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Promo-Tracked-SHA256SUMS.txt"
-    },
-    {
-      "name": "Gukgam-Live-Introduction-9x16-Structure.mp4",
-      "bytes": 16367333,
-      "sha256": "e7ea18f6bfc9a8065bcabf05db477cce1b7d3982f65eadccda56f37fdebfc2f3",
-      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-9x16-Structure.mp4"
-    },
-    {
-      "name": "Gukgam-Live-Introduction-9x16-Structure.png",
-      "bytes": 508008,
-      "sha256": "6d3aeff9f54da4536cb86678974919b306da1b86fa5ca9b1704a12d15e0e9e34",
-      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-9x16-Structure.png"
-    },
-    {
-      "name": "Gukgam-Live-Introduction-16x9-Structure.mp4",
-      "bytes": 16192907,
-      "sha256": "7ed1da91c67af55880218646d78356fccf6d10e247644086dbb7c45634e93fec",
-      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-16x9-Structure.mp4"
-    },
-    {
-      "name": "Gukgam-Live-Introduction-16x9-Structure.png",
-      "bytes": 573781,
-      "sha256": "c67f479dd02f0d00e8aa4d2e10f8d40d316f920e0e76d913c377f531e1327450",
-      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-16x9-Structure.png"
-    },
-    {
-      "name": "Gukgam-Live-Promo-Structure-SHA256SUMS.txt",
-      "bytes": 440,
-      "sha256": "5be187167afa0f9e0b35d0557fefa922307f50610aff1727a81c99af4502f144",
-      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Promo-Structure-SHA256SUMS.txt"
+      "bytes": 439,
+      "sha256": "d0888c24e8c12852ddbfcb7f18156497574f227310f86d442ea9812e37bb39d7",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.1/SHA256SUMS.txt"
     }
   ],
-  "source_release_commit": "16a259ede8b005cc6155c672cd49f9a5cd315098",
+  "source_release_commit": null,
   "source_followup": {
     "kind": "source-security-and-build-compatibility-followups",
     "applies_to": "public main source",
@@ -454,5 +379,55 @@
       "new_model_calls": 0,
       "paid_credits": 0
     }
-  }
+  },
+  "previous_releases": [
+    {
+      "version": "0.1.0",
+      "source_commit": "16a259ede8b005cc6155c672cd49f9a5cd315098",
+      "github_release": {
+        "id": 430110807,
+        "tag": "v0.1.0",
+        "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/tag/v0.1.0",
+        "published": true,
+        "prerelease": false,
+        "published_at": "2026-10-31T19:29:05Z",
+        "asset_count": 19,
+        "asset_digests_verified": true,
+        "assets_verified_at": "2026-11-01T11:20:50.223Z"
+      },
+      "installer": {
+        "name": "Gukgam-Live-Setup-0.1.0.exe",
+        "bytes": 326369746,
+        "sha256": "7fc58e72bb0938f2018aaddfb80816ed32223816adc0b31d4bd3cc36065c606d",
+        "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Setup-0.1.0.exe"
+      },
+      "validation": {
+        "package_verified": true,
+        "python_modules_bytecode_verified": 146,
+        "public_synthetic_tests_passed": 180,
+        "full_private_run": {
+          "passed": 8616,
+          "failed": 40,
+          "skipped": 11,
+          "windows_symlink_fixture_unavailable": 29,
+          "non_permission_failures_rechecked_passed": 11,
+          "all_tests_declared_passed": false
+        },
+        "installed_version_observed": "0.1.0",
+        "installed_binary_hashes_verified": true,
+        "record_page_preservation_check": "verified session identifiers and installed record page",
+        "desktop_tests_passed": 193,
+        "record_count_after_update": 21,
+        "record_id_set_preserved": true,
+        "update_validation_model_requests": 0,
+        "local_relay_observed": {
+          "enabled": false,
+          "active": false,
+          "cloud_enabled": false
+        }
+      },
+      "assets_preserved": true
+    }
+  ],
+  "source_base_commit": "ca9b8ec85270da946737410a23ff526a0edbc6c6"
 }
