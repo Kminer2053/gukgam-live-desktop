@@ -4,7 +4,7 @@ import {mkdtemp,mkdir,writeFile,readFile,readdir,rm} from 'node:fs/promises';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {RelayProvisioner,databaseFromEnvironment,officialApproval,type Cli} from '../src/relay/provisioner';
-async function fixture() {
+async function fixture(config:{stores?:(resourceName:string)=>unknown}={}) {
  const dir=await mkdtemp(join(tmpdir(),'gukgam-relay-test-')),template=join(dir,'template');await mkdir(template);await writeFile(join(template,'index.py'),'# 동봉 소스');await writeFile(join(template,'.env'),'배포 제외');
  const values=new Map<string,unknown>(),calls:{args:string[];input?:any}[]=[],fetches:string[]=[];
  let approved=false,created=false,online=false,initialized=0,unknown=false,jobId='';let setup:any={organization:'시험기관',hasRelayToken:false};
@@ -24,7 +24,11 @@ async function fixture() {
   else if(path?.endsWith('/env/env_database'))data={id:'env_database',key:'DATABASE_URL_UNPOOLED',target:['production'],type:'encrypted',decrypted:true,value:'postgresql://test:placeholder@db.invalid/newdb?sslmode=require'};
   else if(path?.endsWith('/env/env_marker'))data={id:'env_marker',key:'GUKGAM_DESKTOP_SETUP_ID',target:['production'],type:'plain',decrypted:true,value:jobId};
   else if(path?.startsWith('/v9/projects/'))data={id:'project_test'};
-  else if(args[0]==='integration'&&args[1]==='list')data={resources:[{id:'store_test',name:JSON.parse(await readFile(join(dir,'relay','job.json'),'utf8')).resourceName}]};
+  else if(path==='/v1/storage/stores'){
+   assert.equal(args[args.indexOf('--scope')+1],'team_test');
+   const resourceName=JSON.parse(await readFile(join(dir,'relay','job.json'),'utf8')).resourceName;
+   data=config.stores?config.stores(resourceName):{stores:[{id:'store_test',name:resourceName}]};
+  }
   else if(args[0]==='deploy')return {code:0,stdout:'https://gukgam-test-workspace.vercel.app\n',stderr:''};
   else throw Error('예상하지 않은 CLI 요청');return {code:0,stdout:JSON.stringify(data),stderr:''};
  }};
@@ -55,7 +59,23 @@ test('동의·암호·카탈로그 검증 실패 때 사이트와 DB를 생성�
  for(const changed of [{consent:false},{operatorPasscode:'short'},{viewerPasscode:'operator-placeholder-long'},{metadata:{region:'invalid'}},{planId:'unknown'}]){const f=await fixture();try{assert.equal((await f.provisioner.provision({...f.input,...changed})).state,'error');assert.equal(f.created(),false);assert.equal(f.calls.some(c=>c.args[1]?.includes('/auto-provision/')),false);}finally{await f.close();}}
 });
 test('결과가 불명확한 DB는 재개 때 기존 자원만 조회하고 중복 생성하지 않는다',async()=>{
- const f=await fixture();try{f.setApproved();f.setUnknown();assert.equal((await f.provisioner.provision(f.input)).state,'error');assert.equal((await f.provisioner.resume()).state,'ready');assert.equal(f.calls.filter(c=>c.args[1]?.includes('/auto-provision/')).length,1);}finally{await f.close();}
+ const f=await fixture();try{f.setApproved();f.setUnknown();assert.equal((await f.provisioner.provision(f.input)).state,'error');assert.equal((await f.provisioner.resume()).state,'ready');assert.equal(f.calls.filter(c=>c.args[1]?.includes('/auto-provision/')).length,1);assert.equal(f.calls.filter(c=>c.args[1]==='/v1/storage/stores').length,1);assert.equal(f.calls.some(c=>c.args[0]==='integration'),false);}finally{await f.close();}
+});
+
+test('DB 복구 REST의 잘못된 목록·식별자·중복 자원은 새 생성 없이 보존한다',async()=>{
+ const cases=[()=>null,()=>[],()=>({resources:[]}),()=>({stores:{}}),()=>({stores:[null]}),
+  (name:string)=>({stores:[{name,id:'../outside'}]}),(name:string)=>({stores:[{name}]}),
+  (name:string)=>({stores:[{name,id:'store_one'},{name,id:'store_two'}]}),
+  (name:string)=>({stores:[{name,id:'store_same'},{name:'different',id:'store_same'}]})];
+ for(const stores of cases){const f=await fixture({stores});try{
+  f.setApproved();f.setUnknown();await f.provisioner.provision(f.input);
+  const job=await readFile(join(f.dir,'relay','job.json'),'utf8');
+  assert.equal((await f.provisioner.resume()).state,'error');
+  assert.equal(await readFile(join(f.dir,'relay','job.json'),'utf8'),job);
+  assert.equal(f.calls.filter(c=>c.args[1]?.includes('/auto-provision/')).length,1);
+  assert.equal(f.calls.filter(c=>c.args[1]==='/v1/storage/stores').length,1);
+  assert.equal(f.initialized(),0);assert.equal(f.calls.some(c=>c.args[0]==='deploy'||c.args[0]==='integration'),false);
+ }finally{await f.close();}}
 });
 test('손상된 준비 기록은 반복 조회에도 덮어쓰거나 신규 생성하지 않는다',async()=>{
  const f=await fixture();try{await mkdir(join(f.dir,'relay'));await writeFile(join(f.dir,'relay','job.json'),'{}');await assert.rejects(f.provisioner.status(),/중복/);await assert.rejects(f.provisioner.status(),/중복/);assert.equal(f.calls.length,0);}finally{await f.close();}

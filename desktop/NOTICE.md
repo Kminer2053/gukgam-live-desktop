@@ -1,5 +1,16 @@
 # 재사용한 코드
 
+## 릴레이 배포 도구
+
+Vercel CLI 50.0.0(Apache-2.0)을 동봉합니다. 원본 프로젝트는
+https://github.com/vercel/vercel 이며 판본은
+`ef726cc19fb9f1b14b3c5c4f9ddc77c49947f4df`입니다. 국감 라이브 기여자는
+2026-11-03에 확인된 프로젝트 ID를 공식 배포 요청으로 전달하는 한 줄을
+보완했습니다. 함께 사용하는 @ts-morph/common 0.11.1(MIT)에는 minimatch의
+현재 API를 선택하는 한 줄을 보완했습니다. 각 패키지의 원 LICENSE 파일과
+저작권을 동봉하며, 변경 위치·원본 및 결과 SHA256은 공개 소스의
+`desktop/relay-cli/scripts/apply-relay-compat-patches.cjs`에서 확인할 수 있습니다.
+
 ## Nemotron CPU 음성 화자 분리
 
 NVIDIA의 `Nemotron-3-Diarization.q8_0.gguf`를 Windows 설치파일에 포함한다. 출처는 https://huggingface.co/nvidia/Nemotron-3-Diarization 이며 고정 판본은 `f667ed73aee57d40cc39428eb768b4fd87a0a29e`, SHA256은 `08456d9e22cd9a323c0364d98375f3746d6e68507ebb705cd46438c534c7a3a1`이다. 모델은 OpenMDW-1.1이며 공식 약관 사본을 `LICENSES/Nemotron-OpenMDW-1.1.txt`에 보존한다. 모델 파일은 변경하지 않았다.

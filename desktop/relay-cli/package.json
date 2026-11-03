@@ -4,7 +4,7 @@
   "private": true,
   "description": "설치 앱 전용 Vercel 배포 도구",
   "dependencies": {
-    "vercel": "59.4.0"
+    "vercel": "50.0.0"
   },
   "overrides": {
     "tar": "7.5.22",
@@ -17,7 +17,9 @@
     "smol-toml@^1": "1.9.0",
     "zod": "4.6.6",
     "ajv@^8": "8.18.0",
-    "@tootallnate/once@^2": "2.0.1"
+    "@tootallnate/once@^2": "2.0.1",
+    "esbuild": "0.27.0",
+    "srvx": "0.11.13"
   },
   "engines": {
     "node": ">=24"

@@ -32,6 +32,18 @@ Nemotron-3-Diarization CPU 화자 분리 모델을 설치파일의 별도 자산
 
 ## 화면 자산과 의존성
 
+## 릴레이 배포 도구
+
+Vercel CLI 50.0.0(Apache-2.0)을 동봉합니다. 원본 프로젝트는
+https://github.com/vercel/vercel 이며 판본은
+`ef726cc19fb9f1b14b3c5c4f9ddc77c49947f4df`입니다. 국감 라이브 기여자는
+2026-11-03에 확인된 프로젝트 ID를 공식 배포 요청으로 전달하는 한 줄을
+보완했습니다. 함께 사용하는 @ts-morph/common 0.11.1(MIT)에는 minimatch의
+현재 API를 선택하는 한 줄을 보완했습니다. 각 패키지의 원 LICENSE 파일과
+저작권을 동봉하며, 변경 위치·원본 및 결과 SHA256은 공개 소스의
+`desktop/relay-cli/scripts/apply-relay-compat-patches.cjs`에서 확인할 수 있습니다.
+
+
 기존 HLS 화면 코드의 라이선스 헤더·고지를 유지합니다. Electron·Python·npm 패키지와 번들 실행 도구의 고지도 실제 설치파일과 함께 대조합니다. 별도 변환 도구를 추가 배포하는 경우 해당 도구의 라이선스·바이너리 출처를 새로 검토합니다.
 
 이 문서는 법적 사용 권한을 새로 부여하거나 외부 서비스의 약관을 대신하는 문서가 아닙니다. 전체 고지와 필수 라이선스 파일이 빠진 설치물·공개 스냅샷을 배포하지 않습니다.

@@ -1,0 +1,10 @@
+--- a/packages/cli/src/commands/deploy/index.ts
++++ b/packages/cli/src/commands/deploy/index.ts
+@@ -499,6 +499,7 @@
+     const createArgs: CreateOptions = {
+       name,
++      project: project.id,
+       env: deploymentEnv as Dictionary<string>,
+       build: { env: deploymentBuildEnv as Dictionary<string> },
+       forceNew: parsedArguments.flags['--force'],
+       withCache: parsedArguments.flags['--with-cache'],

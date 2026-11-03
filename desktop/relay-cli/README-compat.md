@@ -1,26 +1,30 @@
-# 릴레이 배포 도구의 빌드 호환 보완
+# 릴레이 배포 도구의 호환 보완
 
-Node.js 24 이상에서 쓰는 빌드 도우미입니다. 위치는
-`desktop/relay-cli/scripts/apply-relay-compat-patches.cjs`이며, 인수 없이 실행하거나
-같은 `desktop/relay-cli` 경로를 `--root`로 명시할 수 있습니다.
+공식 Vercel CLI `50.0.0`을 사용합니다. 이 판본에는 sandbox 의존성이 없으며,
+전체 잠금 그래프의 실제 패키지 300종을 OSV에 조회한 결과 알려진 항목은
+0건이었습니다(2026-11-03). 이는 향후 취약점 부재를 보장하지 않습니다.
+보안 수정이 있는 esbuild·srvx·minimatch·Zod 등의 정확한 버전은 package-lock.json에 고정합니다.
 
-Vercel CLI는 `59.4.0`을 유지합니다. 이 도우미는 설치된 패키지의 이름·버전·라이선스·의존성
-metadata를 바꾸지 않고 다음 **3개 파일, 총 35곳**만 보완합니다.
+공식 CLI의 로그인·토큰 갱신·배포 기능을 사용합니다. CLI50에 없는
+`integration list --json`은 공식 저장소 목록 API로 연결합니다. 배포할 프로젝트는
+소유한 작업 폴더의 `.vercel/project.json`과 조직 범위를 검증한 뒤, 해당 자식
+프로세스의 두 환경 변수로만 전달합니다. 다른 프로젝트의 자동 생성으로 전환하지 않습니다.
 
-- `@ts-morph/common 0.11.1`: minimatch named API를 선택하는 fallback 한 줄.
-- `@vercel/python-analysis 0.14.0`: ESM·CJS 각각 17개의 단일 인수 record를 `z.record(z.string(), valueSchema)`로 명확히 표현.
+Node.js 24 이상에서 `scripts/apply-relay-compat-patches.cjs`를 실행합니다.
+배포 빌드의 준비 단계에서도 자동 실행합니다. 변경하는 배포 의존성 소스는 두 곳입니다.
 
-Zod는 네이티브 `4.6.6`을 사용하며 `/v3` 호환 alias를 만들지 않습니다.
-길이 제한·검증 조기 종료 등 Zod 자체의 보안 동작을 별도 구현으로
-대체하지 않고, 스키마의 기존 값 제약과 오류 처리 코드를 유지합니다.
-앱의 Python 배포 경로가 실제 사용하는 CommonJS 공개 스키마 4개의 정상·오류 입력 32건과 이전 API 계약을 검증했습니다. ESM에는 같은 스키마 보완을 적용하고 정적으로 검토했습니다. 상위 패키지의 ESM 단독 Node 24 로더에는 기존 extensionless import 문제가 있어 그 경로의 실행을 보증하지 않습니다.
+- `@ts-morph/common 0.11.1`: minimatch의 현재 named API를 선택하는 한 줄.
+- `vercel 50.0.0`: 확인한 `project.id`를 기존 공식 배포 SDK의 `project` 인수로 전달하는 한 줄.
 
-고정 버전·원본 및 패치 SHA·record 인수 수·alias별 개수가 다르면 쓰기 전에
-중단합니다. 상위 패키지의 새 버전은 별도 검토해야 합니다. 반복 실행은
-동일한 보완 상태와 원본 복원 자료를 확인합니다.
+두 번째 보완은 프로젝트가 확인된 뒤 이름만으로요청하는 경쟁 상태를 막습니다.
+상위 TypeScript 변경은 `patches/vercel-50-project-binding.patch`에 표시합니다.
+CLI 원본 판본은 `vercel/vercel`의 `ef726cc19fb9f1b14b3c5c4f9ddc77c49947f4df`입니다.
+패키지 이름·버전·잠금 파일·원 라이선스는 보완 전후 그대로 유지합니다.
 
-백업과 적용 영수증은 `relay-cli/node_modules/.cache/gukgam-native-zod4-compat/`에
-둡니다. 매 실행이 package/lock을 바꾸지 않았는지 전후 해시로 확인하되,
-앱의 정상 버전 metadata 변경을 과거 영수증의 해시로 차단하지는 않습니다.
+전체 원본/보완 SHA256과 고유한 변경 위치가 일치할 때만 적용합니다.
+원본과 영수증은 `node_modules/.cache/gukgam-relay-cli-50-compat/`에 보존하며
+설치물에는 이 개발용 백업을 넣지 않습니다. 반복 실행과 소스 변경 시 중단도 확인합니다.
 
-깨끗한 소스에서 `npm ci --prefix relay-cli --ignore-scripts`로 CLI 의존성을 설치합니다. `npm run dist` 직전 배포 준비 도우미가 이 보완을 자동 적용합니다. 독립 점검은 relay-cli에서 `npm run prepare:compat`로 실행할 수 있습니다. 실제 계정 로그인·클라우드 배포를 시험한 것은 아니며 기존 정식 0.1.0 설치파일은 교체하지 않았습니다.
+깨끗한 소스에서 `npm ci --prefix relay-cli --ignore-scripts`로 설치하고,
+relay-cli에서 `npm run prepare:compat`로 독립 확인할 수 있습니다.
+합성 회귀는 실제 계정 로그인·클라우드 배포를 대신하지 않습니다.

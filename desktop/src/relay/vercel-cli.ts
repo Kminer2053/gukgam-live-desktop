@@ -1,6 +1,7 @@
 import {spawn, type ChildProcessWithoutNullStreams} from 'node:child_process';
-import {lstat,mkdir,mkdtemp,readFile,rm,writeFile} from 'node:fs/promises';
-import {isAbsolute,join} from 'node:path';
+import {constants,type BigIntStats} from 'node:fs';
+import {lstat,mkdir,mkdtemp,open,readFile,realpath,rm,writeFile} from 'node:fs/promises';
+import {dirname,isAbsolute,join,resolve} from 'node:path';
 import {StringDecoder} from 'node:string_decoder';
 import {SITE_UPDATE_CODES,type SiteUpdateStatus} from './contracts';
 
@@ -94,6 +95,70 @@ function checkArguments(args:string[]) {
     throw failure('VERCEL_ARGS_INVALID','Vercel 실행 요청 형식이 올바르지 않습니다.');
   const blocked=/^(--(?:global-config|token|cwd|local-config|api|debug|verbose|spec-url|generate|dangerously-skip-permissions)(?:=|$)|-[QAtd])/;
   if(args.some(a=>blocked.test(a)))throw failure('VERCEL_ARGS_INVALID','앱의 Vercel 인증·실행 경로를 바꾸는 옵션은 사용할 수 없습니다.');
+}
+
+function samePath(left:string,right:string):boolean {
+  return process.platform==='win32'?resolve(left).toLowerCase()===resolve(right).toLowerCase():resolve(left)===resolve(right);
+}
+function sameFile(left:BigIntStats,right:BigIntStats):boolean {
+  return left.dev===right.dev&&left.ino===right.ino&&left.mode===right.mode&&left.nlink===right.nlink&&left.size===right.size
+    &&left.mtimeNs===right.mtimeNs&&left.ctimeNs===right.ctimeNs;
+}
+/** 공식 CLI의 환경 바인딩을 사용하되 셸 환경이나 변경 가능한 링크 파일을 신뢰하지 않는다. */
+async function deploymentBinding(args:string[],cwd:string):Promise<{args:string[];orgId:string;projectId:string}> {
+  const validId=(value:unknown):value is string=>typeof value==='string'&&/^[A-Za-z0-9_][A-Za-z0-9_-]{0,127}$/.test(value);
+  let scope:string|undefined,project:string|undefined,prod=false,yes=false;
+  const forwarded=['deploy'];
+  for(let index=1;index<args.length;index++) {
+    const argument=args[index];
+    if(argument==='--scope'||argument==='--project') {
+      const value=args[++index];
+      if(!validId(value)||argument==='--scope'&&scope!==undefined||argument==='--project'&&project!==undefined)
+        throw failure('VERCEL_ARGS_INVALID','기존 배포의 팀·프로젝트 지정이 올바르지 않습니다.');
+      if(argument==='--scope'){scope=value;forwarded.push(argument,value);}else project=value;
+    } else if(argument==='--prod'&&!prod){prod=true;forwarded.push(argument);}
+    else if(argument==='--yes'&&!yes){yes=true;forwarded.push(argument);}
+    else throw failure('VERCEL_ARGS_INVALID','앱이 지정한 기존 프로젝트의 배포 옵션만 사용할 수 있습니다.');
+  }
+  if(!scope||!prod||!yes)throw failure('VERCEL_ARGS_INVALID','배포할 팀과 Production 설정을 확인하지 못했습니다.');
+  try {
+    const parents:Array<{path:string;stat:BigIntStats}>=[];
+    for(let current=resolve(cwd);;current=dirname(current)) {
+      const info=await lstat(current,{bigint:true});
+      if(!info.isDirectory()||info.isSymbolicLink()||!samePath(await realpath(current),current))throw Error();
+      parents.push({path:current,stat:info});if(dirname(current)===current)break;
+    }
+    const directory=join(cwd,'.vercel'),file=join(directory,'project.json');
+    const directoryInfo=await lstat(directory,{bigint:true});
+    if(!directoryInfo.isDirectory()||directoryInfo.isSymbolicLink()||!samePath(await realpath(directory),directory))throw Error();
+    parents.push({path:directory,stat:directoryInfo});
+    const before=await lstat(file,{bigint:true});
+    if(!before.isFile()||before.isSymbolicLink()||before.nlink!==1n||before.size<1n||before.size>4096n||!samePath(await realpath(file),file))throw Error();
+    const handle=await open(file,constants.O_RDONLY|(constants.O_NOFOLLOW??0));
+    let raw:Buffer;
+    try {
+      // Windows에서도 읽기 전에 열린 핸들과 검증한 파일의 identity를 대조한다.
+      if(!sameFile(before,await handle.stat({bigint:true})))throw Error();
+      const buffer=Buffer.alloc(4097);let size=0;
+      while(size<buffer.length){const part=await handle.read(buffer,size,buffer.length-size,null);if(!part.bytesRead)break;size+=part.bytesRead;}
+      if(size!==Number(before.size)||size>4096||!sameFile(before,await handle.stat({bigint:true})))throw Error();
+      raw=buffer.subarray(0,size);
+    } finally {await handle.close();}
+    if(!sameFile(before,await lstat(file,{bigint:true})))throw Error();
+    for(const parent of parents) {
+      const after=await lstat(parent.path,{bigint:true});
+      if(!after.isDirectory()||after.isSymbolicLink()||after.dev!==parent.stat.dev||after.ino!==parent.stat.ino
+        ||!samePath(await realpath(parent.path),parent.path))throw Error();
+    }
+    const link=JSON.parse(new TextDecoder('utf8',{fatal:true}).decode(raw));
+    if(!link||typeof link!=='object'||Array.isArray(link)||!validId(link.orgId)||!validId(link.projectId))throw Error();
+    if(link.orgId!==scope||project!==undefined&&link.projectId!==project)
+      throw failure('VERCEL_ARGS_INVALID','선택한 팀·프로젝트가 이 앱의 저장된 연결과 다릅니다. 배포하지 않았습니다.');
+    return {args:forwarded,orgId:link.orgId,projectId:link.projectId};
+  } catch(error) {
+    if(error instanceof Error&&internalErrors.has(error))throw error;
+    throw failure('VERCEL_PATH_INVALID','기존 프로젝트 연결 파일을 안전하게 확인하지 못했습니다. 배포하지 않았습니다.');
+  }
 }
 
 function apiUrl(path:string,teamId:string|undefined):URL {
@@ -208,6 +273,8 @@ export class VercelCliRunner {
     if(this.unsafeChild)throw failure('VERCEL_STOP_UNCONFIRMED','이전 Vercel 작업의 종료를 확인하지 못했습니다. 앱을 다시 실행하세요.');
     if(options.signal?.aborted)throw failure('VERCEL_CANCELLED','Vercel 작업을 취소했습니다.');
     if(options.input&&Buffer.byteLength(options.input)>MAX_INPUT_BYTES)throw failure('VERCEL_INPUT_LIMIT','Vercel 입력이 허용 크기를 넘었습니다.');
+    const binding=args[0]==='deploy'?await deploymentBinding(args,options.cwd):undefined;
+    if(options.signal?.aborted)throw failure('VERCEL_CANCELLED','Vercel 작업을 취소했습니다.');
     // vault가 잠겼으면 임시 평문 파일을 만들기 전에 중단한다.
     const saved=authEnvelope(await this.options.vault.get<unknown>(VERCEL_AUTH_VAULT_KEY));
     await mkdir(this.options.tempRoot,{recursive:true,mode:0o700});
@@ -277,8 +344,10 @@ export class VercelCliRunner {
         };
         try {
           child=(this.options.spawn??spawn)(this.options.executable??process.execPath,
-            [this.options.cliPath,...args,'--global-config',dir],
-            {cwd:options.cwd,env:vercelChildEnvironment(this.options.env??process.env),shell:false,windowsHide:true,stdio:['pipe','pipe','pipe']}) as ChildProcessWithoutNullStreams;
+            [this.options.cliPath,...(binding?.args??args),'--global-config',dir],
+            {cwd:options.cwd,env:{...vercelChildEnvironment(this.options.env??process.env),
+              ...(binding?{VERCEL_ORG_ID:binding.orgId,VERCEL_PROJECT_ID:binding.projectId}:{})},
+              shell:false,windowsHide:true,stdio:['pipe','pipe','pipe']}) as ChildProcessWithoutNullStreams;
           stopped=false;
           child.stdin.on('error',()=>{});
           child.stdout.on('data',(chunk:Buffer)=>output('stdout',chunk));

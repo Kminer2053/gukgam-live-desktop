@@ -289,7 +289,7 @@ export class RelayProvisioner {
    await mkdir(join(directory,'.vercel'),{mode:0o700});
    await writeFile(join(directory,'.vercel','project.json'),JSON.stringify({projectId,orgId:teamId,projectName:job.projectName}),{mode:0o600,flag:'wx'});check();
    this.current.message='기존 프로젝트의 사이트 코드만 업데이트하고 있습니다. DB·요금제·암호·환경 설정과 이 PC의 기록은 변경하거나 업로드하지 않습니다.';
-   // pinned CLI의 명시 --project는 failIfNotFound를 켜므로 삭제·권한 상실 시 신규 생성으로 전환하지 않는다.
+   // wrapper가 저장된 연결을 검증해 공식 CLI의 명시 환경 바인딩으로 전달한다. 삭제·권한 상실 시 신규 생성하지 않는다.
    // 호출 직전의 보수적 표지다. 실제 서버 배포 생성이나 CLI 시작 성공을 뜻하지 않는다.
    await record('deploying',true);check();
    const result=await this.command(['deploy','--prod','--yes','--scope',teamId,'--project',projectId],undefined,directory);check();
@@ -392,9 +392,13 @@ export class RelayProvisioner {
    if(resource.kind!=='provisioned'||!resource.resource?.id)throw Error('DB 생성 결과를 확인하지 못했습니다. 중복 생성 없이 기존 결과를 먼저 확인합니다.');
    job.resourceId=safeId(resource.resource.id);job.phase='database';await this.persist();
   } else if(job.phase==='creating-database') {
-   const response=await this.command(['integration','list','--all','--json','--scope',job.teamId]);const listing=parse(response);
-   const rows=Array.isArray(listing)?listing:listing.resources??listing.stores;
-   const matches=Array.isArray(rows)?rows.filter((r:any)=>r.name===job.resourceName):[];
+   const listing=await this.api('/v1/storage/stores',job.teamId);
+   if(!listing||typeof listing!=='object'||Array.isArray(listing)||!Array.isArray(listing.stores)||listing.stores.length>1000)
+    throw Error('이전 DB 목록의 형식을 확인하지 못했습니다. 새 DB를 생성하지 않았습니다.');
+   const rows=listing.stores;
+   for(const row of rows){if(!row||typeof row!=='object'||Array.isArray(row)||typeof row.name!=='string'||!row.name||row.name.length>256)throw Error('이전 DB 목록의 형식을 확인하지 못했습니다.');safeId(row.id);}
+   if(new Set(rows.map((row:any)=>row.id)).size!==rows.length)throw Error('이전 DB 목록의 식별자가 중복되어 복구를 중단했습니다.');
+   const matches=rows.filter((r:any)=>r.name===job.resourceName);
    if(matches.length!==1){if(job.pendingApprovalUrl){this.current={...this.current,state:'approval',approvalUrl:job.pendingApprovalUrl,canResume:true,message:'아직 이 요청 이름의 DB가 확인되지 않았습니다. 공식 브라우저에서 구성을 마친 뒤 다시 확인하세요. 새 DB 생성 요청은 보내지 않았습니다.'};return;}throw Error('이전 DB 생성 결과가 아직 확인되지 않았습니다. 중복 DB를 만들지 않았습니다. 잠시 뒤 다시 이어서 준비하세요.');}
    job.resourceId=safeId(matches[0].id);delete job.pendingApprovalUrl;job.phase='database';await this.persist();
   }
