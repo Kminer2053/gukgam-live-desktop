@@ -36,6 +36,51 @@ jobs:
         run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Apply the reviewed build compatibility changes
         run: npm run prebuild
+      - name: Diagnose Windows paths and prepare canonical synthetic fixtures
+        shell: pwsh
+        run: |
+          @'
+          const fs = require('node:fs/promises');
+          const path = require('node:path');
+          const os = require('node:os');
+          const equal = (a, b) => path.resolve(a).toLowerCase() === path.resolve(b).toLowerCase();
+          async function chain(start) {
+            const rows = [];
+            for (let current = path.resolve(start); ; current = path.dirname(current)) {
+              const info = await fs.lstat(current), actual = await fs.realpath(current);
+              rows.push({path: current, actual, directory: info.isDirectory(), link: info.isSymbolicLink(), canonical: equal(current, actual)});
+              if (path.dirname(current) === current) return rows;
+            }
+          }
+          (async () => {
+            if (process.platform !== 'win32') throw Error('Windows fixture preparation requires Windows.');
+            const original = os.tmpdir(), originalChain = await chain(original);
+            console.log(JSON.stringify({node: process.version, originalTmp: original, originalPathChecks: originalChain}));
+            const runner = process.env.RUNNER_TEMP;
+            if (!runner || !path.isAbsolute(runner)) throw Error('The runner temporary directory is unavailable.');
+            // Only synthetic tests use this new canonical directory; production guards stay unchanged.
+            const parent = await fs.realpath(runner);
+            const root = await fs.mkdtemp(path.join(parent, 'gukgam-node-fixtures-'));
+            const canonical = await fs.realpath(root), checks = await chain(canonical);
+            if (!checks.every(row => row.directory && !row.link && row.canonical)) throw Error('The synthetic fixture ancestors are not canonical regular directories.');
+            const probe = path.join(canonical, 'identity-probe.json');
+            await fs.writeFile(probe, '{"synthetic":true}', {flag: 'wx'});
+            const before = await fs.lstat(probe, {bigint: true}), handle = await fs.open(probe, 'r');
+            let opened;
+            try { opened = await handle.stat({bigint: true}); } finally { await handle.close(); }
+            const identity = before.isFile() && !before.isSymbolicLink() && before.nlink === 1n
+              && before.dev === opened.dev && before.ino === opened.ino && before.size === opened.size
+              && before.mode === opened.mode && before.nlink === opened.nlink
+              && before.mtimeNs === opened.mtimeNs && before.ctimeNs === opened.ctimeNs;
+            console.log(JSON.stringify({canonicalFixture: canonical, ancestorChecks: checks, identity,
+              nlink: String(before.nlink), dev: String(before.dev), ino: String(before.ino)}));
+            await fs.unlink(probe);
+            if (!identity || /[\r\n]/.test(canonical)) throw Error('The synthetic fixture file identity could not be verified.');
+            if (!process.env.GITHUB_ENV) throw Error('The GitHub job environment file is unavailable.');
+            await fs.appendFile(process.env.GITHUB_ENV, `TEMP=${canonical}\nTMP=${canonical}\n`, 'utf8');
+          })().catch(error => { console.error(error); process.exitCode = 1; });
+          '@ | node
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Run synthetic lifecycle and download security contracts
         run: npm test
       - name: Check TypeScript contracts

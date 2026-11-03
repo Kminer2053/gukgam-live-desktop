@@ -14,7 +14,7 @@
 
 국감 때 사용한 **감사 질의 기록·중계 시스템**을 일반 사무담당자도 편하게 쓸 수 있는 Windows 앱으로 만들었습니다. 코딩을 배우거나 개발 도구를 따로 설치할 필요가 없습니다.
 
-**0.2.0 경량 인터넷 설치판을 준비 중입니다.** 필요한 도구를 처음 쓸 때 받아 두고 다시 사용하는 방식입니다. 최종 용량·게시 파일·확인값은 공개된 릴리스에서 확인해 주세요.
+**0.2.0 경량 인터넷 설치판을 공개했습니다.** [설치파일 받기](https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.2.0/Gukgam-Live-Setup-0.2.0.exe) · [배포 안내](https://github.com/Kminer2053/gukgam-live-desktop/releases/tag/v0.2.0). 설치파일은 0.77MB이며, 설치 중 받는 기본 앱까지 합해 최초 약 114.8MB입니다. 필요한 도구는 처음 쓸 때 받아 두고 다시 사용합니다.
 
 **Sign in with ChatGPT**로 내 ChatGPT 구독 계정을 연결할 수 있습니다. 별도 API 키나 로컬 AI 프로그램 준비 없이 시작하세요. 이용 가능한 기능과 사용량은 본인 계정·플랜·서비스 정책을 따릅니다. [OpenAI의 기능 안내](https://developers.openai.com/siwc/token-sharing-open-source)
 
@@ -92,7 +92,7 @@ ChatGPT 구독 사용과 API 이용 요금은 별개입니다. 외부 AI를 고�
 - [개발용 Python 의존성 고정](docs/PYTHON_DEPENDENCY_LOCKS.md)
 - [기존 기록의 중복 판정 키 이전](docs/ITEM_FINGERPRINT_MIGRATION.md)
 
-0.2.0은 공개 준비 중입니다. 기존 배포본과 개발 중인 구성을 구분하며, 각 저장소의 실제 게시 상태는 배포 확인 정보를 따릅니다.
+정식 0.2.0의 소스·설치파일·선택 구성요소는 GitHub에 공개했습니다. 공공 GitLab에는 새 의존성 4파일이 보안 검사 5종을 통과했지만, 나머지 소스 반영은 검사 결과 없는 HTTP 502로 미완료입니다. 최신 전체 소스는 GitHub를 이용하세요. 각 저장소의 확인 시점과 범위는 배포 확인 정보에 기록합니다.
 
 개발 환경은 Windows x64·Node.js 24와 고정된 Python 의존성을 사용합니다. 고정 의존성 준비·호환 보완 → Python 엔진 빌드 → scripts/build_runtime_packs.py로 선택 다운로드와 고정 카탈로그 생성 → 데스크톱 빌드 → nsis-web 패키징 순서입니다. 사용자의 PC에서 npm을 실행하거나 소스를 다시 빌드하지 않습니다.
 

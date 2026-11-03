@@ -1,6 +1,6 @@
 {
   "schema_version": 5,
-  "status": "stable_0_2_0_verified_pending_publication",
+  "status": "stable_0_2_0_published_verified",
   "product_name": "국감 라이브 데스크톱",
   "release_version": "0.2.0",
   "source_release_ref": "v0.2.0",
@@ -123,7 +123,7 @@
     "cached_redownloads": 0,
     "engine_help_passed": true,
     "cli_version_guard_passed": true,
-    "node_tests_passed": 246,
+    "node_tests_passed": 247,
     "web_installer_security_tests_passed": 11,
     "python_tests_passed": 327,
     "typecheck_passed": true,
@@ -138,7 +138,14 @@
     "actual_cloud_deployment_repeated": false,
     "inference_worker_sources_changed": false,
     "live_model_quality_repeated": false,
-    "nsis_full_rollback_guaranteed": false
+    "nsis_full_rollback_guaranteed": false,
+    "public_core_download_verified": true,
+    "public_core_sha256_and_sha512_match": true,
+    "runtime_packs_public_https_download_and_all_file_hashes_verified": true,
+    "runtime_packs_public_verified_payload_bytes": 119318417,
+    "runtime_packs_public_cached_requests": 0,
+    "github_ci_windows_python": "success",
+    "github_ci_windows_desktop": "initial_run_failed_in_temporary_path_security_contracts; CI fixture diagnosis pending verification"
   },
   "dependency_security": {
     "query_date": "2026-11-03",
@@ -154,14 +161,49 @@
   },
   "gitlab_publication": {
     "complete": false,
-    "last_confirmed_main": "45dfbf7b9e33d42b3ecb3a4ec2941d70aa99ceb2",
-    "previous_requests": "four normal HTTPS pushes returned HTTP 502 without scan results, including one small document",
-    "new_version_gate_result": "not_submitted_yet"
+    "last_confirmed_main": "7d87baa909b19cfa5acb4ea3c7cea9634a72a3bb",
+    "new_version_gate_result": "dependency_batch_4_paths_all_5_scanners_PASS",
+    "passed_scanners": [
+      "Gitleaks",
+      "Semgrep",
+      "OSV-Scanner",
+      "Trivy",
+      "Syft"
+    ],
+    "remaining_source_paths": 55,
+    "code_requests": [
+      {
+        "paths": 40,
+        "bytes": 1301985,
+        "elapsed_seconds": 122.609,
+        "result": "HTTP_502_no_scan_results"
+      },
+      {
+        "paths": 8,
+        "bytes": 99515,
+        "elapsed_seconds": 122.921,
+        "result": "HTTP_502_no_scan_results"
+      }
+    ],
+    "new_code_security_rejection_confirmed": false,
+    "force_push_or_scanner_bypass_used": false,
+    "previous_requests": "four earlier normal HTTPS pushes returned HTTP 502 without scan results"
   },
   "preserved_releases": [
     "v0.1.0",
     "v0.1.1",
     "v0.1.2"
   ],
-  "prepared_at_utc": "2026-11-03T04:34:07.061838+00:00"
+  "prepared_at_utc": "2026-11-03T04:34:07.061838+00:00",
+  "github_publication": {
+    "complete": true,
+    "release_id": 432284409,
+    "tag": "v0.2.0",
+    "built_source_commit": "7489d22447ed9128e89c4f8bb24c2673ff4ea001",
+    "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/tag/v0.2.0",
+    "published_at_utc": "2026-11-03T04:40:41Z",
+    "asset_count": 10,
+    "all_server_asset_digests_match": true
+  },
+  "publication_verified_at_utc": "2026-11-03T04:51:12.163880+00:00"
 }
