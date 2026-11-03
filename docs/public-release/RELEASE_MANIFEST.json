@@ -164,9 +164,9 @@
     "permanent_vulnerability_absence_claimed": false
   },
   "gitlab_publication": {
-    "complete": false,
-    "last_confirmed_main": "7d87baa909b19cfa5acb4ea3c7cea9634a72a3bb",
-    "new_version_gate_result": "dependency_batch_4_paths_all_5_scanners_PASS",
+    "complete": true,
+    "last_confirmed_main": "4f2db247f7e31eeb19e28ad1fd25409efd321a69",
+    "new_version_gate_result": "all_five_scanners_PASS_for_all_source_batches",
     "passed_scanners": [
       "Gitleaks",
       "Semgrep",
@@ -174,7 +174,7 @@
       "Trivy",
       "Syft"
     ],
-    "remaining_source_paths": 55,
+    "remaining_source_paths": 0,
     "code_requests": [
       {
         "paths": 40,
@@ -191,7 +191,90 @@
     ],
     "new_code_security_rejection_confirmed": false,
     "force_push_or_scanner_bypass_used": false,
-    "previous_requests": "four earlier normal HTTPS pushes returned HTTP 502 without scan results"
+    "previous_requests": "four earlier normal HTTPS pushes returned HTTP 502 without scan results",
+    "verified_source_snapshot_commit": "04b02fcef1833773b7d87d44ca43b4c9e9c47e42",
+    "source_verified_at_gitlab_commit": "4f2db247f7e31eeb19e28ad1fd25409efd321a69",
+    "verified_at_utc": "2026-11-03T18:44:08.660213+00:00",
+    "source_verification_scope": "Exact path, mode and blob comparison of the verified source snapshot; later documentation commits are separate.",
+    "source_tracked_paths": 491,
+    "mirrored_source_paths": 489,
+    "gitlab_tracked_paths": 490,
+    "excluded_release_media": [
+      "docs/public-release/media/gukgam-live-product-tour.mp4",
+      "docs/public-release/media/gukgam-live-threads-30s.mp4"
+    ],
+    "extra_remote_paths": [
+      "SOURCE_MIRROR.json"
+    ],
+    "accepted_batches": [
+      {
+        "commit": "7d87baa909b19cfa5acb4ea3c7cea9634a72a3bb",
+        "paths": 4,
+        "elapsed_seconds": 120.672,
+        "passed_scanners": [
+          "Gitleaks",
+          "Semgrep",
+          "OSV-Scanner",
+          "Trivy",
+          "Syft"
+        ],
+        "request_started_at_utc": "2026-11-03T04:36:22.759726+00:00"
+      },
+      {
+        "commit": "bbaa6681090ad289083976a62ef8d127f2406528",
+        "paths": 8,
+        "elapsed_seconds": 60.718,
+        "passed_scanners": [
+          "Gitleaks",
+          "Semgrep",
+          "OSV-Scanner",
+          "Trivy",
+          "Syft"
+        ],
+        "request_started_at_utc": "2026-11-03T07:44:38.366784+00:00"
+      },
+      {
+        "commit": "9408730b6debeb951e3c075d63b130fd387c463e",
+        "paths": 21,
+        "elapsed_seconds": 61.859,
+        "passed_scanners": [
+          "Gitleaks",
+          "Semgrep",
+          "OSV-Scanner",
+          "Trivy",
+          "Syft"
+        ],
+        "request_started_at_utc": "2026-11-03T08:18:02.902605+00:00"
+      },
+      {
+        "commit": "55ec2263be50bc343893361a82563fc0fbce36b1",
+        "paths": 3,
+        "elapsed_seconds": 60.813,
+        "passed_scanners": [
+          "Gitleaks",
+          "Semgrep",
+          "OSV-Scanner",
+          "Trivy",
+          "Syft"
+        ],
+        "request_started_at_utc": "2026-11-03T09:37:59.612487+00:00"
+      },
+      {
+        "commit": "4f2db247f7e31eeb19e28ad1fd25409efd321a69",
+        "paths": 23,
+        "elapsed_seconds": 62.109,
+        "passed_scanners": [
+          "Gitleaks",
+          "Semgrep",
+          "OSV-Scanner",
+          "Trivy",
+          "Syft"
+        ],
+        "request_started_at_utc": "2026-11-03T18:42:57.182030+00:00"
+      }
+    ],
+    "code_requests_scope": "Historical attempts before successful source publication; retained without alteration.",
+    "transport_failure_root_cause": "not_confirmed"
   },
   "preserved_releases": [
     "v0.1.0",

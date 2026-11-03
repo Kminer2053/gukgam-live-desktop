@@ -92,7 +92,7 @@ ChatGPT 구독 사용과 API 이용 요금은 별개입니다. 외부 AI를 고�
 - [개발용 Python 의존성 고정](docs/PYTHON_DEPENDENCY_LOCKS.md)
 - [기존 기록의 중복 판정 키 이전](docs/ITEM_FINGERPRINT_MIGRATION.md)
 
-정식 0.2.0의 소스·설치파일·선택 구성요소는 GitHub에 공개했습니다. 공공 GitLab에는 새 의존성 4파일이 보안 검사 5종을 통과했지만, 나머지 소스 반영은 검사 결과 없는 HTTP 502로 미완료입니다. 최신 전체 소스는 GitHub를 이용하세요. 각 저장소의 확인 시점과 범위는 배포 확인 정보에 기록합니다.
+정식 0.2.0의 소스는 GitHub와 공공 GitLab에 공개했습니다. 2026년 11월 4일 공공 GitLab의 보안 검사 5종 통과와 전체 소스 반영을 확인했습니다. 설치파일·선택 구성요소와 영상은 GitHub 공식 릴리스에서 받으세요. 공공 GitLab에서는 대용량 영상 2개를 릴리스 링크로 제공하며, 검증한 소스 판본과 범위는 [배포 확인 정보](docs/public-release/RELEASE_MANIFEST.json)에 기록합니다.
 
 개발 환경은 Windows x64·Node.js 24와 고정된 Python 의존성을 사용합니다. 고정 의존성 준비·호환 보완 → Python 엔진 빌드 → scripts/build_runtime_packs.py로 선택 다운로드와 고정 카탈로그 생성 → 데스크톱 빌드 → nsis-web 패키징 순서입니다. 사용자의 PC에서 npm을 실행하거나 소스를 다시 빌드하지 않습니다.
 
