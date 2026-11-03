@@ -24,6 +24,8 @@ import httpx
 
 from .decision import (DecisionError, MAX_RESPONSE_BYTES, _number, validate_answer_set,
                        validate_questions)
+from ..assets_download import download_file, verified_file
+from ..secure_files import make_private_directory
 
 JULIA_MODEL = "SupersonicLabs/Julia-1"
 JULIA_REVISION = "a85b127321d580d65176c89ced8273f305745d85"
@@ -63,7 +65,7 @@ def protocol_json(value: str | bytes) -> Any:
 
 
 def model_directory(data_dir: Path) -> Path:
-    return Path(data_dir).resolve() / "models" / "julia-1"
+    return Path(data_dir).absolute() / "models" / "julia-1"
 
 
 def model_fingerprint(data_dir: Path) -> str:
@@ -215,44 +217,28 @@ async def cancel_prepare_model(data_dir: Path) -> dict[str, Any]:
 
 async def _prepare(root: Path) -> None:
     key = str(root)
-    partial: Path | None = None
     total = sum(spec["size"] for spec in JULIA_FILES.values())
     received = 0
     try:
-        await asyncio.to_thread(root.mkdir, parents=True, exist_ok=True)
+        await asyncio.to_thread(make_private_directory, root, parents=True, exist_ok=True)
         free = await asyncio.to_thread(lambda: shutil.disk_usage(root).free)
         if free < total + 128 * 1024 * 1024:
             raise DecisionError("disk_space", "Julia 모델 준비에 약 750MB 이상의 여유 공간이 필요합니다")
         _PREPARE_STATUS[key] = {"state": "preparing", "message": "공식 Julia 모델을 확인하고 있습니다",
                                 "bytes": 0, "total_bytes": total, "progress": 0}
-        async with httpx.AsyncClient(follow_redirects=True, trust_env=False,
+        async with httpx.AsyncClient(follow_redirects=False, trust_env=False,
                 timeout=httpx.Timeout(30, connect=10)) as client:
             for name, spec in JULIA_FILES.items():
                 target = root / name
                 if await asyncio.to_thread(_verified_file, target, spec):
                     received += spec["size"]
                     continue
-                partial = root / (name + "." + uuid.uuid4().hex + ".partial")
-                digest = hashlib.sha256()
-                size = 0
                 url = f"https://huggingface.co/{JULIA_ONNX_REPO}/resolve/{JULIA_ONNX_REVISION}/{name}"
-                async with client.stream("GET", url) as response:
-                    if response.status_code != 200:
-                        raise DecisionError("download_failed", "공식 Julia 모델 파일을 내려받지 못했습니다")
-                    with partial.open("xb") as stream:
-                        async for chunk in response.aiter_bytes(64 * 1024):
-                            size += len(chunk)
-                            if size > spec["size"]:
-                                raise DecisionError("invalid_model", "Julia 모델 파일 크기가 검증값을 넘었습니다")
-                            digest.update(chunk)
-                            await asyncio.to_thread(stream.write, chunk)
-                            _PREPARE_STATUS[key].update(bytes=received + size,
-                                progress=round((received + size) / total, 4))
-                if size != spec["size"] or digest.hexdigest() != spec["sha256"]:
-                    raise DecisionError("invalid_model", "Julia 모델 파일의 검증 해시가 일치하지 않습니다")
-                await asyncio.to_thread(partial.replace, target)
-                partial = None
-                received += size
+                def progress(size):
+                    _PREPARE_STATUS[key].update(bytes=received + size,
+                        progress=round((received + size) / total, 4))
+                await download_file(client, url, target, spec["size"], spec["sha256"], progress=progress)
+                received += spec["size"]
         _PREPARE_STATUS[key] = {"state": "idle", "message": "Julia 모델 해시 확인 완료 · CPU 실행 전",
                                 "bytes": total, "total_bytes": total, "progress": 1}
     except asyncio.CancelledError:
@@ -262,22 +248,10 @@ async def _prepare(root: Path) -> None:
         safe = exc if isinstance(exc, DecisionError) else DecisionError("download_failed", "Julia 모델 준비에 실패했습니다. 기존 처리로 계속할 수 있습니다")
         _PREPARE_STATUS[key] = {"state": "error", "message": str(safe)}
         raise safe from None
-    finally:
-        if partial is not None:
-            try:
-                await asyncio.to_thread(partial.unlink, missing_ok=True)
-            except OSError:
-                pass
 
 
 def _verified_file(path: Path, spec: dict[str, Any]) -> bool:
-    try:
-        if not path.is_file() or path.stat().st_size != spec["size"]:
-            return False
-        with path.open("rb") as stream:
-            return hashlib.file_digest(stream, "sha256").hexdigest() == spec["sha256"]
-    except OSError:
-        return False
+    return verified_file(path, spec["size"], spec["sha256"])
 
 
 class JuliaDecisionProvider:

@@ -15,6 +15,33 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  windows-desktop:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    env:
+      GUKGAM_ALLOW_ASSEMBLY_NETWORK: '0'
+    defaults:
+      run:
+        working-directory: desktop
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+      - name: Install the pinned desktop graph without install scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Apply the reviewed build compatibility changes
+        run: npm run prebuild
+      - name: Run synthetic lifecycle and download security contracts
+        run: npm test
+      - name: Check TypeScript contracts
+        run: npm run typecheck
+      - name: Build the desktop shell without installing or starting the app
+        run: npm run build
   windows-python:
     runs-on: windows-latest
     timeout-minutes: 20

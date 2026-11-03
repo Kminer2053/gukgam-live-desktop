@@ -4,7 +4,7 @@ import {mkdtemp,mkdir,writeFile,readFile,readdir,rm} from 'node:fs/promises';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {RelayProvisioner,databaseFromEnvironment,officialApproval,type Cli} from '../src/relay/provisioner';
-async function fixture(config:{stores?:(resourceName:string)=>unknown}={}) {
+async function fixture(config:{stores?:(resourceName:string)=>unknown;resolveTemplate?:(signal?:AbortSignal)=>Promise<string>}={}) {
  const dir=await mkdtemp(join(tmpdir(),'gukgam-relay-test-')),template=join(dir,'template');await mkdir(template);await writeFile(join(template,'index.py'),'# 동봉 소스');await writeFile(join(template,'.env'),'배포 제외');
  const values=new Map<string,unknown>(),calls:{args:string[];input?:any}[]=[],fetches:string[]=[];
  let approved=false,created=false,online=false,initialized=0,unknown=false,jobId='';let setup:any={organization:'시험기관',hasRelayToken:false};
@@ -32,7 +32,7 @@ async function fixture(config:{stores?:(resourceName:string)=>unknown}={}) {
   else if(args[0]==='deploy')return {code:0,stdout:'https://gukgam-test-workspace.vercel.app\n',stderr:''};
   else throw Error('예상하지 않은 CLI 요청');return {code:0,stdout:JSON.stringify(data),stderr:''};
  }};
- const options={userData:dir,templateDir:template,cli,settings,vault,initializeDatabase:async(dsn:string)=>{initialized++;assert.equal(dsn,'postgresql://test:placeholder@db.invalid/newdb?sslmode=require');},openExternal:async(url:string)=>{assert.equal(new URL(url).hostname,'vercel.com');},expectedConnection:async()=> 'a'.repeat(32),fetcher:(async(url:any,init:RequestInit={})=>{
+ const options={userData:dir,templateDir:template,resolveTemplate:config.resolveTemplate,cli,settings,vault,initializeDatabase:async(dsn:string)=>{initialized++;assert.equal(dsn,'postgresql://test:placeholder@db.invalid/newdb?sslmode=require');},openExternal:async(url:string)=>{assert.equal(new URL(url).hostname,'vercel.com');},expectedConnection:async()=> 'a'.repeat(32),fetcher:(async(url:any,init:RequestInit={})=>{
   fetches.push(String(url));assert.equal(init.redirect,'error');const headers={'content-type':'application/json'};
   if(String(url).endsWith('/api/auth/login'))return new Response('{"ok":true}',{headers:{...headers,'set-cookie':'__Host-gukgam_auth=placeholder; Secure; HttpOnly'}});
   if(String(url).endsWith('/api/health'))return new Response(JSON.stringify({ok:true,cloud:true,read_mode:'source',agent:{online,read_mode:'source',connection_id:'a'.repeat(32)}}),{headers});
@@ -54,6 +54,23 @@ test('로그인·공식 약관 대기·재개·배포·현재 PC 조회를 안�
   f.setOnline();assert.equal((await f.provisioner.verify()).sourceOnline,true);assert.ok(f.fetches.some(x=>x.endsWith('/api/sessions')));
   assert.equal((await new RelayProvisioner(f.options).status()).verified,false);
  }finally{await f.close();}
+});
+
+test('템플릿은 실제 준비에서만 요청하고 취소된 늦은 결과는 복사하지 않으며 재개 때 다시 확인한다',async()=>{
+ let prepared=0,signal:AbortSignal|undefined,entered!:()=>void,release!:()=>void;
+ const began=new Promise<void>(resolve=>{entered=resolve;}),gate=new Promise<void>(resolve=>{release=resolve;});
+ const f=await fixture({resolveTemplate:async value=>{prepared++;signal=value;if(prepared===1){entered();await gate;}return join(f.dir,'template');}});
+ try {
+  await f.provisioner.status();await f.provisioner.connect();assert.equal(prepared,0);
+  const before=await readdir(join(f.dir,'relay','site'));
+  f.setApproved();const preparing=f.provisioner.provision(f.input);await began;
+  assert.deepEqual(await readdir(join(f.dir,'relay','site')),before);assert.equal(f.created(),false);
+  const cancellation=f.provisioner.cancel();assert.equal(signal?.aborted,true);release();
+  assert.equal((await preparing).state,'error');await cancellation;
+  assert.deepEqual(await readdir(join(f.dir,'relay','site')),before);assert.equal(f.created(),false);assert.equal(f.initialized(),0);
+  assert.equal((await f.provisioner.resume()).state,'ready');assert.equal(prepared,2);assert.equal(signal?.aborted,false);
+  assert.equal(await readFile(join(f.dir,'relay','site','index.py'),'utf8'),'# 동봉 소스');assert.equal((await readdir(join(f.dir,'relay','site'))).includes('.env'),false);
+ }finally{release();await f.close();}
 });
 test('동의·암호·카탈로그 검증 실패 때 사이트와 DB를 생성하지 않는다',async()=>{
  for(const changed of [{consent:false},{operatorPasscode:'short'},{viewerPasscode:'operator-placeholder-long'},{metadata:{region:'invalid'}},{planId:'unknown'}]){const f=await fixture();try{assert.equal((await f.provisioner.provision({...f.input,...changed})).state,'error');assert.equal(f.created(),false);assert.equal(f.calls.some(c=>c.args[1]?.includes('/auto-provision/')),false);}finally{await f.close();}}

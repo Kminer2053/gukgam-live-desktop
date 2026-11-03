@@ -306,15 +306,16 @@ class Download:
         self.payloads, self.bad, self.hold = payloads, bad, hold
         self.urls = []
         self.status_code = 200
+        self.headers = {}
     async def __aenter__(self):
         return self
     async def __aexit__(self, *_):
         pass
-    def stream(self, method, url):
+    def stream(self, method, url, **kwargs):
         self.urls.append(url)
         self.current = self.payloads[url.rsplit("/", 1)[-1]]
         return self
-    async def aiter_bytes(self, _size):
+    async def aiter_raw(self, _size):
         if self.hold:
             await self.hold.wait()
         yield b"bad" if self.bad else self.current

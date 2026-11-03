@@ -67,6 +67,16 @@ async function fixture(initial:EngineState['state']='stopped',initialRead?:Promi
     close:()=>windowEvents.emit('beforeunload')};
 }
 
+test('구성 준비 진행률은 상태 값만 표시하며 화면 조회로 실행이나 다운로드를 요청하지 않는다',async()=>{
+  const value=status(engine('stopped'));
+  value.components={engine:{id:'engine',state:'downloading',message:'DO_NOT_DISPLAY_INTERNAL_DETAILS',receivedBytes:25,totalBytes:100,progress:25},relayTools:{id:'relay-tools',state:'missing',message:'DO_NOT_DISPLAY_INTERNAL_DETAILS',receivedBytes:0,totalBytes:200,progress:0}};
+  const f=await fixture('stopped',Promise.resolve(value));try{
+    assert.match(f.get('engine-component-message').textContent,/기록 기능.*25%/);assert.equal(f.get('engine-component-progress').hidden,false);assert.equal(Number(f.get('engine-component-progress').value),0.25);
+    assert.match(f.get('relay-component-message').textContent,/처음 사용할 때/);assert.equal(f.get('relay-component-progress').hidden,true);
+    assert.equal(f.get('engine-component-message').textContent.includes('DO_NOT_DISPLAY'),false);assert.equal(f.starts(),0);assert.equal(f.stops(),0);
+  }finally{f.close();}
+});
+
 test('시작 최종 ready 응답은 후속 상태 조회가 실패해도 준비 완료와 다시 열기에 반영한다',async()=>{
   const f=await fixture();try{
     f.failReads();f.get('start').click();await flush();

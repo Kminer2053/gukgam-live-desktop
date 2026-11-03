@@ -58,6 +58,7 @@
 !public/static/js/common.js
 !public/static/js/dashboard.js
 !public/static/js/items.js
+!public/static/js/module-importmap.js
 !public/static/js/pcm-worklet.js
 !public/static/js/question-audio.js
 !public/static/js/report-view.js

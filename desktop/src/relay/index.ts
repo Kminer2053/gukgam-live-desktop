@@ -8,14 +8,17 @@ import {VercelCliRunner} from './vercel-cli';
 import {RelayProvisioner} from './provisioner';
 import type {SiteUpdateStatus} from './contracts';
 
-type Options={userData:string;templateDir:string;settings:SetupStore;vault:ChatGPTVault;openExternal:(url:string)=>Promise<unknown>;resourcesPath:string;projectRoot:string;packaged:boolean;engineIsReady?:()=>boolean;readRelayConnectionId?:()=>Promise<string|undefined>;version?:string;onSiteUpdate?:(value:SiteUpdateStatus)=>void};
+type Options={userData:string;templateDir:string;settings:SetupStore;vault:ChatGPTVault;openExternal:(url:string)=>Promise<unknown>;resourcesPath:string;projectRoot:string;packaged:boolean;resolveEngine?:(signal?:AbortSignal)=>Promise<string>;resolveCliPath?:(signal?:AbortSignal)=>Promise<string>;resolveTemplate?:(signal?:AbortSignal)=>Promise<string>;engineIsReady?:()=>boolean;readRelayConnectionId?:()=>Promise<string|undefined>;version?:string;onSiteUpdate?:(value:SiteUpdateStatus)=>void};
 let unconfirmedInitializer=false;
 /** DB 준비는 포트를 열지 않으며 연결 정보는 표준입력으로만 전달한다. */
-export function initializeRelayDatabase(options:Pick<Options,'userData'|'resourcesPath'|'projectRoot'|'packaged'>,dsn:string,signal?:AbortSignal):Promise<void> {
+export async function initializeRelayDatabase(options:Pick<Options,'userData'|'resourcesPath'|'projectRoot'|'packaged'|'resolveEngine'>,dsn:string,signal?:AbortSignal):Promise<void> {
+ if(unconfirmedInitializer)throw Error('이전 DB 준비 도구의 종료를 확인하지 못했습니다. 앱을 다시 실행하세요.');
+ if(signal?.aborted)throw Error('릴레이 DB 준비를 취소했습니다.');
+ const engineRoot=options.resolveEngine?await options.resolveEngine(signal):undefined;
  return new Promise((resolve,reject)=>{
   if(unconfirmedInitializer){reject(Error('이전 DB 준비 도구의 종료를 확인하지 못했습니다. 앱을 다시 실행하세요.'));return;}
   if(signal?.aborted){reject(Error('릴레이 DB 준비를 취소했습니다.'));return;}
-  const launch=buildLaunch(options,'unused');
+  const launch=buildLaunch({...options,engineRoot},'unused');
   launch.args=options.packaged?['--relay-init']:['-m','gukgam.desktop_runtime','--relay-init'];
   const child=spawn(launch.executable,launch.args,{cwd:launch.cwd,env:launch.env,windowsHide:true,shell:false,stdio:['pipe','pipe','pipe']});
   let output='',finished=false,closed=false,pending:Error|undefined,force:ReturnType<typeof setTimeout>|undefined,abandon:ReturnType<typeof setTimeout>|undefined;
@@ -34,7 +37,7 @@ export function initializeRelayDatabase(options:Pick<Options,'userData'|'resourc
 }
 export function createManagedRelay(options:Options) {
  const cliPath=options.packaged?join(options.resourcesPath,'relay-cli','node_modules','vercel','dist','vc.js'):join(options.projectRoot,'desktop','relay-cli','node_modules','vercel','dist','vc.js');
- const cli=new VercelCliRunner({cliPath,tempRoot:join(options.userData,'relay','private-cli'),vault:options.vault});
+ const cli=new VercelCliRunner({cliPath,resolveCliPath:options.resolveCliPath,tempRoot:join(options.userData,'relay','private-cli'),vault:options.vault});
  return new RelayProvisioner({...options,cli,expectedConnection:async()=>{
   if(!options.engineIsReady?.())return undefined;
   try{const value=await options.readRelayConnectionId?.();return typeof value==='string'&&/^[a-f0-9]{32}$/.test(value)?value:undefined;}catch{return undefined;}

@@ -1,21 +1,22 @@
 import {spawn, type ChildProcessWithoutNullStreams} from 'node:child_process';
 import {Socket} from 'node:net';
 import {mkdir,rm,writeFile} from 'node:fs/promises';
-import {dirname,join} from 'node:path';
+import {dirname,isAbsolute,join} from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {StringDecoder} from 'node:string_decoder';
 import type {BackendEvent,EngineState,SetupInput} from '../shared/contracts';
 import {ENGINE_ORIGIN,explicitPython,parseBackendEvent,parseRelayConnectionResult,redactLog,validateEngineSetup} from './security';
 type Launch = {executable:string;args:string[];cwd:string;env:NodeJS.ProcessEnv};
-type Options = {userData:string;resourcesPath:string;projectRoot:string;packaged:boolean;env?:NodeJS.ProcessEnv;spawn?:typeof spawn;checkPort?:()=>Promise<void>;readyTimeoutMs?:number;shutdownTimeoutMs?:number;forceKillTimeoutMs?:number;connectionTimeoutMs?:number;onEvent?:(event:BackendEvent)=>void;onStopped?:()=>void};
-export function buildLaunch(options:Pick<Options,'userData'|'resourcesPath'|'projectRoot'|'packaged'|'env'>,configPath:string):Launch {
+type Options = {userData:string;resourcesPath:string;projectRoot:string;packaged:boolean;resolveEngine?:(signal?:AbortSignal)=>Promise<string>;env?:NodeJS.ProcessEnv;spawn?:typeof spawn;writeConfig?:typeof writeFile;checkPort?:()=>Promise<void>;readyTimeoutMs?:number;shutdownTimeoutMs?:number;forceKillTimeoutMs?:number;connectionTimeoutMs?:number;onEvent?:(event:BackendEvent)=>void;onStopped?:()=>void};
+export function buildLaunch(options:Pick<Options,'userData'|'resourcesPath'|'projectRoot'|'packaged'|'env'> & {engineRoot?:string},configPath:string):Launch {
   const original=options.env??process.env,env:NodeJS.ProcessEnv={};
   for(const [key,value] of Object.entries(original))if(!key.startsWith('GUKGAM_')&&!['PYTHONPATH','PYTHONHOME'].includes(key))env[key]=value;
   // 외부 환경은 네트워크를 끄는 값만 전달할 수 있다. 켜는 값·다른 GUKGAM 설정은 격리한다.
   if(original.GUKGAM_ALLOW_ASSEMBLY_NETWORK==='0')env.GUKGAM_ALLOW_ASSEMBLY_NETWORK='0';
   env.GUKGAM_DATA_DIR=join(options.userData,'records');
   if(options.packaged) {
-    const executable=join(options.resourcesPath,'engine','gukgam-engine.exe');
+    if(options.engineRoot!==undefined&&!isAbsolute(options.engineRoot))throw Error('기록 엔진의 준비 위치를 확인하지 못했습니다. 다시 준비하세요.');
+    const executable=join(options.engineRoot??join(options.resourcesPath,'engine'),'gukgam-engine.exe');
     return {executable,args:['--config',configPath],cwd:dirname(executable),env};
   }
   return {executable:explicitPython(original.GUKGAM_DESKTOP_PYTHON),args:['-m','gukgam.desktop_runtime','--config',configPath],cwd:options.projectRoot,env};
@@ -39,6 +40,7 @@ export class EngineController {
   private logs='';
   private sensitiveValues=new Set<string>();
   private starting=false;
+  private preparation?:AbortController;
   private generation=0;
   private connectionReads=new Map<string,{child:ChildProcessWithoutNullStreams;finish:(value?:string)=>void}>();
   constructor(private options:Options) {}
@@ -74,25 +76,32 @@ export class EngineController {
   async start(raw:SetupInput & {relayPolicyRevision?:string}):Promise<EngineState> {
     if(this.child||this.starting||this.shutdown)throw Error('기록 엔진이 이미 실행 중이거나 종료 중입니다.');
     const config=validateEngineSetup(raw);
-    this.starting=true;const generation=++this.generation;
-    const check=()=>{if(generation!==this.generation)throw Error('기록 엔진 시작을 취소했습니다.');};
+    this.starting=true;const generation=++this.generation,preparation=new AbortController();this.preparation=preparation;
+    const check=()=>{if(preparation.signal.aborted||generation!==this.generation)throw Error('기록 엔진 시작을 취소했습니다.');};
+    let ownedConfigPath:string|undefined;
+    const cleanConfig=async()=>{
+      const file=ownedConfigPath;if(!file)return;
+      if(this.configPath===file)this.configPath=undefined;
+      await rm(file,{force:true}).catch(()=>{});
+    };
     this.current={state:'starting',message:'이 앱의 기록 엔진을 준비하고 있습니다.'};
     try {
       await (this.options.checkPort??ensurePortAvailable)();
       check();
+      const engineRoot=this.options.resolveEngine?await this.options.resolveEngine(preparation.signal):undefined;
+      check();
       const configDir=join(this.options.userData,'private');
       await mkdir(configDir,{recursive:true,mode:0o700});
       check();
-      this.configPath=join(configDir,`engine-${randomUUID()}.json`);
-      const ownedConfigPath=this.configPath;
-      await writeFile(this.configPath,JSON.stringify(config),{mode:0o600,flag:'wx'});
+      ownedConfigPath=join(configDir,`engine-${randomUUID()}.json`);
+      this.configPath=ownedConfigPath;
+      await (this.options.writeConfig??writeFile)(ownedConfigPath,JSON.stringify(config),{mode:0o600,flag:'wx'});
       check();
-      const launch=buildLaunch(this.options,this.configPath);
+      const launch=buildLaunch({...this.options,engineRoot},this.configPath);
       const child=(this.options.spawn??spawn)(launch.executable,launch.args,{cwd:launch.cwd,env:launch.env,windowsHide:true,shell:false,stdio:['pipe','pipe','pipe']}) as ChildProcessWithoutNullStreams;
       this.child=child;this.logs='';
       let buffer='',stderr='';const stdoutDecoder=new StringDecoder('utf8'),stderrDecoder=new StringDecoder('utf8');
       child.stdin.on('error',()=>{});
-      const cleanConfig=async()=>{if(this.configPath===ownedConfigPath)this.configPath=undefined;await rm(ownedConfigPath,{force:true}).catch(()=>{});};
       const started=new Promise<EngineState>((resolve,reject)=>{
         let settled=false;
         const timer=setTimeout(()=>fail(Error('기록 엔진 준비 시간이 지났습니다. 앱을 종료한 뒤 다시 시도하세요.')),this.options.readyTimeoutMs??30_000);
@@ -149,14 +158,20 @@ export class EngineController {
       });
       return await started;
     } catch(error) {
+      const cancelled=preparation.signal.aborted||generation!==this.generation;
       await this.stop();
-      const message=error instanceof Error&&/[가-힣]/.test(error.message)?error.message:'기록 엔진을 시작하지 못했습니다. 설치 파일을 확인하세요.';
-      this.current={state:'error',message};throw Error(message);
-    } finally {this.starting=false;}
+      const message=cancelled?'기록 엔진 시작을 취소했습니다.':error instanceof Error&&/[가-힣]/.test(error.message)?error.message:'기록 엔진을 시작하지 못했습니다. 설치 파일을 확인하세요.';
+      if(!cancelled)this.current={state:'error',message};throw Error(message);
+    } finally {
+      // stop이 쓰기 완료 전에 경로를 비워도 이 시작 작업의 늦은 파일은 정리한다.
+      await cleanConfig();
+      if(this.preparation===preparation)this.preparation=undefined;this.starting=false;
+    }
   }
   async stop():Promise<EngineState> {
     if(this.shutdown)return this.shutdown;
     ++this.generation;
+    this.preparation?.abort();
     this.clearConnectionReads();
     this.shutdown=(async()=>{
       const child=this.child;this.current={state:'stopping',message:'이 앱의 기록 엔진을 종료하고 있습니다.'};

@@ -5,7 +5,7 @@ export type ChatGPTStatus = {connected:boolean;verified:boolean;message:string;m
 export type ChatGPTConnectionHealth = {state:'verified'|'refreshable'|'unverified'|'expired'|'disconnected'|'checking'|'error'|'unavailable'};
 export type EngineState = {state:'stopped'|'starting'|'ready'|'stopping'|'error';message:string};
 export type RelayHealth = {reachable:boolean;readMode:'source'|'mirror';agentOnline:boolean;sourceReady:boolean;message:string};
-export type AppStatus = {version:string;setup:SavedSetup;chatgpt:ChatGPTStatus;engine:EngineState};
+export type AppStatus = {version:string;setup:SavedSetup;chatgpt:ChatGPTStatus;engine:EngineState;components?:{engine:import('../runtime-packs/contracts').RuntimePackStatus;relayTools:import('../runtime-packs/contracts').RuntimePackStatus}};
 export type DesktopApi = import('../relay/contracts').RelayDesktopApi & import('../role/contracts').RoleDesktopApi & {
   status():Promise<AppStatus>;
   saveSetup(input:SetupInput):Promise<SavedSetup>;

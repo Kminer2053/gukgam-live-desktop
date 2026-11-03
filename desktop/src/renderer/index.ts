@@ -1,4 +1,5 @@
 import type {AppStatus,EngineState,SetupInput} from '../shared/contracts';
+import type {RuntimePackStatus} from '../runtime-packs/contracts';
 import {controls,type Task} from './state';
 import {initializeRelayWizard} from './relay-wizard';
 import {initializeRoleSettings} from './role-settings';
@@ -12,6 +13,16 @@ let relayWizard:ReturnType<typeof initializeRelayWizard>|undefined;
 let roleSettings:ReturnType<typeof initializeRoleSettings>|undefined;
 const titles=['기관명을 알려주세요','사용할 AI 연결 방식을 고르세요','이 PC에서 기록을 시작하세요','동료의 웹 열람을 준비하세요','추가 판정 모델을 준비하세요'];
 function notice(message:string,error=false) {const box=element('notice');box.hidden=false;box.textContent=message;box.className=error?'error':'';}
+function componentProgress(prefix:string,value:RuntimePackStatus|undefined) {
+  const box=element(`${prefix}-component`),message=element(`${prefix}-component-message`),progress=element<HTMLProgressElement>(`${prefix}-component-progress`);
+  box.hidden=!value;if(!value)return;
+  const name=prefix==='engine'?'기록 기능':'동료 열람 도구';
+  const descriptions={missing:'처음 사용할 때 준비합니다.',checking:'준비된 파일을 확인하고 있습니다.',downloading:'필요한 파일을 내려받고 있습니다.',extracting:'내려받은 파일을 준비하고 있습니다.',ready:'준비됐습니다.',cancelled:'준비를 취소했습니다. 다시 누르면 준비를 다시 시작합니다.',error:'준비하지 못했습니다. 연결 상태와 저장 공간을 확인한 뒤 다시 시도하세요.'};
+  const bytes=Number.isFinite(value.totalBytes)&&value.totalBytes>0&&Number.isFinite(value.receivedBytes)?` (${Math.min(100,Math.max(0,Math.floor(value.receivedBytes/value.totalBytes*100)))}%)`:'';
+  message.textContent=`${name}: ${descriptions[value.state]}${value.state==='downloading'?bytes:''}`;
+  progress.hidden=!['checking','downloading','extracting'].includes(value.state);
+  if(value.state==='downloading'&&value.totalBytes>0)progress.value=Math.min(1,Math.max(0,value.receivedBytes/value.totalBytes));else progress.removeAttribute('value');
+}
 function showStep(next:number,focus=true) {
   if(!Number.isInteger(next)||next<0||next>=titles.length)return;
   if(next===2&&!state?.setup.organization){notice('기관명을 먼저 저장한 뒤 기록 화면을 여세요.',true);input('organization').focus();return;}
@@ -43,6 +54,7 @@ function updateButtons() {
   for(const id of ['relay-enabled','relay-start-date','relay-end-date'])input(id).disabled=availability.settingsDisabled;
   element<HTMLSelectElement>('model').disabled=availability.settingsDisabled;
   element('engine-state').textContent=state?.engine.message??'기록 엔진 상태를 확인하고 있습니다.';
+  componentProgress('engine',state?.components?.engine);componentProgress('relay',state?.components?.relayTools);
   element('workspace-account-note').textContent=state?.chatgpt.connected?'ChatGPT 계정이 연결돼 있습니다. 실제 사용할 AI는 기록 화면의 설정에서 선택하세요.':'ChatGPT 미연결 상태입니다. Ollama·API를 연결하거나 ChatGPT에 로그인해 AI 보정과 요약을 사용할 수 있습니다. 회의 기록과 수집은 먼저 시작할 수 있습니다.';
   relayWizard?.updateAvailability();
   roleSettings?.updateAvailability();

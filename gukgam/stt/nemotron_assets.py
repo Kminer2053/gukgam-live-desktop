@@ -8,10 +8,12 @@ from pathlib import Path, PurePosixPath
 import re
 import shutil
 import stat
-import uuid
 import zipfile
 
 import httpx
+
+from ..assets_download import AssetDownloadError, asset_response, atomic_download, download_file, verified_file
+from ..secure_files import make_private_directory, open_regular_file, write_all
 
 from .nemotron_cpu import (MODEL_REPO, MODEL_REVISION, MODEL_FILE, MODEL_BYTES,
     MODEL_SHA256, MODEL_LICENSE, RUNTIME_TAG, RUNTIME_ARCHIVE, RUNTIME_BYTES,
@@ -75,7 +77,7 @@ async def _download_model_ranges(client, url: str, size: int, output, digest, pr
         for attempt in range(MODEL_CHUNK_ATTEMPTS):
             payload = bytearray()
             try:
-                async with client.stream("GET", url, headers={"Range": f"bytes={start}-{end}",
+                async with asset_response(client, url, headers={"Range": f"bytes={start}-{end}",
                         "Accept-Encoding": "identity"}) as response:
                     _range_response(response, start, end, size)
                     payload = bytearray(expected)
@@ -91,14 +93,16 @@ async def _download_model_ranges(client, url: str, size: int, output, digest, pr
                         raise _IncompleteRange()
                 if count + len(payload) > size:
                     raise PreparationError("음성 모델 파일 크기가 검증값을 넘었습니다", code="model_size_bound")
-                output.write(payload)
+                write_all(output, payload)
                 digest.update(payload)
                 count += len(payload)
                 progress(count)
                 break
-            except (httpx.TransportError, httpx.StreamError, _IncompleteRange) as error:
+            except (httpx.TransportError, httpx.StreamError, _IncompleteRange, AssetDownloadError) as error:
+                if isinstance(error, AssetDownloadError) and error.code != "download_body_incomplete":
+                    raise
                 if attempt + 1 == MODEL_CHUNK_ATTEMPTS:
-                    name = type(error).__name__
+                    name = "RemoteProtocolError" if isinstance(error, AssetDownloadError) else type(error).__name__
                     safe_class = name if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]{0,79}", name) else "TransportError"
                     raise PreparationError("음성 모델 구간을 내려받지 못했습니다. 인터넷 연결을 확인하고 다시 준비하세요",
                         code="range_transfer_incomplete", transport_class=safe_class) from None
@@ -118,10 +122,10 @@ def mark_cancelled(data_dir: Path) -> None:
 
 
 def _inside(root: Path, path: Path) -> Path:
-    resolved = path.resolve()
-    if not resolved.is_relative_to(root.resolve()):
+    absolute = path.absolute()
+    if ".." in path.parts or not absolute.is_relative_to(root.absolute()):
         raise PreparationError("음성 모델 준비 경로를 확인하지 못했습니다")
-    return resolved
+    return absolute
 
 
 def status(data_dir: Path) -> dict:
@@ -150,10 +154,7 @@ def _size_ok(path: Path, size: int) -> bool:
 
 
 def _verified(path: Path, size: int, sha: str) -> bool:
-    if not _size_ok(path, size):
-        return False
-    with path.open("rb") as stream:
-        return hashlib.file_digest(stream, "sha256").hexdigest() == sha
+    return verified_file(path, size, sha)
 
 
 def _extract(root: Path) -> None:
@@ -163,7 +164,10 @@ def _extract(root: Path) -> None:
     archive = _inside(root, root / FILES[0][0])
     prefix = RUNTIME_ARCHIVE.removesuffix(".zip")
     seen, total = set(), 0
-    with _open_read_locked(archive) as archive_stream:
+    with open_regular_file(archive) as guard, _open_read_locked(archive) as archive_stream:
+        first, second = os.fstat(guard.fileno()), os.fstat(archive_stream.fileno())
+        if (first.st_dev, first.st_ino) != (second.st_dev, second.st_ino):
+            raise PreparationError("CPU 런타임의 파일이 검사 중 변경되었습니다")
         archive_stream.seek(0)
         if (os.fstat(archive_stream.fileno()).st_size != RUNTIME_BYTES
                 or hashlib.file_digest(archive_stream, "sha256").hexdigest() != RUNTIME_SHA256):
@@ -192,59 +196,45 @@ def _extract(root: Path) -> None:
                 if entry.is_dir():
                     continue
                 target = _inside(root, root / "runtimes" / entry.filename)
-                target.parent.mkdir(parents=True, exist_ok=True)
-                partial = target.with_name(target.name + "." + uuid.uuid4().hex + ".partial")
-                try:
-                    with bundle.open(entry) as source, partial.open("xb") as output:
-                        shutil.copyfileobj(source, output, 64 * 1024)
-                    os.replace(partial, target)
-                finally:
-                    partial.unlink(missing_ok=True)
+                make_private_directory(target.parent, parents=True, exist_ok=True)
+                with bundle.open(entry) as source:
+                    expected = hashlib.file_digest(source, "sha256").hexdigest()
+                if verified_file(target, entry.file_size, expected):
+                    # 검증된 구형 캐시는 권한·파일 판본을 바꾸지 않고 그대로 재사용한다.
+                    continue
+                with bundle.open(entry) as source, atomic_download(target) as output:
+                    shutil.copyfileobj(source, output, 64 * 1024)
 
 
 async def prepare(data_dir: Path) -> dict:
     """HTTP 엔드포인트의 명시적 라이선스·준비 확인 뒤에만 호출한다. 추론은 하지 않는다."""
-    root = Path(data_dir).resolve()
-    key = str(root)
-    partial = None
+    root = Path(data_dir).absolute()
+    key = str(root.resolve())
     try:
-        root.mkdir(parents=True, exist_ok=True)
+        make_private_directory(root, parents=True, exist_ok=True)
         if shutil.disk_usage(root).free < TOTAL_BYTES + 192 * 1024 * 1024:
             raise PreparationError("음성 모델 준비에 약 950MB 이상의 여유 공간이 필요합니다")
         _STATUS[key] = {"state": "preparing", "message": "공식 CPU 런타임·모델을 확인하고 있습니다",
                         "bytes": 0, "progress": 0}
         received = 0
-        async with httpx.AsyncClient(follow_redirects=True, trust_env=False,
+        async with httpx.AsyncClient(follow_redirects=False, trust_env=False,
                 timeout=httpx.Timeout(30, connect=10)) as client:
             for relative, size, sha, url in FILES:
                 target = _inside(root, root / relative)
-                target.parent.mkdir(parents=True, exist_ok=True)
+                make_private_directory(target.parent, parents=True, exist_ok=True)
                 if await asyncio.to_thread(_verified, target, size, sha):
                     received += size
                     continue
-                partial = target.with_name(target.name + "." + uuid.uuid4().hex + ".partial")
-                digest, count = hashlib.sha256(), 0
                 def progress(count):
                     _STATUS[key].update(bytes=received + count, progress=round((received + count) / TOTAL_BYTES, 4))
                 if relative == Path("models/nemotron35-asr") / MODEL_FILE:
-                    with partial.open("xb") as output:
+                    digest = hashlib.sha256()
+                    with atomic_download(target) as output:
                         count = await _download_model_ranges(client, url, size, output, digest, progress)
+                        if count != size or digest.hexdigest() != sha:
+                            raise PreparationError("음성 모델 파일의 검증 해시가 일치하지 않습니다")
                 else:
-                    async with client.stream("GET", url) as response:
-                        if response.status_code != 200:
-                            raise PreparationError("공식 음성 모델 파일을 내려받지 못했습니다")
-                        with partial.open("xb") as output:
-                            async for chunk in response.aiter_bytes(64 * 1024):
-                                count += len(chunk)
-                                if count > size:
-                                    raise PreparationError("음성 모델 파일 크기가 검증값을 넘었습니다")
-                                digest.update(chunk)
-                                output.write(chunk)
-                                progress(count)
-                if count != size or digest.hexdigest() != sha:
-                    raise PreparationError("음성 모델 파일의 검증 해시가 일치하지 않습니다")
-                os.replace(partial, target)
-                partial = None
+                    await download_file(client, url, target, size, sha, progress=progress)
                 received += size
         # 작은 CPU ZIP을 쓰는 동안 취소되면 추출 종료까지 기다려 종료 후 쓰기를 남기지 않는다.
         extraction = asyncio.create_task(asyncio.to_thread(_extract, root))
@@ -267,6 +257,3 @@ async def prepare(data_dir: Path) -> dict:
         if safe.http_status is not None:
             _STATUS[key]["http_status"] = safe.http_status
         raise safe from None
-    finally:
-        if partial is not None:
-            partial.unlink(missing_ok=True)

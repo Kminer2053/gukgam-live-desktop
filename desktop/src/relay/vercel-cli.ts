@@ -18,6 +18,7 @@ export type VercelApiResult={status:number;body:unknown};
 type AuthEnvelope={version:1;authJson:string};
 export type VercelCliOptions={
   cliPath:string;tempRoot:string;vault:VercelAuthVault;
+  resolveCliPath?:(signal?:AbortSignal)=>Promise<string>;
   executable?:string;env?:NodeJS.ProcessEnv;spawn?:typeof spawn;
   timeoutMs?:number;killWaitMs?:number;maxOutputBytes?:number;
   fetch?:typeof fetch;apiTimeoutMs?:number;maxApiBytes?:number;
@@ -215,7 +216,7 @@ async function boundedApiJson(response:Response,maxBytes:number,signal:AbortSign
   } finally {signal.removeEventListener('abort',abort);reader.releaseLock();}
 }
 
-/** 동봉 CLI만 실행한다. 회전하는 refreshToken 충돌을 막기 위해 호출을 직렬화한다. */
+/** 검증된 전용 CLI만 실행한다. 회전하는 refreshToken 충돌을 막기 위해 호출을 직렬화한다. */
 export class VercelCliRunner {
   private tail:Promise<unknown>=Promise.resolve();
   private unsafeChild=false;
@@ -245,10 +246,11 @@ export class VercelCliRunner {
     const controller=new AbortController();let timedOut=false;
     const abort=()=>controller.abort();
     options.signal?.addEventListener('abort',abort,{once:true});
-    const timer=setTimeout(()=>{timedOut=true;controller.abort();},this.options.apiTimeoutMs??30_000);
+    let timer:ReturnType<typeof setTimeout>|undefined;
     try {
       // run()을 다시 호출하면 tail이 자신을 기다리므로 직렬 구간 안에서 private execute를 쓴다.
-      const refresh=await this.execute(['whoami'],{cwd:options.cwd,signal:controller.signal});
+      // 최초 도구 준비는 별도 준비 제한을 따른다. 인증 갱신·API 제한은 준비 직후부터 유지한다.
+      const refresh=await this.execute(['whoami'],{cwd:options.cwd,signal:controller.signal},()=>{timer=setTimeout(()=>{timedOut=true;controller.abort();},this.options.apiTimeoutMs??30_000);});
       if(refresh.code!==0)throw failure('VERCEL_API_AUTH_FAILED','Vercel 로그인을 확인하지 못했습니다. 다시 로그인하세요.');
       if(controller.signal.aborted)throw failure('VERCEL_API_CANCELLED','Vercel API 요청을 취소했습니다.');
       const envelope=authEnvelope(await this.options.vault.get<unknown>(VERCEL_AUTH_VAULT_KEY));
@@ -267,7 +269,7 @@ export class VercelCliRunner {
       throw failure('VERCEL_API_FAILED','Vercel API 요청을 마치지 못했습니다. 연결 상태를 확인하세요.');
     } finally {clearTimeout(timer);options.signal?.removeEventListener('abort',abort);}
   }
-  private async execute(args:string[],options:VercelCliRunOptions):Promise<VercelCliResult> {
+  private async execute(args:string[],options:VercelCliRunOptions,onPrepared?:()=>void):Promise<VercelCliResult> {
     checkArguments(args);
     if(!isAbsolute(options.cwd))throw failure('VERCEL_PATH_INVALID','Vercel 작업 폴더에는 절대 경로가 필요합니다.');
     if(this.unsafeChild)throw failure('VERCEL_STOP_UNCONFIRMED','이전 Vercel 작업의 종료를 확인하지 못했습니다. 앱을 다시 실행하세요.');
@@ -275,6 +277,14 @@ export class VercelCliRunner {
     if(options.input&&Buffer.byteLength(options.input)>MAX_INPUT_BYTES)throw failure('VERCEL_INPUT_LIMIT','Vercel 입력이 허용 크기를 넘었습니다.');
     const binding=args[0]==='deploy'?await deploymentBinding(args,options.cwd):undefined;
     if(options.signal?.aborted)throw failure('VERCEL_CANCELLED','Vercel 작업을 취소했습니다.');
+    let cliPath=this.options.cliPath;
+    if(this.options.resolveCliPath) {
+      try {cliPath=await this.options.resolveCliPath(options.signal);}
+      catch {throw failure(options.signal?.aborted?'VERCEL_CANCELLED':'VERCEL_TOOLS_UNAVAILABLE',options.signal?.aborted?'Vercel 작업을 취소했습니다.':'사이트 준비 도구를 준비하지 못했습니다. 연결 상태를 확인한 뒤 다시 시도하세요.');}
+      if(options.signal?.aborted)throw failure('VERCEL_CANCELLED','Vercel 작업을 취소했습니다.');
+      if(!isAbsolute(cliPath))throw failure('VERCEL_PATH_INVALID','사이트 준비 도구의 위치를 확인하지 못했습니다. 다시 준비하세요.');
+    }
+    onPrepared?.();
     // vault가 잠겼으면 임시 평문 파일을 만들기 전에 중단한다.
     const saved=authEnvelope(await this.options.vault.get<unknown>(VERCEL_AUTH_VAULT_KEY));
     await mkdir(this.options.tempRoot,{recursive:true,mode:0o700});
@@ -344,7 +354,7 @@ export class VercelCliRunner {
         };
         try {
           child=(this.options.spawn??spawn)(this.options.executable??process.execPath,
-            [this.options.cliPath,...(binding?.args??args),'--global-config',dir],
+            [cliPath,...(binding?.args??args),'--global-config',dir],
             {cwd:options.cwd,env:{...vercelChildEnvironment(this.options.env??process.env),
               ...(binding?{VERCEL_ORG_ID:binding.orgId,VERCEL_PROJECT_ID:binding.projectId}:{})},
               shell:false,windowsHide:true,stdio:['pipe','pipe','pipe']}) as ChildProcessWithoutNullStreams;

@@ -1,158 +1,167 @@
 {
-  "schema_version": 4,
-  "status": "stable_0_1_2_github_published_gitlab_update_transport_failed",
+  "schema_version": 5,
+  "status": "stable_0_2_0_verified_pending_publication",
   "product_name": "국감 라이브 데스크톱",
-  "release_version": "0.1.2",
-  "source_release_ref": "v0.1.2",
-  "runtime_source_commit": "e45ebfe283368fd9d33d1d8146ce2c55a95333ed",
+  "release_version": "0.2.0",
+  "source_release_ref": "v0.2.0",
   "target": "windows-x64",
   "license_spdx": "MIT",
   "public_github_url": "https://github.com/Kminer2053/gukgam-live-desktop",
   "public_gitlab_url": "https://gitlab.aigov.go.kr/Kminer2053/gukgam-live-desktop",
   "installer": {
-    "name": "Gukgam-Live-Setup-0.1.2.exe",
-    "bytes": 319405624,
-    "sha256": "259812e193bbb70b42a016b15efdfeca12cbc37b4be164b7aac639e13fb73711",
-    "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.2/Gukgam-Live-Setup-0.1.2.exe"
+    "filename": "Gukgam-Live-Setup-0.2.0.exe",
+    "bytes": 768316,
+    "sha256": "2e9e354ae59d5a01f577ed10dc4709187c41bd959ff0fded314ebca649b5c750"
   },
-  "manual": {
-    "name": "Gukgam-Live-Manual-ko.html",
-    "bytes": 2259106,
-    "sha256": "e4afb187d228865bb8d51b5aceffd9296588058498160009e0bfea69f156e5b4",
-    "source": "docs/public-release/manual.html",
-    "standalone": true,
-    "external_assets": false,
-    "audience": "일반 사무담당자",
-    "visual_service_diagram": true,
-    "actual_settings_screenshots": true
+  "core_package": {
+    "filename": "gukgam-live-desktop-0.2.0-x64.nsis.7z",
+    "bytes": 114031535,
+    "sha256": "3db7a8f051ab87d45c919387fa417a9b0132a4b4e5044a1e1d2f8b9045a08484",
+    "sha512": "aa88ce30b1fbeddf873486db346d65da2d7a4d0e693db4a95a7e0e819541dcba758415efcfc73af13fa7341bc16aba1d5c285cb7783478d1702567ef2f0f6d3e"
   },
   "assets": [
     {
-      "name": "Gukgam-Live-Setup-0.1.2.exe",
-      "bytes": 319405624,
-      "sha256": "259812e193bbb70b42a016b15efdfeca12cbc37b4be164b7aac639e13fb73711"
+      "name": "Gukgam-Live-Setup-0.2.0.exe",
+      "bytes": 768316,
+      "sha256": "2e9e354ae59d5a01f577ed10dc4709187c41bd959ff0fded314ebca649b5c750",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.2.0/Gukgam-Live-Setup-0.2.0.exe"
+    },
+    {
+      "name": "gukgam-live-desktop-0.2.0-x64.nsis.7z",
+      "bytes": 114031535,
+      "sha256": "3db7a8f051ab87d45c919387fa417a9b0132a4b4e5044a1e1d2f8b9045a08484",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.2.0/gukgam-live-desktop-0.2.0-x64.nsis.7z"
+    },
+    {
+      "name": "Gukgam-Engine-win-x64-0.2.0.tar.gz",
+      "bytes": 64887081,
+      "sha256": "473db4d37cce7daceb1340011409e44fcc15e077c24ad0730f2ffb4f597f12a2",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.2.0/Gukgam-Engine-win-x64-0.2.0.tar.gz"
+    },
+    {
+      "name": "Gukgam-Relay-Tools-win-x64-0.2.0.tar.gz",
+      "bytes": 54431336,
+      "sha256": "ae76097edc02b228c0169bcfd3e093b7e662a977f8e0a63cbfb3aa204246e579",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.2.0/Gukgam-Relay-Tools-win-x64-0.2.0.tar.gz"
+    },
+    {
+      "name": "Gukgam-Live-Components-0.2.0.json",
+      "bytes": 1214710,
+      "sha256": "e5c8176dcc081de00f226868c89748b2aed76ecbc7a545eadf1ceb6427092098",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.2.0/Gukgam-Live-Components-0.2.0.json"
     },
     {
       "name": "Gukgam-Live-Manual-ko.html",
-      "bytes": 2259106,
-      "sha256": "e4afb187d228865bb8d51b5aceffd9296588058498160009e0bfea69f156e5b4"
+      "bytes": 2260875,
+      "sha256": "97f332b2573bd4e71dabcd4264bbb5bf05d61468d34b997a45d60d4ec9d88278",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.2.0/Gukgam-Live-Manual-ko.html"
     },
     {
       "name": "Gukgam-Live-Icon.ico",
       "bytes": 32532,
-      "sha256": "9aa932abb5906a7c57e3a4be92f6a3a20a3c0d44829d97a4f6c624bb69372cfa"
+      "sha256": "9aa932abb5906a7c57e3a4be92f6a3a20a3c0d44829d97a4f6c624bb69372cfa",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.2.0/Gukgam-Live-Icon.ico"
     },
     {
       "name": "Gukgam-Live-Icon.png",
       "bytes": 14962,
-      "sha256": "da78ef40ba88abe8360b659956db26b9ec8ebf43da1be279b5220cbdfa0c3768"
+      "sha256": "da78ef40ba88abe8360b659956db26b9ec8ebf43da1be279b5220cbdfa0c3768",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.2.0/Gukgam-Live-Icon.png"
     },
     {
       "name": "LICENSE.txt",
       "bytes": 1089,
-      "sha256": "2f325006e1161f3413aa99680346bbbe7567309d7f8280e133cd1af9ce357521"
+      "sha256": "2f325006e1161f3413aa99680346bbbe7567309d7f8280e133cd1af9ce357521",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.2.0/LICENSE.txt"
     },
     {
       "name": "SHA256SUMS.txt",
-      "bytes": 439,
-      "sha256": "82b6394c577d91ffc3dbde721621ae8a11092d9dc8337ec3003fd75dc47dd93c"
+      "bytes": 850,
+      "sha256": "ca8bf736168563ddcd2a5974404b062bf771ae7e4392404f595edf100cf3150c",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.2.0/SHA256SUMS.txt"
+    }
+  ],
+  "distribution": {
+    "online_installer": true,
+    "initial_download_bytes": 114799851,
+    "core_unpacked_file_bytes": 331006570,
+    "base_contains_optional_components": false,
+    "persistent_installer_payload_cache": false,
+    "first_record_open_download": "engine",
+    "first_relay_action_download": "relay-tools",
+    "models": "explicit preparation from pinned official sources with existing license confirmation",
+    "catalog_trust": "URLs, revisions, archive SHA256 and exact file hashes are embedded in the application, not fetched as a mutable instruction",
+    "runtime_npm_or_npx": false
+  },
+  "components": [
+    {
+      "id": "engine",
+      "version": "0.2.0",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.2.0/Gukgam-Engine-win-x64-0.2.0.tar.gz",
+      "bytes": 64887081,
+      "sha256": "473db4d37cce7daceb1340011409e44fcc15e077c24ad0730f2ffb4f597f12a2",
+      "unpacked_bytes": 152532357,
+      "files": 905
+    },
+    {
+      "id": "relay-tools",
+      "version": "0.2.0",
+      "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.2.0/Gukgam-Relay-Tools-win-x64-0.2.0.tar.gz",
+      "bytes": 54431336,
+      "sha256": "ae76097edc02b228c0169bcfd3e093b7e662a977f8e0a63cbfb3aa204246e579",
+      "unpacked_bytes": 236807487,
+      "files": 5142
     }
   ],
   "validation": {
-    "windows_installer_build_exit_code": 0,
-    "static_embedded_package_verified": true,
-    "engine_files_verified": 905,
-    "python_modules_bytecode_verified": 146,
-    "compiled_desktop_ui_files_verified": 6,
-    "bundled_cpu_asset_hashes_verified": 79,
-    "tls_resource_verified": true,
-    "node_tests_passed": 209,
+    "nsis_web_build_exit_code": 0,
+    "static_core_package_verified": true,
+    "core_files_all_bytes_match": true,
+    "compiled_ui_files_verified": 6,
+    "engine_python_modules_verified": 147,
+    "runtime_packs_local_stream_and_all_file_hashes_verified": true,
+    "cached_redownloads": 0,
+    "engine_help_passed": true,
+    "cli_version_guard_passed": true,
+    "node_tests_passed": 246,
+    "web_installer_security_tests_passed": 11,
+    "python_tests_passed": 327,
     "typecheck_passed": true,
     "desktop_build_passed": true,
-    "dependency_patch_contracts_passed": 7,
-    "packaged_cli_version": "50.0.0",
-    "packaged_cli_help_with_network_denied_passed": true,
-    "engine_help_passed": true,
-    "app_pe_icon_images_verified": 7,
-    "setup_pe_icon_images_verified": 7,
-    "uninstaller_icon_verified": false,
-    "installation_performed": false,
-    "actual_cloud_deployment_repeated": false,
+    "app_icon_images_verified": 7,
+    "setup_icon_images_verified": 7,
+    "installer_executed": false,
+    "application_ui_started": false,
+    "new_model_calls": 0,
+    "operating_records_accessed": false,
     "actual_oauth_login_repeated": false,
-    "new_model_requests": 0,
-    "operating_records_read_or_changed": false
+    "actual_cloud_deployment_repeated": false,
+    "inference_worker_sources_changed": false,
+    "live_model_quality_repeated": false,
+    "nsis_full_rollback_guaranteed": false
   },
-  "relay_dependencies": {
-    "official_cli": "vercel@50.0.0",
-    "sandbox_package_count": 0,
-    "unique_pinned_name_versions": 300,
-    "osv_query_findings": 0,
-    "osv_query_date": "2026-11-03",
-    "osv_query_is_server_gate_equivalence": false,
-    "actual_source_compatibility_changes": [
-      "ts-morph named minimatch API",
-      "explicit verified project.id in official deployment request"
-    ],
-    "project_link_validation": "owned regular file, bounded content, no links or hardlinks, matching team/project, isolated child environment"
-  },
-  "installer_size": {
-    "previous_version": "0.1.1",
-    "previous_download_bytes": 325881809,
-    "current_download_bytes": 319405624,
-    "download_saved_bytes": 6476185,
-    "previous_unpacked_file_bytes": 841342697,
-    "current_unpacked_file_bytes": 849338403,
-    "unpacked_increase_bytes": 7995706,
-    "excluded_nonruntime_cli_files": 835,
-    "excluded_nonruntime_raw_bytes": 10374379,
-    "electron_languages": [
-      "ko",
-      "en-US"
-    ],
-    "cpu_model_preserved": true,
-    "licenses_preserved": true
-  },
-  "relay_management": {
-    "default_enabled": false,
-    "date_timezone": "Asia/Seoul",
-    "end_date_inclusive": true,
-    "manual_off": true,
-    "local_collection_and_ai_independent": true,
-    "hosting_project_deleted_by_off": false,
-    "actual_cloud_cost_saving_measured": false
+  "dependency_security": {
+    "query_date": "2026-11-03",
+    "name_versions": 635,
+    "npm": 550,
+    "pypi": 85,
+    "known_findings": 0,
+    "sandbox_package_present": false,
+    "official_relay_cli": "50.0.0",
+    "scanner_suppression_added": false,
+    "server_gate_equivalence_claimed": false,
+    "permanent_vulnerability_absence_claimed": false
   },
   "gitlab_publication": {
     "complete": false,
     "last_confirmed_main": "45dfbf7b9e33d42b3ecb3a4ec2941d70aa99ceb2",
-    "latest_lock_attempts": 2,
-    "latest_lock_result": "HTTP 502 without a scanner result; remote main unchanged",
-    "scanner_suppressions_added": false,
-    "force_push": false,
-    "ssh_read_test": "official port 22 connection timed out; no authentication or host validation weakened",
-    "normal_upload_requests": 4,
-    "latest_code_result": "HTTP 502 without a scanner result",
-    "single_document_result": "HTTP 502 after 122.109 seconds without a scanner result",
-    "new_cli_source_published": false,
-    "security_rejection_of_new_lock_observed": false,
-    "underlying_server_cause_confirmed": false
+    "previous_requests": "four normal HTTPS pushes returned HTTP 502 without scan results, including one small document",
+    "new_version_gate_result": "not_submitted_yet"
   },
   "preserved_releases": [
     "v0.1.0",
-    "v0.1.1"
+    "v0.1.1",
+    "v0.1.2"
   ],
-  "video_download_links": [
-    "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-16x9-Structure.mp4",
-    "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-9x16-Structure.mp4"
-  ],
-  "prepared_at_utc": "2026-11-03T02:53:43.955349+00:00",
-  "github_release": {
-    "id": 432227207,
-    "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/tag/v0.1.2",
-    "draft": false,
-    "prerelease": false,
-    "server_asset_digests_verified": 6,
-    "published_at": "2026-11-03T02:57:39Z",
-    "tag_commit": "5cdb8ca82701b5c946fe982fc14bc7121980bd38"
-  },
-  "publication_verified_at_utc": "2026-11-03T02:59:25.527883+00:00"
+  "prepared_at_utc": "2026-11-03T04:34:07.061838+00:00"
 }

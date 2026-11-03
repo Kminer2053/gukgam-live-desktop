@@ -34,6 +34,8 @@
       <p>기록 화면에서 회의를 선택하거나 보관된 기록을 열 수 있습니다.</p>
       <p id="workspace-account-note" class="hint" role="status">ChatGPT 연결과 별개로 회의 기록을 사용할 수 있습니다.</p>
       <div class="status-card"><strong id="engine-state">기록 엔진 대기</strong><p>이 앱이 시작한 엔진만 제어합니다. 8765 포트가 이미 사용 중이면 시작을 멈추고 안내합니다.</p></div>
+      <div id="engine-component" class="status-card" hidden><p id="engine-component-message" role="status" aria-live="polite"></p><progress id="engine-component-progress" max="1" aria-label="기록 기능 준비 진행률" hidden></progress></div>
+      <p class="hint">처음 기록 화면을 열 때 기록 기능을 한 번 내려받습니다. 준비 중에는 ‘기록 엔진 종료’로 취소할 수 있습니다.</p>
       <div class="actions"><button id="start" class="primary">기록 화면 열기</button><button id="reopen">열린 기록 화면 보기</button><button id="stop">기록 엔진 종료</button></div>
       <p class="hint">AI 보정과 요약은 설정에서 선택한 ChatGPT·Ollama·API 연결을 사용합니다. AI 연결 오류로 실황 수집을 멈추지 않습니다. 실제 수집과 AI 초안 검토는 기록 화면에서 시작하세요.</p>
       <button id="workspace-llm-settings" type="button">AI 연결 설정 · ChatGPT·Ollama·API</button>
@@ -44,6 +46,8 @@
     <section data-step="3" data-testid="setup-step" aria-label="릴레이 열람 준비" hidden>
       <p>Vercel에 로그인하고 팀·저장공간·요금제를 선택하면 앱이 기관 열람 사이트를 준비합니다. 외부 서비스 가입과 약관·요금제 승인은 브라우저에서 직접 완료합니다. 사이트 구성이 안 돼도 로컬 기록은 사용할 수 있습니다.</p>
       <div class="status-card" data-testid="managed-relay-status"><strong id="managed-relay-state">사이트 계정 미설정</strong><p id="managed-relay-message" role="status" aria-live="polite">실제 계정과 사이트 구성 상태를 확인하고 있습니다.</p></div>
+      <div id="relay-component" class="status-card" hidden><p id="relay-component-message" role="status" aria-live="polite"></p><progress id="relay-component-progress" max="1" aria-label="동료 열람 도구 준비 진행률" hidden></progress></div>
+      <p class="hint">Vercel 로그인이나 사이트 구성을 시작하면 필요한 도구를 한 번 내려받습니다. 화면을 열어 보기만 할 때는 내려받지 않습니다. 진행 중에는 ‘취소’로 멈출 수 있습니다.</p>
       <div id="relay-ready-actions" class="status-card relay-connect-card" hidden>
         <h3>현재 PC 연결과 사이트 열기</h3>
         <p id="relay-connection-help">아래 연결 버튼을 누르면 필요한 경우 기록 엔진을 시작하고, 이 PC의 저장 기록을 사이트에서 조회할 수 있는지 확인합니다.</p>

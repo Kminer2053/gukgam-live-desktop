@@ -1,5 +1,5 @@
-import {mkdir,mkdtemp,readFile,writeFile,rename,rm,cp,stat} from 'node:fs/promises';
-import {join,resolve,dirname,basename,relative} from 'node:path';
+import {mkdir,mkdtemp,readFile,writeFile,rename,rm,cp,lstat,realpath} from 'node:fs/promises';
+import {join,resolve,dirname,basename,relative,isAbsolute} from 'node:path';
 import {randomBytes,randomUUID} from 'node:crypto';
 import {validateVercelDeviceUrl,vercelCommandFailure,vercelFailureMetadata} from './vercel-cli';
 import type {SetupStore} from '../storage/settings';
@@ -10,7 +10,7 @@ import {siteUpdateStatus,siteUpdateVersion,type SiteUpdateStatus,type ManagedRel
 export type Cli={requestApi(path:string,options:{cwd:string;teamId?:string;body?:unknown;method?:string;signal?:AbortSignal}):Promise<{status:number;body:unknown}>;run(args:string[],options:{cwd:string;input?:string;signal?:AbortSignal;onDeviceUrl?:(url:string)=>void}):Promise<{code:number;stdout:string;stderr:string}>};
 type Job={version:1;id:string;teamId:string;teamSlug:string;projectName:string;productId:string;productSlug:string;integrationId:string;planId:string;metadata:Record<string,unknown>;installationMetadata:Record<string,unknown>;resourceName:string;phase:'prepared'|'creating-project'|'project'|'creating-database'|'database'|'configured'|'deployed';projectId?:string;resourceId?:string;url?:string;pendingApprovalUrl?:string;siteUpdate?:SiteUpdateStatus};
 type Secrets={operatorPasscode:string;viewerPasscode:string;token:string;key:string};
-type Options={userData:string;templateDir:string;cli:Cli;settings:Pick<SetupStore,'read'|'save'>;vault:ChatGPTVault;initializeDatabase:(dsn:string,signal?:AbortSignal)=>Promise<void>;openExternal:(url:string)=>Promise<unknown>;fetcher?:typeof fetch;expectedConnection?:()=>Promise<string|undefined>;version?:string;onSiteUpdate?:(value:SiteUpdateStatus)=>void};
+type Options={userData:string;templateDir:string;resolveTemplate?:(signal?:AbortSignal)=>Promise<string>;cli:Cli;settings:Pick<SetupStore,'read'|'save'>;vault:ChatGPTVault;initializeDatabase:(dsn:string,signal?:AbortSignal)=>Promise<void>;openExternal:(url:string)=>Promise<unknown>;fetcher?:typeof fetch;expectedConnection?:()=>Promise<string|undefined>;version?:string;onSiteUpdate?:(value:SiteUpdateStatus)=>void};
 const identifier=/^[a-zA-Z0-9_-]{1,128}$/;
 const excludedTemplateParts=new Set(['.vercel','.git','__pycache__','node_modules','docs','outputs','records','raw','audio','vault','account']);
 class ApiFailure extends Error {constructor(readonly status:number,readonly body:any){super(status===401?'사이트 계정을 다시 연결하세요.':status===403?'이 작업 공간의 기관 SSO 재인증 또는 관리 권한이 필요합니다. 공식 사이트에서 기관 관리자와 접근 권한을 확인하거나 사용 권한이 있는 작업 공간을 선택하세요.':'외부 사이트 요청을 완료하지 못했습니다.');}}
@@ -343,9 +343,22 @@ export class RelayProvisioner {
  async cancel(){this.active?.abort();await this.activeDone;return this.status();}
  async openApproval(){await this.load();if(this.active?.signal.aborted)throw Error('취소 중인 작업의 승인 페이지는 열 수 없습니다. 취소가 끝난 뒤 현재 상태를 확인하세요.');if(!this.current.approvalUrl)throw Error('현재 열어야 할 공식 승인 화면이 없습니다.');const url=new URL(this.current.approvalUrl);if(url.protocol!=='https:'||url.username||url.password||url.port||!['vercel.com','console.neon.tech','neon.tech'].includes(url.hostname))throw Error('공식 승인 주소가 아닙니다.');await this.options.openExternal(url.href);}
  private async prepareTemplate(destination=this.cwd) {
-  const info=await stat(this.options.templateDir);if(!info.isDirectory())throw Error('동봉한 릴레이 소스를 찾지 못했습니다. 설치 파일을 확인하세요.');
-  // 설치 자산만 복사한다. 직원 PC의 저장 기록·계정·환경 파일은 배포 대상이 아니다.
-  await cp(this.options.templateDir,destination,{recursive:true,force:true,filter:source=>!relative(this.options.templateDir,source).split(/[\\/]/).some(p=>excludedTemplateParts.has(p)||p.startsWith('.env'))});
+  const owned=this.active,check=()=>{if(!owned||this.active!==owned||owned.signal.aborted)throw Error('사이트 소스 준비를 취소했습니다.');};
+  check();const template=this.options.resolveTemplate?await this.options.resolveTemplate(owned!.signal):this.options.templateDir;check();
+  const sourceRoot=resolve(template),targetRoot=resolve(destination),parent=resolve(this.options.userData,'relay');
+  const same=(a:string,b:string)=>process.platform==='win32'?a.toLowerCase()===b.toLowerCase():a===b;
+  if(!isAbsolute(template)||same(sourceRoot,targetRoot)||!(same(targetRoot,resolve(this.cwd))||same(dirname(targetRoot),parent)&&basename(targetRoot).startsWith('site-update-')))throw Error('사이트 소스의 준비 위치를 확인하지 못했습니다.');
+  const guard=async(file:string,missing=false)=>{
+   try{const info=await lstat(file);if(info.isSymbolicLink()||!info.isDirectory()&&!info.isFile()||info.isFile()&&info.nlink!==1||!same(await realpath(file),resolve(file)))throw Error('사이트 소스의 파일 구성을 확인하지 못했습니다.');return info;}
+   catch(error){if(missing&&(error as NodeJS.ErrnoException).code==='ENOENT')return;throw error;}
+  };
+  const info=await guard(sourceRoot);if(!info?.isDirectory())throw Error('준비된 사이트 소스를 찾지 못했습니다. 다시 준비하세요.');
+  await mkdir(parent,{recursive:true,mode:0o700});await guard(parent);await guard(targetRoot,true);check();
+  // 검증된 소스만 소유 작업 폴더에 복사하며 파일마다 취소·링크를 다시 확인한다.
+  await cp(sourceRoot,targetRoot,{recursive:true,force:true,filter:async(source,target)=>{
+   check();if(relative(sourceRoot,source).split(/[\\/]/).some(p=>excludedTemplateParts.has(p)||p.startsWith('.env')))return false;
+   await guard(source);await guard(target,true);check();return true;
+  }});check();
  }
  private async advance(resuming:boolean) {
   const job=this.job!,secrets=await this.options.vault.get<Secrets>('relay-provision');if(!secrets)throw Error('보호된 릴레이 연결 정보를 읽지 못했습니다.');

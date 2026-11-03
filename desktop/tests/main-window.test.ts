@@ -13,13 +13,13 @@ import {build} from 'esbuild';
 import type {ManagedRelayStatus} from '../src/relay/contracts';
 let bundled:Promise<string>|undefined;
 function mainBundle() {
-  bundled??=build({entryPoints:[resolve('src/main/index.ts')],bundle:true,write:false,platform:'node',format:'cjs',external:['electron','gukgam-test-engine','gukgam-test-auth','gukgam-test-relay'],plugins:[{
+  bundled??=build({entryPoints:[resolve('src/main/index.ts')],bundle:true,write:false,platform:'node',format:'cjs',external:['electron','gukgam-test-engine','gukgam-test-auth','gukgam-test-relay','gukgam-test-packs'],plugins:[{
     name:'실행 없는 메인 경계',setup(builder){
-      builder.onResolve({filter:/^(?:\.\/engine|\.\.\/auth\/chatgpt|\.\.\/relay)$/},args=>{
+      builder.onResolve({filter:/^(?:\.\/engine|\.\.\/auth\/chatgpt|\.\.\/relay|\.\.\/runtime-packs\/manager)$/},args=>{
         if(!args.importer.replaceAll('\\','/').endsWith('/src/main/index.ts'))return;
         return {path:args.path,namespace:'모의-메인'};
       });
-      builder.onLoad({filter:/.*/,namespace:'모의-메인'},args=>({contents:args.path==='./engine'?"export {EngineController,ENGINE_ORIGIN} from 'gukgam-test-engine';":args.path==='../relay'?"export {createManagedRelay} from 'gukgam-test-relay';":"export {ChatGPTService} from 'gukgam-test-auth';",loader:'js'}));
+      builder.onLoad({filter:/.*/,namespace:'모의-메인'},args=>({contents:args.path==='./engine'?"export {EngineController,ENGINE_ORIGIN} from 'gukgam-test-engine';":args.path==='../relay'?"export {createManagedRelay} from 'gukgam-test-relay';":args.path==='../runtime-packs/manager'?"export {RuntimePackManager} from 'gukgam-test-packs';":"export {ChatGPTService} from 'gukgam-test-auth';",loader:'js'}));
     }
   }]}).then(result=>result.outputFiles[0].text);
   return bundled;
@@ -28,7 +28,7 @@ async function harness(options:{failWorkspace?:boolean;failRelay?:boolean;relay?
   const dir=await mkdtemp(join(tmpdir(),'gukgam-main-mock-'));
   let finished!:()=>void;const quit=new Promise<void>(done=>{finished=done;});
   const handlers=new Map<string,Function>(),windows:MockWindow[]=[],paths=new Map<string,string>();
-  const stats={starts:0,stops:0,requests:0,healthReads:0,healthState:'verified',sent:[] as any[],opened:[] as string[],engineOptions:undefined as any,failWorkspace:Boolean(options.failWorkspace),relayReads:0,verifies:0,provisions:0,resumes:0,updates:0,relayCancels:0,events:[] as string[],configs:[] as any[],failStopOnce:Boolean(options.failStopOnce)};
+  const stats={starts:0,stops:0,requests:0,healthReads:0,healthState:'verified',sent:[] as any[],opened:[] as string[],engineOptions:undefined as any,relayOptions:undefined as any,packOptions:undefined as any,packEnsures:[] as string[],packCancels:[] as string[],packReads:[] as string[],failWorkspace:Boolean(options.failWorkspace),relayReads:0,verifies:0,provisions:0,resumes:0,updates:0,relayCancels:0,events:[] as string[],configs:[] as any[],failStopOnce:Boolean(options.failStopOnce)};
   class MockContents extends EventEmitter {mainFrame={url:''};openHandler?:Function;setWindowOpenHandler(value:Function){this.openHandler=value;}}
   class MockWindow extends EventEmitter {
     webContents=new MockContents();destroyed=false;
@@ -45,7 +45,7 @@ async function harness(options:{failWorkspace?:boolean;failRelay?:boolean;relay?
     generation=0;
     constructor(private options:any){stats.engineOptions=options;}
     status(){return {...this.current};}
-    async start(config:unknown){stats.starts++;stats.configs.push(config);stats.events.push('engine.start');const generation=++this.generation;this.current={state:'starting',message:'모의 준비'};await options.startGate;if(generation!==this.generation)throw Error('모의 엔진 시작 취소');this.current={state:'ready',message:'모의 실행'};stats.events.push('engine.ready');return this.status();}
+    async start(config:unknown){stats.starts++;stats.configs.push(config);stats.events.push('engine.start');const generation=++this.generation;this.current={state:'starting',message:'모의 준비'};await this.options.resolveEngine?.();await options.startGate;if(generation!==this.generation)throw Error('모의 엔진 시작 취소');this.current={state:'ready',message:'모의 실행'};stats.events.push('engine.ready');return this.status();}
     async stop(){stats.stops++;++this.generation;this.current={state:'stopping',message:'모의 종료중'};if(stats.failStopOnce){stats.failStopOnce=false;throw Error('모의 엔진 종료 확인 실패');}this.current={state:'stopped',message:'모의 중지'};this.options.onStopped();return this.status();}
     send(value:any){stats.sent.push(value);}
     sendSensitive(value:any,_secret:string){stats.events.push('roles.sync');stats.sent.push({type:value.type,hasKey:Boolean(value.key)});}
@@ -57,7 +57,7 @@ async function harness(options:{failWorkspace?:boolean;failRelay?:boolean;relay?
     async request(){stats.requests++;throw Error('모의 계정 연결 전');}
   }
   let relay:ManagedRelayStatus={state:'idle',message:'모의 미설정',teams:[],canResume:false,verified:false,sourceOnline:false,...options.relay};
-  const createManagedRelay=()=>{if(options.failRelay)throw Error('MOCK 릴레이 도구 오류');return {
+  const createManagedRelay=(value:any)=>{stats.relayOptions=value;if(options.failRelay)throw Error('MOCK 릴레이 도구 오류');return {
     status:async()=>{stats.relayReads++;await options.statusGate;return {...relay};},
     verify:async()=>{stats.verifies++;stats.events.push('relay.verify');await options.verifyGate;if(options.failVerify)throw Error('모의 릴레이 연결 확인 실패');relay={...relay,state:'ready',verified:true,sourceOnline:options.sourceOnline??true,message:options.sourceOnline===false?'릴레이는 정상이며 현재 PC의 연결을 기다리고 있습니다.':'이 PC 연결과 릴레이를 통한 실제 회의 목록 조회를 확인했습니다.'};return {...relay};},
     provision:async()=>{stats.provisions++;relay={...relay,state:'configuring'};await options.provisionGate;return {...relay};},
@@ -66,8 +66,14 @@ async function harness(options:{failWorkspace?:boolean;failRelay?:boolean;relay?
     // 지연된 모의 verify는 취소 뒤에도 성공을 돌려줄 수 있게 해 메인 세대 보호를 검증한다.
     cancel:async()=>{stats.relayCancels++;if(options.failCancel)throw Error('모의 릴레이 취소 실패');return {...relay};}
   };};
+  class RuntimePackManager {
+    constructor(value:any){stats.packOptions=value;}
+    async status(id:string){stats.packReads.push(id);return {id,state:'missing',message:'합성 준비 전',receivedBytes:0,totalBytes:100,progress:0};}
+    async ensure(id:string){stats.packEnsures.push(id);return join(dir,'verified-components',id);}
+    cancel(id:string){stats.packCancels.push(id);}
+  }
   const nativeRequire=createRequire(resolve('tests/main-window.test.ts'));
-  const requireMock=(name:string)=>name==='electron'?electron:name==='gukgam-test-engine'?{EngineController,ENGINE_ORIGIN:'http://127.0.0.1:8765'}:name==='gukgam-test-auth'?{ChatGPTService}:name==='gukgam-test-relay'?{createManagedRelay}:nativeRequire(name);
+  const requireMock=(name:string)=>name==='electron'?electron:name==='gukgam-test-engine'?{EngineController,ENGINE_ORIGIN:'http://127.0.0.1:8765'}:name==='gukgam-test-auth'?{ChatGPTService}:name==='gukgam-test-relay'?{createManagedRelay}:name==='gukgam-test-packs'?{RuntimePackManager}:nativeRequire(name);
   const module={exports:{}};
   runInNewContext(await mainBundle(),{require:requireMock,module,exports:module.exports,__dirname:join(dir,'desktop','dist','main'),process:{platform:process.platform,env:{},resourcesPath:join(dir,'resources')},Buffer,URL,Error,setTimeout,clearTimeout,AbortController,AbortSignal,fetch:async()=>{throw Error('모의 메인 시험의 외부 호출 금지');},console});
   await delay(5);
@@ -83,6 +89,28 @@ async function harness(options:{failWorkspace?:boolean;failRelay?:boolean;relay?
 }
 test('새 설치 폴더를 만든 뒤 실제 메인 진입 코드가 초기 설정을 연다',async()=>{
   const h=await harness();try {assert.equal(h.windows.length,1);const result=await h.invoke('status');assert.equal(result.ok,true);assert.equal(result.data.chatgpt.connected,false);assert.match(result.data.setup.secureStorageWarning,/기록/);assert.equal(h.stats.starts,0);assert.equal(h.windows[0].options.webPreferences.sandbox,true);}finally{await h.cleanup();}
+});
+
+test('시작창·중계 상태 조회는 다운로드하지 않고 첫 기록 시작만 고정 엔진 구성 준비를 요청한다',async()=>{
+  const h=await harness();try {
+    const result=await h.invoke('status');await h.invoke('relay-status');
+    assert.deepEqual(h.stats.packEnsures,[]);assert.equal(result.data.components.engine.state,'missing');assert.equal(result.data.components.relayTools.state,'missing');
+    assert.equal(h.stats.packOptions.root,join(h.paths.get('userData')!,'components'));
+    await h.invoke('save-setup',{organization:'합성 기관'});assert.equal((await h.invoke('start-engine')).ok,true);
+    assert.deepEqual(h.stats.packEnsures,['engine']);
+  }finally{await h.cleanup();}
+  assert.deepEqual(h.stats.packCancels,['engine','relay-tools']);
+});
+
+test('메인은 중계 도구와 DB 엔진을 고정 구성 ID와 진입점으로만 연결한다',async()=>{
+  const h=await harness();try {
+    assert.deepEqual(h.stats.packEnsures,[]);const signal=new AbortController().signal;
+    const entry=await h.stats.relayOptions.resolveCliPath(signal);
+    assert.equal(entry,join(h.dir,'verified-components','relay-tools','node_modules','vercel','dist','vc.js'));
+    assert.equal(await h.stats.relayOptions.resolveEngine(signal),join(h.dir,'verified-components','engine'));
+    assert.deepEqual(h.stats.packEnsures,['relay-tools','engine']);
+    assert.equal((await h.invokeUntrusted('start-engine')).ok,false);assert.deepEqual(h.stats.packEnsures,['relay-tools','engine']);
+  }finally{await h.cleanup();}
 });
 
 test('ChatGPT 미연결에서도 AI 설정을 열고 준비된 자기 엔진을 재사용한다',async()=>{

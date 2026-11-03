@@ -16,6 +16,8 @@ import type {ManagedRelayStatus,RelayProvisionInput} from '../relay/contracts';
 import type {AppStatus,EngineState} from '../shared/contracts';
 import {DesktopDiagnostics} from './diagnostics';
 import {RoleSettingsService} from './role-settings';
+import {RuntimePackManager} from '../runtime-packs/manager';
+import {PACK_CATALOG} from '../runtime-packs/catalog.generated';
 
 let userData=join(app.getPath('appData'),'GukgamLiveDesktop'),ciSmoke=false,startupFailure='';
 try {
@@ -33,6 +35,7 @@ let loginPending=false,startingEngine=false,connectingManagedRelay=false,prepari
 let managedSourceGeneration:number|undefined;
 let cancelRelayOnQuit:(()=>Promise<unknown>)|undefined;
 let diagnostics:DesktopDiagnostics|undefined;
+let runtimePacks:RuntimePackManager|undefined;
 const setupFile=join(__dirname,'../renderer/index.html');
 const setupUrl=pathToFileURL(setupFile).href;
 const lockedPreferences=isolatedWebPreferences;
@@ -98,7 +101,10 @@ function handle(name:string,action:(...args:unknown[])=>unknown) {
     catch(error) {return {ok:false,message:error instanceof Error&&/[가-힣]/.test(error.message)?error.message:'작업을 완료하지 못했습니다. 앱을 다시 열고 설정을 확인하세요.'};}
   });
 }
-async function status():Promise<AppStatus> {return {version:app.getVersion(),setup:await settings.read(),chatgpt:await chat.status(),engine:engine.status()};}
+async function status():Promise<AppStatus> {
+  const components=runtimePacks?{engine:await runtimePacks.status('engine'),relayTools:await runtimePacks.status('relay-tools')}:undefined;
+  return {version:app.getVersion(),setup:await settings.read(),chatgpt:await chat.status(),engine:engine.status(),...(components?{components}:{})};
+}
 /** 화면 이동 여부만 다르게 하며 같은 소유 엔진·브릿지·키 준비 경로를 사용한다. */
 async function startOwnedEngine(openWorkspace:boolean,reuseReady=false):Promise<{result:EngineState;generation:number}> {
   const current=engine.status();
@@ -144,7 +150,11 @@ else {
     const vault=new SecureVault(join(userData,'vault'),safeStorage);
     settings=new SetupStore(userData,vault);
     const projectRoot=resolve(__dirname,'../../..');
-    const managedRelayReady=Promise.resolve().then(()=>createManagedRelay({userData,templateDir:app.isPackaged?join(process.resourcesPath,'relay-template'):join(projectRoot,'cloud'),resourcesPath:process.resourcesPath,projectRoot,packaged:app.isPackaged,engineIsReady:()=>engine.status().state==='ready',readRelayConnectionId:()=>engine.readRelayConnectionId(),version:app.getVersion(),onSiteUpdate:value=>diagnostics?.log('relay.site-update',{siteUpdate:value}),settings,vault,openExternal:async value=>{
+    if(app.isPackaged)runtimePacks=new RuntimePackManager({root:join(userData,'components'),catalog:PACK_CATALOG});
+    const resolveEngine=runtimePacks?(signal?:AbortSignal)=>runtimePacks!.ensure('engine',signal):undefined;
+    const resolveCliPath=runtimePacks?async(signal?:AbortSignal)=>join(await runtimePacks!.ensure('relay-tools',signal),'node_modules','vercel','dist','vc.js'):undefined;
+    const resolveTemplate=runtimePacks?async(signal?:AbortSignal)=>join(await runtimePacks!.ensure('relay-tools',signal),'template'):undefined;
+    const managedRelayReady=Promise.resolve().then(()=>createManagedRelay({userData,templateDir:app.isPackaged?join(process.resourcesPath,'relay-template'):join(projectRoot,'cloud'),resourcesPath:process.resourcesPath,projectRoot,packaged:app.isPackaged,resolveEngine,resolveCliPath,resolveTemplate,engineIsReady:()=>engine.status().state==='ready',readRelayConnectionId:()=>engine.readRelayConnectionId(),version:app.getVersion(),onSiteUpdate:value=>diagnostics?.log('relay.site-update',{siteUpdate:value}),settings,vault,openExternal:async value=>{
       const url=new URL(value);
       if(url.protocol!=='https:'||url.username||url.password||url.port||!['vercel.com','neon.tech'].some(host=>url.hostname===host||url.hostname.endsWith(`.${host}`)))throw Error('공식 사이트 준비 주소가 아닙니다. 기관 담당자에게 확인하세요.');
       await shell.openExternal(value);
@@ -163,7 +173,7 @@ else {
       if(url.protocol!=='https:'||url.hostname!=='auth.openai.com'||url.pathname!=='/api/accounts/authorize'||url.username||url.password)throw Error('공식 ChatGPT 로그인 주소가 아닙니다.');
       await shell.openExternal(value);
     },{onRequestStatus:value=>diagnostics?.request(value)});
-    engine=new EngineController({userData,resourcesPath:process.resourcesPath,projectRoot:resolve(__dirname,'../../..'),packaged:app.isPackaged,env:{...process.env,...(ciSmoke?{GUKGAM_ALLOW_ASSEMBLY_NETWORK:'0'}:{})},
+    engine=new EngineController({userData,resourcesPath:process.resourcesPath,projectRoot:resolve(__dirname,'../../..'),packaged:app.isPackaged,resolveEngine,env:{...process.env,...(ciSmoke?{GUKGAM_ALLOW_ASSEMBLY_NETWORK:'0'}:{})},
       onEvent:event=>{
         if(event.type==='llm.request')bridge?.accept(event);
         else if(event.type==='llm.cancel')bridge?.cancel(event.id);
@@ -265,6 +275,7 @@ else {
     event.preventDefault();quitting=true;++startGeneration;
     diagnostics?.log('app.quit',{version:app.getVersion(),engineState:engine?.status().state});
     bridge?.close();chat?.cancel();
+    runtimePacks?.cancel('engine');runtimePacks?.cancel('relay-tools');
     if(engine)diagnostics?.log('engine.stop',{engineState:'stopping'});
     const stopped=engine?.stop().then(result=>diagnostics?.log('engine.state',{engineState:result.state}))??Promise.resolve();
     void Promise.allSettled([stopped,cancelRelayOnQuit?.()??Promise.resolve()]).finally(async()=>{await diagnostics?.flush();app.quit();});

@@ -2,18 +2,17 @@
 from __future__ import annotations
 
 import asyncio
-import hashlib
 import os
 from pathlib import Path, PurePosixPath
 import shutil
 import stat
 import sys
-from uuid import uuid4
 import zipfile
 
 import httpx
 
-from ..secure_files import create_private_file, make_private_directory, open_regular_file, atomic_replace, write_all
+from ..assets_download import download_file, verified_file
+from ..secure_files import make_private_directory, open_regular_file
 from .nemotron_cpu import RUNTIME_ARCHIVE, RUNTIME_BYTES, RUNTIME_SHA256, RUNTIME_TAG, NemotronContractError
 from .nemotron_worker import VerifiedAssets, _open_read_locked, _hash
 
@@ -159,41 +158,37 @@ async def _prepare(data_dir, *, confirm=False, accept_license=False, bundled_dir
     if confirm is not True or accept_license is not True:
         raise ValueError("화자분리 모델의 준비와 라이선스를 확인하세요")
     if status(data_dir, bundled_dir=bundled_dir)["asset_origin"] == "bundled":
+        # 이전 설치의 동봉 파일도 고정 해시·DLL 구성이 일치할 때만 재사용한다.
+        def verify_bundled():
+            assets = verify_assets(asset_root(data_dir, bundled_dir=bundled_dir))
+            assets.close()
+        verification = asyncio.create_task(asyncio.to_thread(verify_bundled))
+        try:
+            await asyncio.shield(verification)
+        except asyncio.CancelledError:
+            await asyncio.gather(verification, return_exceptions=True)
+            raise
         return status(data_dir, bundled_dir=bundled_dir)
     root = Path(data_dir).absolute()
     make_private_directory(root, parents=True, exist_ok=True)
     if shutil.disk_usage(root).free < TOTAL_BYTES * 2 + 32 * 1024 * 1024:
         raise ValueError("화자분리 자산을 준비할 저장 공간이 부족합니다")
-    async with httpx.AsyncClient(follow_redirects=True, trust_env=False,
+    async with httpx.AsyncClient(follow_redirects=False, trust_env=False,
                                 timeout=httpx.Timeout(120, connect=15)) as client:
         for relative, size, expected, url in FILES:
             target = root / relative
             make_private_directory(target.parent, parents=True, exist_ok=True)
-            if target.exists():
-                with open_regular_file(target) as stream:
-                    if os.fstat(stream.fileno()).st_size == size and _hash(stream) == expected:
-                        continue
-            partial = target.with_name(target.name + "." + uuid4().hex + ".partial")
-            try:
-                digest, count = hashlib.sha256(), 0
-                with create_private_file(partial) as stream:
-                    async with client.stream("GET", url, headers={"Accept-Encoding": "identity"}) as response:
-                        if response.status_code != 200 or response.headers.get("Content-Encoding", "identity") != "identity":
-                            raise ValueError("공식 화자분리 자산 응답을 확인하지 못했습니다")
-                        async for block in response.aiter_raw(1024 * 1024):
-                            count += len(block)
-                            if count > size:
-                                raise ValueError("화자분리 자산 크기가 검증값을 넘었습니다")
-                            write_all(stream, block)
-                            digest.update(block)
-                if count != size or digest.hexdigest() != expected:
-                    raise ValueError("화자분리 자산 크기 또는 해시가 일치하지 않습니다")
-                atomic_replace(partial, target)
-            finally:
-                partial.unlink(missing_ok=True)
+            if await asyncio.to_thread(verified_file, target, size, expected):
+                continue
+            await download_file(client, url, target, size, expected)
     # 같은 고정 CPU SDK의 기존 안전 ZIP 검증·추출 계약을 재사용한다.
     from .nemotron_assets import _extract
-    await asyncio.to_thread(_extract, root)
+    extraction = asyncio.create_task(asyncio.to_thread(_extract, root))
+    try:
+        await asyncio.shield(extraction)
+    except asyncio.CancelledError:
+        await asyncio.gather(extraction, return_exceptions=True)
+        raise
     return status(root)
 
 
