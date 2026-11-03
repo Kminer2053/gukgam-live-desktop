@@ -145,7 +145,11 @@
     "runtime_packs_public_verified_payload_bytes": 119318417,
     "runtime_packs_public_cached_requests": 0,
     "github_ci_windows_python": "success",
-    "github_ci_windows_desktop": "initial_run_failed_in_temporary_path_security_contracts; CI fixture diagnosis pending verification"
+    "github_ci_windows_desktop": "success",
+    "github_ci_commit": "071c67cc3ee3b5584c21e5c9832fd83ecdf96e28",
+    "github_ci_run_id": 41580610377,
+    "github_ci_url": "https://github.com/Kminer2053/gukgam-live-desktop/actions/runs/41580610377",
+    "github_ci_fixture_correction": "Canonical synthetic TEMP replaces the runner RUNNER~1 DOS alias; all production path guards and test assertions remain unchanged"
   },
   "dependency_security": {
     "query_date": "2026-11-03",
