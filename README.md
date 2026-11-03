@@ -8,7 +8,7 @@
 
 **바이브코딩 몰라도 내 GPT 계정으로 국정감사 회의록 정리**
 
-[Windows 설치파일](https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.1/Gukgam-Live-Setup-0.1.1.exe) · [그림으로 보는 사용설명서](https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.1/Gukgam-Live-Manual-ko.html) · [Threads 세로형 영상](https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-9x16-Structure.mp4)
+[Windows 설치파일](https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.2/Gukgam-Live-Setup-0.1.2.exe) · [그림으로 보는 사용설명서](https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.2/Gukgam-Live-Manual-ko.html) · [Threads 세로형 영상](https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-9x16-Structure.mp4)
 
 </div>
 
@@ -53,7 +53,7 @@ Windows 10/11 **64비트**, Core i5급·메모리 16GB를 기준으로 준비했
 
 회의 기록은 내 PC의 앱 전용 폴더에 저장합니다. 사람이 고친 내용은 자동 정리로 덮어쓰지 않는 구조입니다. 필요한 기록은 보고서나 단독 HTML로 따로 보관하세요. 설정한 보존 기간이 지나거나 회의를 삭제하면 관련 자료가 정리될 수 있습니다.
 
-**정식 0.1.1** 설치파일·영상·설명서와 파일 확인값은 [GitHub Releases](https://github.com/Kminer2053/gukgam-live-desktop/releases/tag/v0.1.1)에서 받으세요.
+**정식 0.1.2** 설치파일·영상·설명서와 파일 확인값은 [GitHub Releases](https://github.com/Kminer2053/gukgam-live-desktop/releases/tag/v0.1.2)에서 받으세요.
 
 <details>
 <summary>다른 AI를 쓰고 싶은 경우</summary>

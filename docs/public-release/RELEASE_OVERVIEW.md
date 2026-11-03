@@ -33,7 +33,7 @@
 
 ## 내려받기
 
-[정식 0.1.1 설치파일·설명서·영상](https://github.com/Kminer2053/gukgam-live-desktop/releases/tag/v0.1.1) · [Threads 세로형 영상](https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-9x16-Structure.mp4)
+[정식 0.1.2 설치파일·설명서·영상](https://github.com/Kminer2053/gukgam-live-desktop/releases/tag/v0.1.2) · [Threads 세로형 영상](https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-9x16-Structure.mp4)
 
 Windows 10/11 64비트, Core i5급·메모리 16GB를 기준으로 준비했습니다. 녹음 파일은 장비와 파일 길이에 따라 처리 시간이 더 걸릴 수 있습니다.
 
