@@ -75,6 +75,8 @@ ChatGPT 구독 사용과 API 이용 요금은 별개입니다. 외부 AI를 고�
 - [개발용 Python 의존성 고정](docs/PYTHON_DEPENDENCY_LOCKS.md)
 - [기존 기록의 중복 판정 키 이전](docs/ITEM_FINGERPRINT_MIGRATION.md)
 
+2026-11-03: GitHub 정식 **0.1.2** 설치파일과 소스는 공개됐습니다. 공공 GitLab은 작은 문서 한 개의 정상 전송도 `HTTP 502`로 끝나 새 버전 업데이트가 대기 중입니다. 기존 게시본을 새 버전 전체 소스라고 표시하지 않습니다. 현재 범위는 [배포 확인 정보](docs/public-release/RELEASE_MANIFEST.json)를 참고하세요.
+
 프로젝트 소스는 [MIT 라이선스](LICENSE)로 공개합니다. 모델과 외부 라이브러리에는 개별 라이선스가 적용됩니다. 실제 회의 기록·녹음·사용자 계정·개인 설정은 공개 소스에 포함하지 않습니다.
 
 [GitHub](https://github.com/Kminer2053/gukgam-live-desktop) · [공공 GitLab](https://gitlab.aigov.go.kr/Kminer2053/gukgam-live-desktop). 각 저장소의 게시 상태는 배포 확인 정보에 기록합니다.

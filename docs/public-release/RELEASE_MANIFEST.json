@@ -1,6 +1,6 @@
 {
   "schema_version": 4,
-  "status": "stable_0_1_2_verified_pending_release_publication",
+  "status": "stable_0_1_2_github_published_gitlab_update_transport_failed",
   "product_name": "국감 라이브 데스크톱",
   "release_version": "0.1.2",
   "source_release_ref": "v0.1.2",
@@ -128,7 +128,13 @@
     "latest_lock_result": "HTTP 502 without a scanner result; remote main unchanged",
     "scanner_suppressions_added": false,
     "force_push": false,
-    "ssh_read_test": "official port 22 connection timed out; no authentication or host validation weakened"
+    "ssh_read_test": "official port 22 connection timed out; no authentication or host validation weakened",
+    "normal_upload_requests": 4,
+    "latest_code_result": "HTTP 502 without a scanner result",
+    "single_document_result": "HTTP 502 after 122.109 seconds without a scanner result",
+    "new_cli_source_published": false,
+    "security_rejection_of_new_lock_observed": false,
+    "underlying_server_cause_confirmed": false
   },
   "preserved_releases": [
     "v0.1.0",
@@ -138,5 +144,15 @@
     "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-16x9-Structure.mp4",
     "https://github.com/Kminer2053/gukgam-live-desktop/releases/download/v0.1.0/Gukgam-Live-Introduction-9x16-Structure.mp4"
   ],
-  "prepared_at_utc": "2026-11-03T02:53:43.955349+00:00"
+  "prepared_at_utc": "2026-11-03T02:53:43.955349+00:00",
+  "github_release": {
+    "id": 432227207,
+    "url": "https://github.com/Kminer2053/gukgam-live-desktop/releases/tag/v0.1.2",
+    "draft": false,
+    "prerelease": false,
+    "server_asset_digests_verified": 6,
+    "published_at": "2026-11-03T02:57:39Z",
+    "tag_commit": "5cdb8ca82701b5c946fe982fc14bc7121980bd38"
+  },
+  "publication_verified_at_utc": "2026-11-03T02:59:25.527883+00:00"
 }
